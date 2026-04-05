@@ -6,6 +6,7 @@ use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
 use App\Http\Controllers\StudentPortalController;
+use App\Http\Middleware\ResolveTenant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,8 +21,8 @@ Route::post('/logout', function () {
     return redirect('/');
 })->name('logout');
 
-// PPDB (public, no auth)
-Route::prefix('ppdb')->name('ppdb.')->group(function () {
+// PPDB (public, no auth, but needs tenant)
+Route::prefix('ppdb')->name('ppdb.')->middleware([ResolveTenant::class])->group(function () {
     Route::get('/', [PPDBController::class, 'index'])->name('index');
     Route::get('/register/{wave}', [PPDBController::class, 'register'])->name('register');
     Route::post('/register', [PPDBController::class, 'store'])->name('store');
