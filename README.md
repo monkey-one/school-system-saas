@@ -1,33 +1,139 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# EduSaaS — Sistem Manajemen Sekolah SaaS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Multi-tenant SaaS School Management System dibangun dengan Laravel 11 + Filament PHP 3.x
 
-## About Laravel
+[![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3+-blue)](https://php.net)
+[![Filament](https://img.shields.io/badge/Filament-3.x-orange)](https://filamentphp.com)
+[![License](https://img.shields.io/badge/License-Regular-green)](LICENSE)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🎯 Apa itu EduSaaS?
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+EduSaaS adalah sistem manajemen sekolah SaaS multi-tenant yang lengkap dan siap produksi. Setiap sekolah mendapatkan subdomain sendiri dan data terisolasi.
 
-## Learning Laravel
+**Cocok untuk:**
+- Entrepreneur yang ingin membangun bisnis SaaS sekolah
+- Sekolah yang membutuhkan sistem manajemen lengkap
+- Developer yang ingin starter SaaS Laravel premium
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ✨ Fitur Utama
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- 🏫 **Multi-Tenant** — Setiap sekolah = subdomain + data terisolasi
+- 📋 **PPDB Online** — Pendaftaran siswa baru online
+- 📊 **Absensi QR Code** — Siswa scan QR via browser HP
+- 💰 **SPP & Pembayaran Online** — Midtrans (QRIS, GoPay, VA) + Xendit
+- 📱 **Notifikasi WhatsApp** — Alert otomatis ke orang tua via Fonnte API
+- 📝 **Rapor Digital** — Generate & kirim rapor via WhatsApp (Kurikulum Merdeka)
+- 🌐 **Portal Siswa & Orang Tua** — Portal self-service web
+- 🔌 **REST API** — Mobile app ready dengan Sanctum auth
+- 📚 **Perpustakaan & Inventaris** — Peminjaman buku + manajemen aset
+- 📈 **Dashboard SaaS** — Kelola semua tenant dari satu tempat
+
+---
+
+## 🛠 Tech Stack
+
+| Komponen | Teknologi |
+|----------|-----------|
+| Backend | Laravel 11, PHP 8.3+ |
+| Admin Panel | Filament PHP 3.x |
+| Frontend | Livewire 3, Alpine.js, Tailwind CSS |
+| Database | MySQL 8.0 |
+| Queue | Redis + Laravel Horizon |
+| Pembayaran | Midtrans + Xendit |
+| WhatsApp | Fonnte API |
+| Multi-Tenancy | spatie/laravel-multitenancy |
+| Roles | spatie/laravel-permission |
+| QR Code | endroid/qr-code |
+| Excel | maatwebsite/excel |
+| PDF | barryvdh/laravel-dompdf |
+
+---
+
+## 📋 Persyaratan
+
+- PHP 8.3+
+- MySQL 8.0+
+- Redis
+- Composer 2.x
+- Node.js 20+
+- Web server: Nginx atau Apache
+
+---
+
+## 🚀 Instalasi Cepat
+
+```bash
+# 1. Clone repository
+git clone git@github.com:monkey-one/school-system-saas.git
+cd school-system-saas
+
+# 2. Install dependencies
+composer install
+npm install && npm run build
+
+# 3. Konfigurasi
+cp .env.example .env
+php artisan key:generate
+
+# 4. Setup database
+php artisan migrate --seed
+
+# 5. Data demo (opsional)
+php artisan db:seed --class=DemoSeeder
+
+# 6. Jalankan queue worker
+php artisan horizon
+
+# 7. Jalankan server
+php artisan serve
+```
+
+**Demo Akses:**
+- Landing: `http://localhost:8000`
+- Super Admin: `http://localhost:8000/super-admin` — `superadmin@edusaas.id` / `password`
+- Admin Sekolah: `http://localhost:8000/school` — `admin@smpn1demo.id` / `password`
+- Guru: `http://localhost:8000/teacher` — `guru@smpn1demo.id` / `password`
+
+Lihat `docs/INSTALLATION.md` untuk panduan lengkap.
+
+---
+
+## 📁 Struktur Modul
+
+| Modul | Deskripsi |
+|-------|-----------|
+| Foundation | Multi-tenancy, auth, 3 Filament panels, roles |
+| Akademik | Tahun ajaran, semester, kelas, mapel, kurikulum |
+| Kesiswaan | PPDB online, profil siswa, alumni |
+| Kepegawaian | Profil guru, jadwal mengajar |
+| Absensi | QR Code attendance, GPS check-in guru |
+| Penilaian | Gradebook, rapor digital Kurikulum Merdeka |
+| Keuangan | SPP, pembayaran online, laporan |
+| Komunikasi | Pengumuman, WhatsApp blast, pesan |
+| Perpustakaan | Katalog buku, peminjaman, denda |
+| Inventaris | Aset, fasilitas, booking |
+| Super Admin | Manajemen tenant, langganan, analytics |
+| Landing Page | Halaman marketing |
+| Portal | Portal siswa & orang tua |
+| REST API | API dengan Sanctum auth |
+
+---
+
+## 📞 Dukungan
+
+- Dokumentasi: folder `docs/`
+- Dukungan: via Codester atau email
+
+---
+
+## 📄 Lisensi
+
+Regular License — untuk 1 end product (SaaS Anda).
 
 ## Laravel Sponsors
 
