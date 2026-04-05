@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Filament\SchoolAdmin\Resources;
+
+use App\Filament\SchoolAdmin\Resources\AssessmentTypeResource\Pages;
+use App\Models\AssessmentType;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+
+class AssessmentTypeResource extends Resource
+{
+    protected static ?string $model = AssessmentType::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
+
+    protected static ?string $navigationGroup = 'Penilaian';
+
+    protected static ?string $navigationLabel = 'Jenis Penilaian';
+
+    protected static ?string $modelLabel = 'Jenis Penilaian';
+
+    protected static ?string $pluralModelLabel = 'Jenis Penilaian';
+
+    protected static ?int $navigationSort = 1;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Data Jenis Penilaian')
+                    ->description('Informasi jenis penilaian')
+                    ->icon('heroicon-o-clipboard-document')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('code')
+                            ->label('Kode')
+                            ->required()
+                            ->maxLength(20)
+                            ->unique(ignoreRecord: true),
+                        Forms\Components\TextInput::make('default_weight')
+                            ->label('Bobot Default (%)')
+                            ->numeric()
+                            ->step(0.01)
+                            ->required(),
+                        Forms\Components\Toggle::make('count_for_final')
+                            ->label('Masuk Nilai Akhir')
+                            ->default(true),
+                    ]),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Kode')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('default_weight')
+                    ->label('Bobot (%)')
+                    ->suffix('%')
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('count_for_final')
+                    ->label('Nilai Akhir')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
+            ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('count_for_final')
+                    ->label('Masuk Nilai Akhir'),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->striped()
+            ->defaultSort('created_at', 'desc')
+            ->paginationPageOptions([25, 50, 100]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListAssessmentTypes::route('/'),
+            'create' => Pages\CreateAssessmentType::route('/create'),
+            'edit' => Pages\EditAssessmentType::route('/{record}/edit'),
+        ];
+    }
+}
