@@ -1,7 +1,7 @@
 @extends('parent-portal.layout')
 
-@section('title', 'Nilai Anak')
-@section('page-title', 'Nilai Anak')
+@section('title', __('Child Grades'))
+@section('page-title', __('Child Grades'))
 
 @section('content')
 <div class="space-y-6">
@@ -21,7 +21,7 @@
     {{-- Semester Selector --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 class="text-lg font-heading font-bold text-navy-700">Nilai Per Mata Pelajaran</h2>
+            <h2 class="text-lg font-heading font-bold text-navy-700">{{ __('Grades Per Subject') }}</h2>
             <form method="GET" class="flex items-center gap-2">
                 <select name="semester_id" class="rounded-lg border-gray-300 text-sm focus:ring-navy-500 focus:border-navy-500">
                     @foreach($semesters ?? [] as $semester)
@@ -31,7 +31,7 @@
                     @endforeach
                 </select>
                 <button type="submit" class="px-4 py-2 bg-navy-700 text-white text-sm rounded-lg hover:bg-navy-800 transition">
-                    Tampilkan
+                    {{ __('Show') }}
                 </button>
             </form>
         </div>
@@ -42,16 +42,16 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 bg-navy-50 border-b border-gray-100">
             <h3 class="font-heading font-bold text-navy-700">{{ $subject['name'] }}</h3>
-            <p class="text-xs text-gray-500">Guru: {{ $subject['teacher'] ?? '-' }}</p>
+            <p class="text-xs text-gray-500">{{ __('Teacher') }}: {{ $subject['teacher'] ?? '-' }}</p>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-gray-100">
-                        <th class="px-6 py-3 text-left font-semibold text-gray-600">Penilaian</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-600">Tipe</th>
-                        <th class="px-6 py-3 text-center font-semibold text-gray-600">Nilai</th>
-                        <th class="px-6 py-3 text-center font-semibold text-gray-600">Remedial</th>
+                        <th class="px-6 py-3 text-left font-semibold text-gray-600">{{ __('Assessment') }}</th>
+                        <th class="px-6 py-3 text-left font-semibold text-gray-600">{{ __('Type') }}</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-600">{{ __('Grade') }}</th>
+                        <th class="px-6 py-3 text-center font-semibold text-gray-600">{{ __('Remedial') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -75,7 +75,7 @@
                 @if(isset($subject['average']))
                 <tfoot class="bg-gold-50 border-t border-gold-200">
                     <tr>
-                        <td colspan="2" class="px-6 py-3 font-heading font-bold text-navy-700">Rata-rata</td>
+                        <td colspan="2" class="px-6 py-3 font-heading font-bold text-navy-700">{{ __('Average') }}</td>
                         <td class="px-6 py-3 text-center font-bold text-navy-700">{{ number_format($subject['average'], 1) }}</td>
                         <td></td>
                     </tr>
@@ -86,7 +86,7 @@
     </div>
     @empty
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-        <p class="text-gray-400">Belum ada data nilai untuk semester ini.</p>
+        <p class="text-gray-400">{{ __('No grade data for this semester.') }}</p>
     </div>
     @endforelse
 </div>

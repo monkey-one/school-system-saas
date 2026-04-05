@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran Peserta Didik Baru (PPDB)</title>
+    <title>{{ __('New Student Registration (PPDB)') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
                     </div>
                     <span class="text-2xl font-heading font-bold">Edu<span class="text-gold-400">SaaS</span></span>
                 </div>
-                <h1 class="text-xl font-heading font-bold">Pendaftaran Peserta Didik Baru (PPDB)</h1>
+                <h1 class="text-xl font-heading font-bold">{{ __('New Student Registration (PPDB)') }}</h1>
                 <p class="text-white/60 text-sm mt-1">Tahun Ajaran {{ date('Y') }}/{{ date('Y') + 1 }}</p>
             </div>
         </header>
@@ -88,35 +88,35 @@
 
                             <div class="grid sm:grid-cols-2 gap-5">
                                 <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                                    <input type="text" x-model="form.full_name" required placeholder="Masukkan nama lengkap sesuai akta"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Full Name') }} <span class="text-red-500">*</span></label>
+                                    <input type="text" x-model="form.full_name" required placeholder="{{ __('Enter full name as on birth certificate') }}"
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none">
                                     <template x-if="errors.full_name"><p class="text-red-500 text-xs mt-1" x-text="errors.full_name"></p></template>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal Lahir <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Date of Birth') }} <span class="text-red-500">*</span></label>
                                     <input type="date" x-model="form.birth_date" required
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none">
                                     <template x-if="errors.birth_date"><p class="text-red-500 text-xs mt-1" x-text="errors.birth_date"></p></template>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Kelamin <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Gender') }} <span class="text-red-500">*</span></label>
                                     <select x-model="form.gender" required
                                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none">
-                                        <option value="">Pilih jenis kelamin</option>
-                                        <option value="male">Laki-laki</option>
-                                        <option value="female">Perempuan</option>
+                                        <option value="">{{ __('Select gender') }}</option>
+                                        <option value="male">{{ __('Male') }}</option>
+                                        <option value="female">{{ __('Female') }}</option>
                                     </select>
                                     <template x-if="errors.gender"><p class="text-red-500 text-xs mt-1" x-text="errors.gender"></p></template>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Asal Sekolah</label>
-                                    <input type="text" x-model="form.previous_school" placeholder="Nama sekolah sebelumnya"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Previous School') }}</label>
+                                    <input type="text" x-model="form.previous_school" placeholder="{{ __('Previous school name') }}"
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none">
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Alamat Lengkap <span class="text-red-500">*</span></label>
-                                    <textarea x-model="form.address" required rows="3" placeholder="Masukkan alamat lengkap"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Full Address') }} <span class="text-red-500">*</span></label>
+                                    <textarea x-model="form.address" required rows="3" placeholder="{{ __('Enter full address') }}"
                                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none resize-none"></textarea>
                                     <template x-if="errors.address"><p class="text-red-500 text-xs mt-1" x-text="errors.address"></p></template>
                                 </div>
@@ -134,13 +134,13 @@
 
                             <div class="grid sm:grid-cols-2 gap-5">
                                 <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Orang Tua / Wali <span class="text-red-500">*</span></label>
-                                    <input type="text" x-model="form.parent_name" required placeholder="Nama lengkap orang tua/wali"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Parent / Guardian Name') }} <span class="text-red-500">*</span></label>
+                                    <input type="text" x-model="form.parent_name" required placeholder="{{ __('Parent/guardian full name') }}"
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none">
                                     <template x-if="errors.parent_name"><p class="text-red-500 text-xs mt-1" x-text="errors.parent_name"></p></template>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nomor Telepon / WhatsApp <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Phone / WhatsApp Number') }} <span class="text-red-500">*</span></label>
                                     <input type="tel" x-model="form.parent_phone" required placeholder="08xxxxxxxxxx"
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none">
                                     <template x-if="errors.parent_phone"><p class="text-red-500 text-xs mt-1" x-text="errors.parent_phone"></p></template>
@@ -162,14 +162,14 @@
                                 Upload Dokumen
                             </h2>
 
-                            <p class="text-gray-500 text-sm mb-6">Upload dokumen yang diperlukan dalam format JPG, PNG, atau PDF (maks. 2MB per file).</p>
+                            <p class="text-gray-500 text-sm mb-6">{{ __('Upload required documents in JPG, PNG, or PDF format (max. 2MB per file).') }}</p>
 
                             @php
                                 $documents = [
-                                    ['key' => 'akta_lahir', 'label' => 'Akta Kelahiran', 'required' => true],
-                                    ['key' => 'kartu_keluarga', 'label' => 'Kartu Keluarga', 'required' => true],
-                                    ['key' => 'foto', 'label' => 'Pas Foto 3x4', 'required' => true],
-                                    ['key' => 'ijazah', 'label' => 'Ijazah / Surat Keterangan Lulus', 'required' => false],
+                                    ['key' => 'akta_lahir', 'label' => __('Birth Certificate'), 'required' => true],
+                                    ['key' => 'kartu_keluarga', 'label' => __('Family Card'), 'required' => true],
+                                    ['key' => 'foto', 'label' => __('Passport Photo 3x4'), 'required' => true],
+                                    ['key' => 'ijazah', 'label' => __('Diploma / Graduation Letter'), 'required' => false],
                                 ];
                             @endphp
 
@@ -181,7 +181,7 @@
                                             {{ $doc['label'] }}
                                             @if($doc['required']) <span class="text-red-500">*</span> @endif
                                         </label>
-                                        <span class="text-xs text-gray-400">Maks. 2MB</span>
+                                        <span class="text-xs text-gray-400">{{ __('Max. 2MB') }}</span>
                                     </div>
                                     <input type="file" name="documents[{{ $doc['key'] }}]" accept=".jpg,.jpeg,.png,.pdf"
                                            {{ $doc['required'] ? '' : '' }}
@@ -203,29 +203,29 @@
                             <div class="space-y-6">
                                 {{-- Student data summary --}}
                                 <div>
-                                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Data Calon Siswa</h3>
+                                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">{{ __('Student Data') }}</h3>
                                     <div class="bg-gray-50 rounded-xl p-4 space-y-2">
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Nama Lengkap</span><span class="text-navy-600 font-medium text-sm" x-text="form.full_name"></span></div>
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Tanggal Lahir</span><span class="text-navy-600 font-medium text-sm" x-text="form.birth_date"></span></div>
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Jenis Kelamin</span><span class="text-navy-600 font-medium text-sm" x-text="form.gender === 'male' ? 'Laki-laki' : 'Perempuan'"></span></div>
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Asal Sekolah</span><span class="text-navy-600 font-medium text-sm" x-text="form.previous_school || '-'"></span></div>
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Alamat</span><span class="text-navy-600 font-medium text-sm text-right max-w-xs" x-text="form.address"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Full Name') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.full_name"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Date of Birth') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.birth_date"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Gender') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.gender === 'male' ? '{{ __('Male') }}' : '{{ __('Female') }}'"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Previous School') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.previous_school || '-'"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Full Address') }}</span><span class="text-navy-600 font-medium text-sm text-right max-w-xs" x-text="form.address"></span></div>
                                     </div>
                                 </div>
 
                                 {{-- Parent data summary --}}
                                 <div>
-                                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Data Orang Tua / Wali</h3>
+                                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">{{ __('Parent / Guardian Data') }}</h3>
                                     <div class="bg-gray-50 rounded-xl p-4 space-y-2">
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Nama</span><span class="text-navy-600 font-medium text-sm" x-text="form.parent_name"></span></div>
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Telepon</span><span class="text-navy-600 font-medium text-sm" x-text="form.parent_phone"></span></div>
-                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">Email</span><span class="text-navy-600 font-medium text-sm" x-text="form.parent_email || '-'"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Name') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.parent_name"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Phone / WhatsApp Number') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.parent_phone"></span></div>
+                                        <div class="flex justify-between"><span class="text-gray-500 text-sm">{{ __('Email') }}</span><span class="text-navy-600 font-medium text-sm" x-text="form.parent_email || '-'"></span></div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mt-6 p-4 bg-gold-500/10 border border-gold-500/20 rounded-xl">
-                                <p class="text-sm text-gold-700"><strong>Perhatian:</strong> Pastikan semua data yang Anda masukkan sudah benar. Data yang sudah dikirim tidak dapat diubah.</p>
+                                <p class="text-sm text-gold-700"><strong>{{ __('Attention') }}:</strong> {{ __('Attention: Make sure all data you entered is correct. Submitted data cannot be changed.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -235,13 +235,13 @@
                         <button type="button" x-show="currentStep > 1" @click="prevStep()"
                                 class="px-6 py-3 rounded-xl font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-all flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            Sebelumnya
+                            {{ __('Previous') }}
                         </button>
                         <div x-show="currentStep === 1"></div>
 
                         <button type="button" x-show="currentStep < 4" @click="nextStep()"
                                 class="px-6 py-3 rounded-xl font-semibold text-white bg-navy-600 hover:bg-navy-700 transition-all flex items-center gap-2 ml-auto">
-                            Selanjutnya
+                            {{ __('Next') }}
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
 
@@ -250,13 +250,13 @@
                             <template x-if="!submitting">
                                 <span class="flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                    Kirim Pendaftaran
+                                    {{ __('Submit Registration') }}
                                 </span>
                             </template>
                             <template x-if="submitting">
                                 <span class="flex items-center gap-2">
                                     <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
-                                    Mengirim...
+                                    {{ __('Submitting...') }}
                                 </span>
                             </template>
                         </button>
@@ -270,21 +270,21 @@
                     <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
                         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <h2 class="text-2xl font-heading font-bold text-navy-600 mb-2">Pendaftaran Berhasil!</h2>
-                    <p class="text-gray-500 mb-8">Terima kasih telah mendaftarkan calon peserta didik baru.</p>
+                    <h2 class="text-2xl font-heading font-bold text-navy-600 mb-2">{{ __('Registration Successful!') }}</h2>
+                    <p class="text-gray-500 mb-8">{{ __('Thank you for registering the new student.') }}</p>
 
                     <div class="bg-navy-600 text-white rounded-2xl p-8 mb-8 max-w-sm mx-auto">
-                        <p class="text-white/60 text-sm mb-2">Nomor Pendaftaran Anda</p>
+                        <p class="text-white/60 text-sm mb-2">{{ __('Your Registration Number') }}</p>
                         <p class="text-3xl font-heading font-extrabold tracking-wider" x-text="registrationNumber"></p>
                     </div>
 
                     <div class="bg-gold-500/10 border border-gold-500/20 rounded-xl p-4 mb-8 max-w-md mx-auto">
-                        <p class="text-sm text-gold-700"><strong>Penting!</strong> Simpan nomor pendaftaran ini. Anda dapat menggunakan nomor ini untuk mengecek status pendaftaran.</p>
+                        <p class="text-sm text-gold-700"><strong>{{ __('Important!') }}</strong> {{ __('Important! Save this registration number. You can use it to check your registration status.') }}</p>
                     </div>
 
                     <a href="/ppdb/status" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-navy-600 bg-navy-600/10 hover:bg-navy-600/20 transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        Cek Status Pendaftaran
+                        {{ __('Check Registration Status') }}
                     </a>
                 </div>
             </template>
@@ -298,7 +298,7 @@
                 submitted: false,
                 submitting: false,
                 registrationNumber: '',
-                stepLabels: ['Data Siswa', 'Data Orang Tua', 'Dokumen', 'Review'],
+                stepLabels: [@json(__('Student Data')), @json(__('Parent / Guardian Data')), @json(__('Upload Documents')), 'Review'],
                 form: {
                     full_name: '',
                     birth_date: '',

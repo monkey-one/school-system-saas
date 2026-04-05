@@ -51,7 +51,7 @@ class SchoolAdminPanelProvider extends PanelProvider
                 'info' => Color::Blue,
             ])
             ->font('Plus Jakarta Sans')
-            ->brandName('EduSaaS Sekolah')
+            ->brandName(__('EduSaaS School'))
             ->favicon(asset('favicon.svg'))
             ->discoverResources(in: app_path('Filament/SchoolAdmin/Resources'), for: 'App\\Filament\\SchoolAdmin\\Resources')
             ->discoverPages(in: app_path('Filament/SchoolAdmin/Pages'), for: 'App\\Filament\\SchoolAdmin\\Pages')
@@ -64,34 +64,34 @@ class SchoolAdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label('Akademik')
+                    ->label(__('Academic'))
                     ->icon('heroicon-o-academic-cap'),
                 NavigationGroup::make()
-                    ->label('Kesiswaan')
+                    ->label(__('Student Affairs'))
                     ->icon('heroicon-o-users'),
                 NavigationGroup::make()
-                    ->label('Kepegawaian')
+                    ->label(__('Staff Management'))
                     ->icon('heroicon-o-briefcase'),
                 NavigationGroup::make()
-                    ->label('Absensi')
+                    ->label(__('Attendance'))
                     ->icon('heroicon-o-clipboard-document-check'),
                 NavigationGroup::make()
-                    ->label('Penilaian')
+                    ->label(__('Grading'))
                     ->icon('heroicon-o-document-text'),
                 NavigationGroup::make()
-                    ->label('Keuangan')
+                    ->label(__('Finance'))
                     ->icon('heroicon-o-currency-dollar'),
                 NavigationGroup::make()
-                    ->label('Komunikasi')
+                    ->label(__('Communication'))
                     ->icon('heroicon-o-megaphone'),
                 NavigationGroup::make()
-                    ->label('Perpustakaan')
+                    ->label(__('Library'))
                     ->icon('heroicon-o-book-open'),
                 NavigationGroup::make()
-                    ->label('Inventaris')
+                    ->label(__('Inventory'))
                     ->icon('heroicon-o-archive-box'),
                 NavigationGroup::make()
-                    ->label('Pengaturan')
+                    ->label(__('Settings'))
                     ->icon('heroicon-o-cog-6-tooth'),
             ])
             ->middleware([

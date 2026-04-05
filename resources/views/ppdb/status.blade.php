@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cek Status PPDB</title>
+    <title>{{ __('Check PPDB Registration Status') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
                     </div>
                     <span class="text-2xl font-heading font-bold">Edu<span class="text-gold-400">SaaS</span></span>
                 </div>
-                <h1 class="text-xl font-heading font-bold">Cek Status Pendaftaran PPDB</h1>
+                <h1 class="text-xl font-heading font-bold">{{ __('Check PPDB Registration Status') }}</h1>
             </div>
         </header>
 
@@ -56,13 +56,13 @@
                         <div class="w-16 h-16 rounded-full bg-navy-600/10 flex items-center justify-center mx-auto mb-4">
                             <svg class="w-8 h-8 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <p class="text-gray-500 text-sm">Masukkan nomor pendaftaran untuk mengecek status PPDB Anda.</p>
+                        <p class="text-gray-500 text-sm">{{ __('Enter your registration number to check your PPDB status.') }}</p>
                     </div>
 
                     <form @submit.prevent="checkStatus()">
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Nomor Pendaftaran</label>
-                            <input type="text" x-model="regNumber" required placeholder="Contoh: PPDB-2026-00001"
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">{{ __('Registration Number') }}</label>
+                            <input type="text" x-model="regNumber" required placeholder="{{ __('Example: PPDB-2026-00001') }}"
                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-all outline-none text-center text-lg font-semibold tracking-wider uppercase">
                         </div>
                         <button type="submit" :disabled="loading"
@@ -70,13 +70,13 @@
                             <template x-if="!loading">
                                 <span class="flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                    Cek Status
+                                    {{ __('Check Status') }}
                                 </span>
                             </template>
                             <template x-if="loading">
                                 <span class="flex items-center gap-2">
                                     <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                                    Mencari...
+                                    {{ __('Searching...') }}
                                 </span>
                             </template>
                         </button>
@@ -86,20 +86,20 @@
                 {{-- Result --}}
                 <template x-if="result">
                     <div class="mt-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8" x-transition>
-                        <h3 class="text-lg font-heading font-bold text-navy-600 mb-4">Hasil Pencarian</h3>
+                        <h3 class="text-lg font-heading font-bold text-navy-600 mb-4">{{ __('Search Results') }}</h3>
 
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-500 text-sm">No. Pendaftaran</span>
+                                <span class="text-gray-500 text-sm">{{ __('Reg. Number') }}</span>
                                 <span class="font-semibold text-navy-600" x-text="result.registration_number"></span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-500 text-sm">Nama</span>
+                                <span class="text-gray-500 text-sm">{{ __('Name') }}</span>
                                 <span class="font-medium text-gray-800" x-text="result.full_name"></span>
                             </div>
                             <hr class="border-gray-100">
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-500 text-sm">Status</span>
+                                <span class="text-gray-500 text-sm">{{ __('Status') }}</span>
                                 <span class="px-4 py-1.5 rounded-full text-sm font-bold"
                                       :class="{
                                           'bg-yellow-100 text-yellow-700': result.status === 'pending',
@@ -111,7 +111,7 @@
                             </div>
                             <template x-if="result.notes">
                                 <div class="bg-gray-50 rounded-xl p-4 mt-2">
-                                    <p class="text-sm text-gray-500 font-medium mb-1">Catatan:</p>
+                                    <p class="text-sm text-gray-500 font-medium mb-1">{{ __('Notes') }}:</p>
                                     <p class="text-sm text-gray-700" x-text="result.notes"></p>
                                 </div>
                             </template>
@@ -130,7 +130,7 @@
                 <div class="text-center mt-6">
                     <a href="/ppdb/register" class="text-navy-600 hover:text-navy-700 font-medium text-sm inline-flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                        Kembali ke halaman pendaftaran
+                        {{ __('Back to registration page') }}
                     </a>
                 </div>
             </div>
@@ -145,10 +145,10 @@
                 result: null,
                 error: null,
                 statusLabels: {
-                    'pending': 'Menunggu Review',
-                    'reviewing': 'Sedang Direview',
-                    'accepted': 'Diterima',
-                    'rejected': 'Ditolak',
+                    'pending': @json(__('Pending Review')),
+                    'reviewing': @json(__('Under Review')),
+                    'accepted': @json(__('Accepted')),
+                    'rejected': @json(__('Rejected')),
                 },
 
                 async checkStatus() {
@@ -164,12 +164,12 @@
                         if (response.ok) {
                             this.result = await response.json();
                         } else if (response.status === 404) {
-                            this.error = 'Nomor pendaftaran tidak ditemukan. Pastikan nomor yang Anda masukkan benar.';
+                            this.error = @json(__('Registration number not found. Please make sure the number is correct.'));
                         } else {
-                            this.error = 'Terjadi kesalahan. Silakan coba lagi.';
+                            this.error = @json(__('An error occurred. Please try again.'));
                         }
                     } catch (e) {
-                        this.error = 'Terjadi kesalahan jaringan. Silakan coba lagi.';
+                        this.error = @json(__('A network error occurred. Please try again.'));
                     } finally {
                         this.loading = false;
                     }

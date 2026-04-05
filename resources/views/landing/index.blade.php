@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="{{ app()->getLocale() }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="EduSaaS - Sistem Manajemen Sekolah Modern untuk Era Digital. Kelola PPDB, Absensi, Rapor, SPP, dan lebih banyak lagi dalam satu platform.">
-    <title>EduSaaS - Sistem Manajemen Sekolah Modern</title>
+    <meta name="description" content="EduSaaS - {{ __('Modern School Management System for the Digital Era') }}">
+    <title>EduSaaS - {{ __('Modern School Management System for the Digital Era') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,15 +80,26 @@
                 </a>
 
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#fitur" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">Fitur</a>
-                    <a href="#harga" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">Harga</a>
-                    <a href="#faq" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">FAQ</a>
-                    <a href="#kontak" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">Kontak</a>
+                    <a href="#fitur" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">{{ __('Features') }}</a>
+                    <a href="#harga" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">{{ __('Pricing') }}</a>
+                    <a href="#faq" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">{{ __('FAQ') }}</a>
+                    <a href="#kontak" class="font-medium transition-colors" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">{{ __('Contact') }}</a>
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="{{ url('/school/login') }}" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">Masuk</a>
-                    <a href="#kontak" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">Coba Gratis</a>
+                    <a href="{{ url('/school/login') }}" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">{{ __('Sign In') }}</a>
+                    <a href="#kontak" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">{{ __('Try Free') }}</a>
+                    {{-- Language Switcher --}}
+                    <div class="relative" x-data="{ langOpen: false }">
+                        <button @click="langOpen = !langOpen" class="flex items-center gap-1 font-medium transition-colors px-2 py-1 rounded-lg" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {{ app()->getLocale() === 'id' ? 'ID' : 'EN' }}
+                        </button>
+                        <div x-show="langOpen" @click.away="langOpen = false" x-transition class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+                            <a href="{{ route('locale.switch', 'id') }}" class="block px-4 py-2.5 text-sm font-medium {{ app()->getLocale() === 'id' ? 'bg-navy-50 text-navy-600' : 'text-gray-600 hover:bg-gray-50' }}">🇮🇩 Indonesia</a>
+                            <a href="{{ route('locale.switch', 'en') }}" class="block px-4 py-2.5 text-sm font-medium {{ app()->getLocale() === 'en' ? 'bg-navy-50 text-navy-600' : 'text-gray-600 hover:bg-gray-50' }}">🇬🇧 English</a>
+                        </div>
+                    </div>
                 </div>
 
                 <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2" :class="scrolled ? 'text-navy-600' : 'text-white'">
@@ -101,13 +112,17 @@
 
             {{-- Mobile Menu --}}
             <div x-show="mobileOpen" x-transition class="md:hidden bg-white rounded-2xl shadow-xl p-6 mb-4 space-y-4">
-                <a href="#fitur" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">Fitur</a>
-                <a href="#harga" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">Harga</a>
-                <a href="#faq" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">FAQ</a>
-                <a href="#kontak" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">Kontak</a>
+                <a href="#fitur" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('Features') }}</a>
+                <a href="#harga" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('Pricing') }}</a>
+                <a href="#faq" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('FAQ') }}</a>
+                <a href="#kontak" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('Contact') }}</a>
                 <hr class="border-gray-200">
-                <a href="{{ url('/school/login') }}" class="block text-navy-600 font-medium">Masuk</a>
-                <a href="#kontak" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">Coba Gratis</a>
+                <a href="{{ url('/school/login') }}" class="block text-navy-600 font-medium">{{ __('Sign In') }}</a>
+                <a href="#kontak" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">{{ __('Try Free') }}</a>
+                <div class="flex gap-2">
+                    <a href="{{ route('locale.switch', 'id') }}" class="flex-1 text-center py-2 rounded-lg text-sm font-medium {{ app()->getLocale() === 'id' ? 'bg-navy-600 text-white' : 'bg-gray-100 text-gray-600' }}">🇮🇩 ID</a>
+                    <a href="{{ route('locale.switch', 'en') }}" class="flex-1 text-center py-2 rounded-lg text-sm font-medium {{ app()->getLocale() === 'en' ? 'bg-navy-600 text-white' : 'bg-gray-100 text-gray-600' }}">🇬🇧 EN</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -125,23 +140,21 @@
                 <div>
                     <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8 border border-white/20">
                         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                        <span class="text-white/80 text-sm font-medium">Platform #1 untuk Manajemen Sekolah</span>
+                        <span class="text-white/80 text-sm font-medium">{{ __('#1 Platform for School Management') }}</span>
                     </div>
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-white leading-tight mb-6">
-                        Sistem Manajemen Sekolah
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-300">Modern</span>
-                        untuk Era Digital
+                        {{ __('Modern School Management System for the Digital Era') }}
                     </h1>
                     <p class="text-lg text-white/70 mb-10 leading-relaxed max-w-lg">
-                        Kelola seluruh operasional sekolah Anda dalam satu platform terintegrasi. Dari PPDB, absensi, rapor, hingga pembayaran SPP — semua jadi lebih mudah.
+                        {{ __('Manage all your school operations in one integrated platform. From student admissions, attendance, report cards, to tuition payments — everything becomes easier.') }}
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <a href="#kontak" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 text-lg">
-                            Mulai Gratis
+                            {{ __('Start Free') }}
                         </a>
                         <a href="#demo" class="group px-8 py-4 rounded-xl font-bold text-white border-2 border-white/20 hover:border-white/40 transition-all flex items-center gap-2">
                             <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            Lihat Demo
+                            {{ __('Watch Demo') }}
                         </a>
                     </div>
                 </div>
@@ -154,19 +167,19 @@
                             <div class="grid grid-cols-2 gap-4 w-full">
                                 <div class="bg-white/10 rounded-xl p-4 text-center">
                                     <div class="text-3xl font-heading font-bold text-gold-400">500+</div>
-                                    <div class="text-white/60 text-sm">Sekolah</div>
+                                    <div class="text-white/60 text-sm">{{ __('Schools') }}</div>
                                 </div>
                                 <div class="bg-white/10 rounded-xl p-4 text-center">
                                     <div class="text-3xl font-heading font-bold text-blue-400">50K+</div>
-                                    <div class="text-white/60 text-sm">Siswa</div>
+                                    <div class="text-white/60 text-sm">{{ __('Students') }}</div>
                                 </div>
                                 <div class="bg-white/10 rounded-xl p-4 text-center">
                                     <div class="text-3xl font-heading font-bold text-green-400">5K+</div>
-                                    <div class="text-white/60 text-sm">Guru</div>
+                                    <div class="text-white/60 text-sm">{{ __('Teachers') }}</div>
                                 </div>
                                 <div class="bg-white/10 rounded-xl p-4 text-center">
                                     <div class="text-3xl font-heading font-bold text-purple-400">99.9%</div>
-                                    <div class="text-white/60 text-sm">Uptime</div>
+                                    <div class="text-white/60 text-sm">{{ __('Uptime') }}</div>
                                 </div>
                             </div>
                             <div class="w-full bg-white/10 rounded-xl p-4">
@@ -201,19 +214,19 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                     <div>
                         <div class="text-3xl sm:text-4xl font-heading font-extrabold text-gold-400">500+</div>
-                        <div class="text-white/70 mt-1 font-medium">Sekolah</div>
+                        <div class="text-white/70 mt-1 font-medium">{{ __('Schools') }}</div>
                     </div>
                     <div>
                         <div class="text-3xl sm:text-4xl font-heading font-extrabold text-gold-400">50.000+</div>
-                        <div class="text-white/70 mt-1 font-medium">Siswa</div>
+                        <div class="text-white/70 mt-1 font-medium">{{ __('Students') }}</div>
                     </div>
                     <div>
                         <div class="text-3xl sm:text-4xl font-heading font-extrabold text-gold-400">5.000+</div>
-                        <div class="text-white/70 mt-1 font-medium">Guru</div>
+                        <div class="text-white/70 mt-1 font-medium">{{ __('Teachers') }}</div>
                     </div>
                     <div>
                         <div class="text-3xl sm:text-4xl font-heading font-extrabold text-gold-400">99.9%</div>
-                        <div class="text-white/70 mt-1 font-medium">Uptime</div>
+                        <div class="text-white/70 mt-1 font-medium">{{ __('Uptime') }}</div>
                     </div>
                 </div>
             </div>
@@ -224,22 +237,22 @@
     <section id="fitur" class="py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="inline-block bg-gold-100 text-gold-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">Fitur Lengkap</span>
-                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">Semua yang Sekolah Anda Butuhkan</h2>
-                <p class="text-gray-500 text-lg max-w-2xl mx-auto">Platform terintegrasi dengan fitur-fitur modern untuk mengelola operasional sekolah secara efisien.</p>
+                <span class="inline-block bg-gold-100 text-gold-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">{{ __('Complete Features') }}</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">{{ __('Everything Your School Needs') }}</h2>
+                <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ __('An integrated platform with modern features to manage school operations efficiently.') }}</p>
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @php
                     $features = [
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>', 'title' => 'PPDB Online', 'desc' => 'Pendaftaran peserta didik baru secara online dengan formulir lengkap dan tracking status.', 'color' => 'blue'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>', 'title' => 'Absensi QR Code', 'desc' => 'Absensi digital menggunakan QR code dengan notifikasi otomatis ke orang tua.', 'color' => 'green'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>', 'title' => 'Rapor Digital', 'desc' => 'Generate rapor otomatis dengan format Kurikulum Merdeka atau K13.', 'color' => 'purple'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>', 'title' => 'SPP Online', 'desc' => 'Pembayaran SPP terintegrasi dengan payment gateway dan reminder otomatis.', 'color' => 'gold'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>', 'title' => 'WhatsApp Notifikasi', 'desc' => 'Notifikasi otomatis ke orang tua melalui WhatsApp untuk kehadiran dan informasi.', 'color' => 'green'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>', 'title' => 'Portal Orang Tua', 'desc' => 'Portal khusus orang tua untuk memantau perkembangan anak secara real-time.', 'color' => 'red'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>', 'title' => 'Perpustakaan', 'desc' => 'Manajemen buku, peminjaman, dan pengembalian dengan barcode scanning.', 'color' => 'indigo'],
-                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>', 'title' => 'Inventaris', 'desc' => 'Pencatatan aset dan inventaris sekolah lengkap dengan tracking kondisi.', 'color' => 'cyan'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>', 'title' => __('Online PPDB'), 'desc' => __('Online student admission with complete forms and status tracking.'), 'color' => 'blue'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>', 'title' => __('QR Code Attendance'), 'desc' => __('Digital attendance using QR code with automatic notifications to parents.'), 'color' => 'green'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>', 'title' => __('Digital Report Card'), 'desc' => __('Auto-generate report cards in Kurikulum Merdeka or K13 format.'), 'color' => 'purple'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>', 'title' => __('Online Tuition'), 'desc' => __('Tuition payment integrated with payment gateway and automatic reminders.'), 'color' => 'gold'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>', 'title' => __('WhatsApp Notifications'), 'desc' => __('Automatic notifications to parents via WhatsApp for attendance and information.'), 'color' => 'green'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>', 'title' => __('Parent Portal'), 'desc' => __("Dedicated portal for parents to monitor their child's progress in real-time."), 'color' => 'red'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>', 'title' => __('Library Management'), 'desc' => __('Book management, borrowing, and returns with barcode scanning.'), 'color' => 'indigo'],
+                        ['icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>', 'title' => __('Inventory Management'), 'desc' => __('Complete school asset and inventory tracking with condition monitoring.'), 'color' => 'cyan'],
                     ];
                     $colorMap = [
                         'blue' => 'bg-blue-100 text-blue-600',
@@ -269,19 +282,19 @@
     <section class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="inline-block bg-navy-100 text-navy-600 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">Mudah Dimulai</span>
-                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">Mulai dalam 3 Langkah</h2>
-                <p class="text-gray-500 text-lg max-w-2xl mx-auto">Tidak perlu keahlian teknis. Sekolah Anda bisa langsung beroperasi dalam hitungan menit.</p>
+                <span class="inline-block bg-navy-100 text-navy-600 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">{{ __('Easy to Start') }}</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">{{ __('Start in 3 Steps') }}</h2>
+                <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ __('No technical expertise needed. Your school can be up and running in minutes.') }}</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8 relative">
-                <div class="hidden md:block absolute top-24 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-gold-400 via-gold-300 to-gold-400"></div>
+                <div class="hidden md:block absolute top-8 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-gold-400 via-gold-300 to-gold-400"></div>
 
                 @php
                     $steps = [
-                        ['num' => '1', 'title' => 'Daftar', 'desc' => 'Buat akun gratis dan isi profil sekolah Anda. Tidak perlu kartu kredit.'],
-                        ['num' => '2', 'title' => 'Konfigurasi', 'desc' => 'Atur tahun ajaran, kelas, mata pelajaran, dan data guru serta siswa.'],
-                        ['num' => '3', 'title' => 'Gunakan', 'desc' => 'Mulai kelola sekolah Anda secara digital. Tim kami siap membantu 24/7.'],
+                        ['num' => '1', 'title' => __('Register'), 'desc' => __('Create a free account and fill in your school profile. No credit card needed.')],
+                        ['num' => '2', 'title' => __('Configure'), 'desc' => __('Set up academic year, classes, subjects, and teacher and student data.')],
+                        ['num' => '3', 'title' => __('Use'), 'desc' => __('Start managing your school digitally. Our team is ready to help 24/7.')],
                     ];
                 @endphp
 
@@ -302,14 +315,14 @@
     <section id="harga" class="py-24 bg-gray-50" x-data="{ annual: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="inline-block bg-gold-100 text-gold-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">Harga Transparan</span>
-                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">Pilih Paket yang Sesuai</h2>
-                <p class="text-gray-500 text-lg max-w-2xl mx-auto mb-8">Semua paket termasuk trial gratis 14 hari. Tanpa biaya tersembunyi.</p>
+                <span class="inline-block bg-gold-100 text-gold-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">{{ __('Transparent Pricing') }}</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">{{ __('Choose the Right Plan') }}</h2>
+                <p class="text-gray-500 text-lg max-w-2xl mx-auto mb-8">{{ __('All plans include a 14-day free trial. No hidden fees.') }}</p>
 
                 <div class="inline-flex items-center gap-4 bg-white rounded-full p-1.5 shadow-sm border border-gray-200">
-                    <button @click="annual = false" :class="!annual ? 'bg-navy-600 text-white shadow-md' : 'text-gray-500'" class="px-6 py-2.5 rounded-full font-semibold transition-all text-sm">Bulanan</button>
+                    <button @click="annual = false" :class="!annual ? 'bg-navy-600 text-white shadow-md' : 'text-gray-500'" class="px-6 py-2.5 rounded-full font-semibold transition-all text-sm">{{ __('Monthly') }}</button>
                     <button @click="annual = true" :class="annual ? 'bg-navy-600 text-white shadow-md' : 'text-gray-500'" class="px-6 py-2.5 rounded-full font-semibold transition-all text-sm">
-                        Tahunan <span class="text-xs ml-1 text-gold-500 font-bold">-20%</span>
+                        {{ __('Annual') }} <span class="text-xs ml-1 text-gold-500 font-bold">-20%</span>
                     </button>
                 </div>
             </div>
@@ -318,74 +331,74 @@
                 {{-- Starter --}}
                 <div class="pricing-card bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300">
                     <div class="mb-6">
-                        <h3 class="text-xl font-heading font-bold text-navy-600 mb-2">Starter</h3>
-                        <p class="text-gray-400 text-sm">Untuk sekolah kecil</p>
+                        <h3 class="text-xl font-heading font-bold text-navy-600 mb-2">{{ __('Starter') }}</h3>
+                        <p class="text-gray-400 text-sm">{{ __('For small schools') }}</p>
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline gap-1">
                             <span class="text-4xl font-heading font-extrabold text-navy-600">Rp <span x-text="annual ? '400.000' : '500.000'"></span></span>
                         </div>
-                        <span class="text-gray-400 text-sm">/bulan</span>
+                        <span class="text-gray-400 text-sm">{{ __('/month') }}</span>
                     </div>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Maks. 200 siswa</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>PPDB Online</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Absensi QR Code</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Rapor Digital</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>SPP Online</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>WhatsApp Notifikasi</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Portal Orang Tua</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Max. 200 students') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Online PPDB') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('QR Code Attendance') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Digital Report Card') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Online Tuition') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>{{ __('WhatsApp Notifications') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>{{ __('Parent Portal') }}</li>
                     </ul>
-                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">Mulai Gratis</a>
+                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">{{ __('Start Free') }}</a>
                 </div>
 
                 {{-- Professional --}}
                 <div class="pricing-card bg-navy-600 rounded-2xl p-8 shadow-xl shadow-navy-600/20 border-2 border-gold-400 relative transition-all duration-300 transform scale-[1.02]">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">Populer</div>
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold-500 text-white text-xs font-bold px-4 py-1.5 rounded-full">{{ __('Popular') }}</div>
                     <div class="mb-6">
-                        <h3 class="text-xl font-heading font-bold text-white mb-2">Professional</h3>
-                        <p class="text-white/60 text-sm">Untuk sekolah menengah</p>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">{{ __('Professional') }}</h3>
+                        <p class="text-white/60 text-sm">{{ __('For medium schools') }}</p>
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline gap-1">
                             <span class="text-4xl font-heading font-extrabold text-white">Rp <span x-text="annual ? '800.000' : '1.000.000'"></span></span>
                         </div>
-                        <span class="text-white/50 text-sm">/bulan</span>
+                        <span class="text-white/50 text-sm">{{ __('/month') }}</span>
                     </div>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Maks. 1.000 siswa</li>
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Semua fitur Starter</li>
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>WhatsApp Notifikasi</li>
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Portal Orang Tua</li>
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Perpustakaan</li>
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Inventaris</li>
-                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Support Prioritas</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Max. 1,000 students') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('All Starter features') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('WhatsApp Notifications') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Parent Portal') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Library Management') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Inventory Management') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Priority Support') }}</li>
                     </ul>
-                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-bold gradient-gold text-white hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">Mulai Gratis</a>
+                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-bold gradient-gold text-white hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">{{ __('Start Free') }}</a>
                 </div>
 
                 {{-- Enterprise --}}
                 <div class="pricing-card bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300">
                     <div class="mb-6">
-                        <h3 class="text-xl font-heading font-bold text-navy-600 mb-2">Enterprise</h3>
-                        <p class="text-gray-400 text-sm">Untuk yayasan & sekolah besar</p>
+                        <h3 class="text-xl font-heading font-bold text-navy-600 mb-2">{{ __('Enterprise') }}</h3>
+                        <p class="text-gray-400 text-sm">{{ __('For foundations & large schools') }}</p>
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline gap-1">
                             <span class="text-4xl font-heading font-extrabold text-navy-600">Rp <span x-text="annual ? '1.600.000' : '2.000.000'"></span></span>
                         </div>
-                        <span class="text-gray-400 text-sm">/bulan</span>
+                        <span class="text-gray-400 text-sm">{{ __('/month') }}</span>
                     </div>
                     <ul class="space-y-3 mb-8">
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Siswa Unlimited</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Semua fitur Professional</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Multi-cabang</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>API Access</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Custom Branding</li>
-                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Dedicated Support</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Unlimited Students') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('All Professional features') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Multi-branch') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('API Access') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Custom Branding') }}</li>
+                        <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Dedicated Support') }}</li>
                         <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>SLA 99.99%</li>
                     </ul>
-                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">Hubungi Kami</a>
+                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">{{ __('Contact Us') }}</a>
                 </div>
             </div>
         </div>
@@ -395,8 +408,8 @@
     <section class="py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="inline-block bg-gold-100 text-gold-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">Testimoni</span>
-                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">Dipercaya oleh Ratusan Sekolah</h2>
+                <span class="inline-block bg-gold-100 text-gold-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">{{ __('Testimonials') }}</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">{{ __('Trusted by Hundreds of Schools') }}</h2>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
@@ -448,19 +461,19 @@
     <section id="faq" class="py-24 bg-gray-50">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="inline-block bg-navy-100 text-navy-600 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">FAQ</span>
-                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">Pertanyaan yang Sering Diajukan</h2>
+                <span class="inline-block bg-navy-100 text-navy-600 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">{{ __('FAQ') }}</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">{{ __('Frequently Asked Questions') }}</h2>
             </div>
 
             <div class="space-y-4" x-data="{ openFaq: null }">
                 @php
                     $faqs = [
-                        ['q' => 'Apakah ada biaya setup awal?', 'a' => 'Tidak ada! Anda bisa langsung mendaftar dan menggunakan platform kami tanpa biaya setup. Semua paket termasuk trial gratis selama 14 hari.'],
-                        ['q' => 'Bagaimana keamanan data sekolah kami?', 'a' => 'Data Anda dienkripsi end-to-end dan disimpan di server yang tersertifikasi ISO 27001. Kami melakukan backup otomatis setiap hari dan memiliki disaster recovery plan.'],
-                        ['q' => 'Apakah bisa import data dari sistem lama?', 'a' => 'Tentu! Kami menyediakan fitur import data melalui file Excel/CSV. Tim kami juga siap membantu proses migrasi data dari sistem lama Anda.'],
-                        ['q' => 'Berapa lama proses implementasi?', 'a' => 'Untuk paket Starter dan Professional, sekolah bisa langsung beroperasi dalam 1-3 hari. Untuk Enterprise dengan kustomisasi, biasanya membutuhkan 1-2 minggu.'],
-                        ['q' => 'Apakah ada pelatihan untuk guru dan staff?', 'a' => 'Ya! Kami menyediakan pelatihan online gratis melalui video tutorial dan webinar. Untuk paket Enterprise, kami menyediakan pelatihan on-site.'],
-                        ['q' => 'Bagaimana jika ingin berhenti berlangganan?', 'a' => 'Anda bisa berhenti kapan saja tanpa penalti. Data Anda akan tetap tersimpan selama 30 hari dan bisa diekspor sebelum dihapus.'],
+                        ['q' => __('Is there an initial setup fee?'), 'a' => __('No! You can register and use our platform right away without any setup fee. All plans include a free 14-day trial.')],
+                        ['q' => __('How secure is our school data?'), 'a' => __('Your data is encrypted end-to-end and stored on ISO 27001 certified servers. We perform automatic daily backups and have a disaster recovery plan.')],
+                        ['q' => __('Can we import data from the old system?'), 'a' => __('Of course! We provide data import via Excel/CSV files. Our team is also ready to help with data migration from your old system.')],
+                        ['q' => __('How long is the implementation process?'), 'a' => __('For Starter and Professional plans, schools can be operational in 1-3 days. For Enterprise with customization, it usually takes 1-2 weeks.')],
+                        ['q' => __('Is there training for teachers and staff?'), 'a' => __('Yes! We provide free online training through video tutorials and webinars. For Enterprise plans, we provide on-site training.')],
+                        ['q' => __('What if we want to unsubscribe?'), 'a' => __('You can cancel anytime without penalty. Your data will be stored for 30 days and can be exported before deletion.')],
                     ];
                 @endphp
 
@@ -486,17 +499,17 @@
             <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
         </div>
         <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-white mb-6">Mulai Kelola Sekolah Anda Sekarang</h2>
-            <p class="text-white/60 text-lg mb-10 max-w-2xl mx-auto">Bergabung dengan 500+ sekolah yang sudah mempercayakan manajemen sekolah mereka kepada EduSaaS.</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-white mb-6">{{ __('Start Managing Your School Now') }}</h2>
+            <p class="text-white/60 text-lg mb-10 max-w-2xl mx-auto">{{ __('Join 500+ schools that have trusted EduSaaS with their school management.') }}</p>
 
             <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" action="{{ route('ppdb.index') }}" method="GET">
-                <input type="email" name="email" placeholder="Masukkan email sekolah Anda" required
+                <input type="email" name="email" placeholder="{{ __('Enter your school email') }}" required
                        class="flex-1 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent">
                 <button type="submit" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 whitespace-nowrap">
-                    Coba Gratis
+                    {{ __('Try Free') }}
                 </button>
             </form>
-            <p class="text-white/40 text-sm mt-4">Gratis 14 hari. Tanpa kartu kredit.</p>
+            <p class="text-white/40 text-sm mt-4">{{ __('Free 14 days. No credit card.') }}</p>
         </div>
     </section>
 
@@ -511,7 +524,7 @@
                         </div>
                         <span class="text-xl font-heading font-bold text-white">Edu<span class="text-gold-500">SaaS</span></span>
                     </div>
-                    <p class="text-sm leading-relaxed max-w-sm">Sistem Manajemen Sekolah Modern untuk Era Digital. Kelola seluruh operasional sekolah dalam satu platform terintegrasi.</p>
+                    <p class="text-sm leading-relaxed max-w-sm">{{ __('Modern School Management System for the Digital Era. Manage all school operations in one integrated platform.') }}</p>
                     <div class="flex gap-4 mt-6">
                         <a href="#" class="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -529,37 +542,37 @@
                 </div>
 
                 <div>
-                    <h4 class="text-white font-heading font-semibold mb-4">Produk</h4>
+                    <h4 class="text-white font-heading font-semibold mb-4">{{ __('Product') }}</h4>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="#fitur" class="hover:text-white transition-colors">Fitur</a></li>
-                        <li><a href="#harga" class="hover:text-white transition-colors">Harga</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Changelog</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">API Docs</a></li>
+                        <li><a href="#fitur" class="hover:text-white transition-colors">{{ __('Features') }}</a></li>
+                        <li><a href="#harga" class="hover:text-white transition-colors">{{ __('Pricing') }}</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('Changelog') }}</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('API Docs') }}</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-white font-heading font-semibold mb-4">Perusahaan</h4>
+                    <h4 class="text-white font-heading font-semibold mb-4">{{ __('Company') }}</h4>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Karir</a></li>
-                        <li><a href="#kontak" class="hover:text-white transition-colors">Kontak</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('About Us') }}</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('Blog') }}</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('Careers') }}</a></li>
+                        <li><a href="#kontak" class="hover:text-white transition-colors">{{ __('Contact') }}</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-white font-heading font-semibold mb-4">Legal</h4>
+                    <h4 class="text-white font-heading font-semibold mb-4">{{ __('Legal') }}</h4>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('Privacy Policy') }}</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">{{ __('Terms & Conditions') }}</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">SLA</a></li>
                     </ul>
                 </div>
             </div>
 
             <div class="border-t border-white/10 pt-8 text-center text-sm">
-                <p>&copy; {{ date('Y') }} EduSaaS. Hak cipta dilindungi undang-undang.</p>
+                <p>&copy; {{ date('Y') }} EduSaaS. {{ __('All rights reserved.') }}</p>
             </div>
         </div>
     </footer>
