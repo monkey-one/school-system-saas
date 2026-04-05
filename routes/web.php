@@ -6,10 +6,19 @@ use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
 use App\Http\Controllers\StudentPortalController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Landing page
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+// Logout (for portals)
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
 
 // PPDB (public, no auth)
 Route::prefix('ppdb')->name('ppdb.')->group(function () {

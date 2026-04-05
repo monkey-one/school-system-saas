@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\EnsureTenantIsSet;
 use App\Http\Middleware\ResolveTenant;
 use Filament\Http\Middleware\Authenticate;
@@ -28,7 +29,8 @@ class SchoolAdminPanelProvider extends PanelProvider
         return $panel
             ->id('school-admin')
             ->path('school')
-            ->login()
+            ->login(Login::class)
+            ->passwordReset()
             ->colors([
                 'primary' => [
                     50 => '#E8F0FB',
@@ -50,7 +52,7 @@ class SchoolAdminPanelProvider extends PanelProvider
             ])
             ->font('Plus Jakarta Sans')
             ->brandName('EduSaaS Sekolah')
-            ->favicon(asset('favicon.ico'))
+            ->favicon(asset('favicon.svg'))
             ->discoverResources(in: app_path('Filament/SchoolAdmin/Resources'), for: 'App\\Filament\\SchoolAdmin\\Resources')
             ->discoverPages(in: app_path('Filament/SchoolAdmin/Pages'), for: 'App\\Filament\\SchoolAdmin\\Pages')
             ->discoverWidgets(in: app_path('Filament/SchoolAdmin/Widgets'), for: 'App\\Filament\\SchoolAdmin\\Widgets')
