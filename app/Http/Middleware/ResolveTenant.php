@@ -9,10 +9,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResolveTenant
 {
+    /**
+     * Known base domains that should NOT be treated as subdomains.
+     * Add your production domain here to prevent false subdomain detection.
+     */
+    private array $baseDomains = [
+        'localhost',
+        '127.0.0.1',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         $host = $request->getHost();
-        $parts = explode('.', $host);
 
         // Check if accessing super-admin panel (no tenant needed)
         if ($request->is('super-admin*')) {
@@ -20,17 +28,26 @@ class ResolveTenant
             return $next($request);
         }
 
-        // For demo/local development, check for tenant slug in subdomain
+        // Resolve tenant slug from subdomain
         $slug = null;
-        if (count($parts) >= 3) {
-            $slug = $parts[0];
-        } elseif (count($parts) === 2 && ! in_array($parts[0], ['localhost', 'www'])) {
-            $slug = $parts[0];
+
+        // Only extract subdomain if the host is NOT a known base domain
+        if (! in_array($host, $this->baseDomains)) {
+            $parts = explode('.', $host);
+            // Require at least 3 parts for subdomain detection (e.g., demo.example.com)
+            if (count($parts) >= 3 && $parts[0] !== 'www') {
+                $slug = $parts[0];
+            }
         }
 
-        // Also support query parameter for testing
+        // Support query parameter for testing: ?tenant=slug
         if (! $slug) {
             $slug = $request->query('tenant');
+        }
+
+        // Fallback to default tenant from config
+        if (! $slug) {
+            $slug = config('app.default_tenant_slug', 'demo');
         }
 
         if ($slug && $slug !== 'super-admin') {
