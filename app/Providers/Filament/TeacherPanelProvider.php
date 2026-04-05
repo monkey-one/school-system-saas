@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\EnsureTenantIsSet;
 use App\Http\Middleware\ResolveTenant;
 use Filament\Http\Middleware\Authenticate;
@@ -27,7 +28,8 @@ class TeacherPanelProvider extends PanelProvider
         return $panel
             ->id('teacher')
             ->path('teacher')
-            ->login()
+            ->login(Login::class)
+            ->passwordReset()
             ->colors([
                 'primary' => [
                     50 => '#E8F0FB',
@@ -49,7 +51,7 @@ class TeacherPanelProvider extends PanelProvider
             ])
             ->font('Plus Jakarta Sans')
             ->brandName('EduSaaS Guru')
-            ->favicon(asset('favicon.ico'))
+            ->favicon(asset('favicon.svg'))
             ->discoverResources(in: app_path('Filament/Teacher/Resources'), for: 'App\\Filament\\Teacher\\Resources')
             ->discoverPages(in: app_path('Filament/Teacher/Pages'), for: 'App\\Filament\\Teacher\\Pages')
             ->discoverWidgets(in: app_path('Filament/Teacher/Widgets'), for: 'App\\Filament\\Teacher\\Widgets')

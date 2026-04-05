@@ -87,8 +87,8 @@
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="/admin/login" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">Masuk</a>
-                    <a href="/register" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">Coba Gratis</a>
+                    <a href="{{ url('/school/login') }}" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">Masuk</a>
+                    <a href="#kontak" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">Coba Gratis</a>
                 </div>
 
                 <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2" :class="scrolled ? 'text-navy-600' : 'text-white'">
@@ -106,8 +106,8 @@
                 <a href="#faq" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">FAQ</a>
                 <a href="#kontak" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">Kontak</a>
                 <hr class="border-gray-200">
-                <a href="/admin/login" class="block text-navy-600 font-medium">Masuk</a>
-                <a href="/register" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">Coba Gratis</a>
+                <a href="{{ url('/school/login') }}" class="block text-navy-600 font-medium">Masuk</a>
+                <a href="#kontak" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">Coba Gratis</a>
             </div>
         </div>
     </nav>
@@ -136,7 +136,7 @@
                         Kelola seluruh operasional sekolah Anda dalam satu platform terintegrasi. Dari PPDB, absensi, rapor, hingga pembayaran SPP — semua jadi lebih mudah.
                     </p>
                     <div class="flex flex-wrap gap-4">
-                        <a href="/register" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 text-lg">
+                        <a href="#kontak" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 text-lg">
                             Mulai Gratis
                         </a>
                         <a href="#demo" class="group px-8 py-4 rounded-xl font-bold text-white border-2 border-white/20 hover:border-white/40 transition-all flex items-center gap-2">
@@ -336,7 +336,7 @@
                         <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>WhatsApp Notifikasi</li>
                         <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Portal Orang Tua</li>
                     </ul>
-                    <a href="/register" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">Mulai Gratis</a>
+                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">Mulai Gratis</a>
                 </div>
 
                 {{-- Professional --}}
@@ -361,7 +361,7 @@
                         <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Inventaris</li>
                         <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Support Prioritas</li>
                     </ul>
-                    <a href="/register" class="block text-center w-full py-3.5 rounded-xl font-bold gradient-gold text-white hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">Mulai Gratis</a>
+                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-bold gradient-gold text-white hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">Mulai Gratis</a>
                 </div>
 
                 {{-- Enterprise --}}
@@ -385,7 +385,7 @@
                         <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Dedicated Support</li>
                         <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>SLA 99.99%</li>
                     </ul>
-                    <a href="/register" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">Hubungi Kami</a>
+                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">Hubungi Kami</a>
                 </div>
             </div>
         </div>
@@ -489,7 +489,7 @@
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-white mb-6">Mulai Kelola Sekolah Anda Sekarang</h2>
             <p class="text-white/60 text-lg mb-10 max-w-2xl mx-auto">Bergabung dengan 500+ sekolah yang sudah mempercayakan manajemen sekolah mereka kepada EduSaaS.</p>
 
-            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" action="/register" method="GET">
+            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" action="{{ route('ppdb.index') }}" method="GET">
                 <input type="email" name="email" placeholder="Masukkan email sekolah Anda" required
                        class="flex-1 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent">
                 <button type="submit" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 whitespace-nowrap">
