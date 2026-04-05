@@ -50,7 +50,7 @@ class TeacherPanelProvider extends PanelProvider
                 'info' => Color::Blue,
             ])
             ->font('Plus Jakarta Sans')
-            ->brandName('EduSaaS Guru')
+            ->brandName(__('EduSaaS Teacher'))
             ->favicon(asset('favicon.svg'))
             ->discoverResources(in: app_path('Filament/Teacher/Resources'), for: 'App\\Filament\\Teacher\\Resources')
             ->discoverPages(in: app_path('Filament/Teacher/Pages'), for: 'App\\Filament\\Teacher\\Pages')

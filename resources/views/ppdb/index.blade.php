@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPDB Online - {{ $tenant->name ?? 'EduSaaS' }}</title>
+    <title>{{ __('PPDB') }} - {{ $tenant->name ?? 'EduSaaS' }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +43,7 @@
                 </div>
                 <span class="text-2xl font-heading font-bold">Edu<span class="text-gold-400">SaaS</span></span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-heading font-extrabold mb-2">Penerimaan Peserta Didik Baru (PPDB)</h1>
+            <h1 class="text-2xl sm:text-3xl font-heading font-extrabold mb-2">{{ __('Student Admission (PPDB)') }}</h1>
             <p class="text-white/60">{{ $tenant->name ?? '' }}</p>
         </div>
     </header>
@@ -56,11 +56,11 @@
                 <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <h2 class="text-xl font-heading font-bold text-gray-800 mb-2">Belum Ada Gelombang PPDB</h2>
-                <p class="text-gray-500 mb-6">Saat ini belum ada gelombang pendaftaran yang dibuka. Silakan cek kembali nanti.</p>
+                <h2 class="text-xl font-heading font-bold text-gray-800 mb-2">{{ __('No PPDB Waves') }}</h2>
+                <p class="text-gray-500 mb-6">{{ __('There are no registration waves open at this time. Please check back later.') }}</p>
                 <a href="{{ route('ppdb.status') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-navy-600 text-white font-semibold hover:bg-navy-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Cek Status Pendaftaran
+                    {{ __('Check Registration Status') }}
                 </a>
             </div>
         @else
@@ -80,18 +80,18 @@
                             @if($wave->quota)
                             <div class="flex items-center gap-3 text-sm">
                                 <svg class="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                <span class="text-gray-600">Kuota: {{ $wave->quota }} siswa</span>
+                                <span class="text-gray-600">{{ __('Quota') }}: {{ $wave->quota }} {{ __('students') }}</span>
                             </div>
                             @endif
                             @if($wave->registration_fee)
                             <div class="flex items-center gap-3 text-sm">
                                 <svg class="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                <span class="text-gray-600">Biaya: Rp {{ number_format($wave->registration_fee, 0, ',', '.') }}</span>
+                                <span class="text-gray-600">{{ __('Fee') }}: Rp {{ number_format($wave->registration_fee, 0, ',', '.') }}</span>
                             </div>
                             @endif
                         </div>
                         <a href="{{ route('ppdb.register', $wave) }}" class="block w-full text-center px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-amber-400 to-amber-600 hover:opacity-90 transition-all shadow-lg shadow-amber-500/20">
-                            Daftar Sekarang
+                            {{ __('Register Now') }}
                         </a>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
             <div class="text-center">
                 <a href="{{ route('ppdb.status') }}" class="inline-flex items-center gap-2 text-navy-600 font-semibold hover:text-navy-700 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Sudah mendaftar? Cek status pendaftaran
+                    {{ __('Already registered? Check registration status') }}
                 </a>
             </div>
         @endif
@@ -111,7 +111,7 @@
     {{-- Footer --}}
     <footer class="bg-white border-t border-gray-100 py-6 mt-auto">
         <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-400">
-            &copy; {{ date('Y') }} EduSaaS — Sistem Manajemen Sekolah
+            &copy; {{ date('Y') }} EduSaaS — {{ __('School Management System') }}
         </div>
     </footer>
 

@@ -10,11 +10,11 @@
         </div>
 
         @if(str_contains(request()->path(), 'super-admin'))
-            <p class="text-sm text-gray-500 dark:text-gray-400">Panel Super Administrator</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Super Administrator Panel') }}</p>
         @elseif(str_contains(request()->path(), 'teacher'))
-            <p class="text-sm text-gray-500 dark:text-gray-400">Panel Guru</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Teacher Panel') }}</p>
         @else
-            <p class="text-sm text-gray-500 dark:text-gray-400">Panel Administrasi Sekolah</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('School Administration Panel') }}</p>
         @endif
     </div>
 
@@ -29,7 +29,7 @@
 
     <div class="mt-6 text-center">
         <p class="text-xs text-gray-400">
-            &copy; {{ date('Y') }} EduSaaS — Sistem Manajemen Sekolah
+            &copy; {{ date('Y') }} EduSaaS — {{ __('School Management System') }}
         </p>
     </div>
 </x-filament-panels::page.simple>

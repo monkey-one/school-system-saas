@@ -1,7 +1,7 @@
 @extends('parent-portal.layout')
 
-@section('title', 'Kehadiran Anak')
-@section('page-title', 'Kehadiran Anak')
+@section('title', __('Child Attendance'))
+@section('page-title', __('Child Attendance'))
 
 @section('content')
 <div class="space-y-6">
@@ -21,12 +21,12 @@
     {{-- Month Selector --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 class="text-lg font-heading font-bold text-navy-700">Rekap Kehadiran Bulanan</h2>
+            <h2 class="text-lg font-heading font-bold text-navy-700">{{ __('Monthly Attendance Recap') }}</h2>
             <form method="GET" class="flex items-center gap-2">
                 <input type="month" name="month" value="{{ $month ?? now()->format('Y-m') }}"
                        class="rounded-lg border-gray-300 text-sm focus:ring-navy-500 focus:border-navy-500">
                 <button type="submit" class="px-4 py-2 bg-navy-700 text-white text-sm rounded-lg hover:bg-navy-800 transition">
-                    Tampilkan
+                    {{ __('Show') }}
                 </button>
             </form>
         </div>
@@ -36,11 +36,11 @@
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         @php
             $summary = [
-                ['label' => 'Hadir', 'count' => $stats['hadir'] ?? 0, 'color' => 'text-green-600 bg-green-50'],
-                ['label' => 'Sakit', 'count' => $stats['sakit'] ?? 0, 'color' => 'text-yellow-600 bg-yellow-50'],
-                ['label' => 'Izin', 'count' => $stats['izin'] ?? 0, 'color' => 'text-blue-600 bg-blue-50'],
-                ['label' => 'Alfa', 'count' => $stats['alfa'] ?? 0, 'color' => 'text-red-600 bg-red-50'],
-                ['label' => 'Terlambat', 'count' => $stats['terlambat'] ?? 0, 'color' => 'text-orange-600 bg-orange-50'],
+                ['label' => __('Present'), 'count' => $stats['hadir'] ?? 0, 'color' => 'text-green-600 bg-green-50'],
+                ['label' => __('Sick'), 'count' => $stats['sakit'] ?? 0, 'color' => 'text-yellow-600 bg-yellow-50'],
+                ['label' => __('Permission'), 'count' => $stats['izin'] ?? 0, 'color' => 'text-blue-600 bg-blue-50'],
+                ['label' => __('Absent'), 'count' => $stats['alfa'] ?? 0, 'color' => 'text-red-600 bg-red-50'],
+                ['label' => __('Late'), 'count' => $stats['terlambat'] ?? 0, 'color' => 'text-orange-600 bg-orange-50'],
             ];
         @endphp
         @foreach($summary as $item)
@@ -59,11 +59,11 @@
             <table class="w-full text-sm">
                 <thead class="bg-navy-50">
                     <tr>
-                        <th class="px-6 py-3 text-left font-semibold text-navy-700">Tanggal</th>
-                        <th class="px-6 py-3 text-left font-semibold text-navy-700">Hari</th>
-                        <th class="px-6 py-3 text-left font-semibold text-navy-700">Status</th>
-                        <th class="px-6 py-3 text-left font-semibold text-navy-700">Jam Masuk</th>
-                        <th class="px-6 py-3 text-left font-semibold text-navy-700">Keterangan</th>
+                        <th class="px-6 py-3 text-left font-semibold text-navy-700">{{ __('Date') }}</th>
+                        <th class="px-6 py-3 text-left font-semibold text-navy-700">{{ __('Day') }}</th>
+                        <th class="px-6 py-3 text-left font-semibold text-navy-700">{{ __('Status') }}</th>
+                        <th class="px-6 py-3 text-left font-semibold text-navy-700">{{ __('Check-in Time') }}</th>
+                        <th class="px-6 py-3 text-left font-semibold text-navy-700">{{ __('Notes') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -91,7 +91,7 @@
                     @empty
                     <tr>
                         <td colspan="5" class="px-6 py-12 text-center text-gray-400">
-                            Belum ada data kehadiran untuk bulan ini.
+                            {{ __('No attendance data for this month.') }}
                         </td>
                     </tr>
                     @endforelse

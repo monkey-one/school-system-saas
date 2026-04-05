@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Route;
 // Landing page
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
+// Locale switcher
+Route::get('/locale/{locale}', function (string $locale) {
+    if (in_array($locale, ['id', 'en'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('locale.switch');
+
 // Logout (for portals)
 Route::post('/logout', function () {
     Auth::logout();

@@ -48,7 +48,7 @@ class SuperAdminPanelProvider extends PanelProvider
                 'info' => Color::Blue,
             ])
             ->font('Plus Jakarta Sans')
-            ->brandName('EduSaaS Admin')
+            ->brandName(__('EduSaaS Admin'))
             ->favicon(asset('favicon.svg'))
             ->discoverResources(in: app_path('Filament/SuperAdmin/Resources'), for: 'App\\Filament\\SuperAdmin\\Resources')
             ->discoverPages(in: app_path('Filament/SuperAdmin/Pages'), for: 'App\\Filament\\SuperAdmin\\Pages')
