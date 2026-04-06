@@ -699,5 +699,13 @@
     "Your school has been registered successfully.": "Your school has been registered successfully.",
     "Your subscription will be activated automatically after payment verification.": "Your subscription will be activated automatically after payment verification.",
     "e.g. SMP Negeri 1 Jakarta": "e.g. SMP Negeri 1 Jakarta",
-    "teachers": "teachers"
+    "students": "students",
+    "teachers": "teachers",
+    "Api": "API",
+    "Custom domain": "Custom Domain",
+    "Ppdb": "Online Admission",
+    "Priority support": "Priority Support",
+    "Reports": "Reports",
+    "Spp": "Tuition Fee",
+    "Whatsapp": "WhatsApp"
 }
