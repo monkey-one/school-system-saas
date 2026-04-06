@@ -27,6 +27,15 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Force URL root to APP_URL so that URL generation is correct even
+        // when the request arrives via a different path prefix (e.g. the
+        // /livewire/ nginx location block sets a SCRIPT_NAME that doesn't
+        // match the actual sub-directory deployment path).
+        $appUrl = config('app.url');
+        if ($appUrl) {
+            URL::forceRootUrl($appUrl);
+        }
+
         // Set the system-level locale for date/time formatting functions like
         // Carbon's translatedFormat(). The application locale itself is handled
         // by config/app.php and the SetLocale middleware.
