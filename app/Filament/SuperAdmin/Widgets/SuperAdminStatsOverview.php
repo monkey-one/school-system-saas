@@ -30,26 +30,26 @@ class SuperAdminStatsOverview extends BaseWidget
         $totalGuru = Teacher::count();
 
         return [
-            Stat::make('Total Sekolah Aktif', number_format($totalSekolahAktif))
-                ->description('Sekolah berlangganan')
+            Stat::make(__('Total Active Schools'), number_format($totalSekolahAktif))
+                ->description(__('Subscribed schools'))
                 ->descriptionIcon('heroicon-o-building-office-2')
                 ->color('success')
                 ->icon('heroicon-o-building-office-2'),
 
-            Stat::make('Total Siswa', number_format($totalSiswa))
-                ->description('Seluruh tenant')
+            Stat::make(__('Total Students'), number_format($totalSiswa))
+                ->description(__('All tenants'))
                 ->descriptionIcon('heroicon-o-users')
                 ->color('info')
                 ->icon('heroicon-o-users'),
 
             Stat::make('MRR', 'Rp ' . number_format($mrr, 0, ',', '.'))
-                ->description('Monthly Recurring Revenue')
+                ->description(__('Monthly Recurring Revenue'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('warning')
                 ->icon('heroicon-o-currency-dollar'),
 
-            Stat::make('Total Guru', number_format($totalGuru))
-                ->description('Seluruh tenant')
+            Stat::make(__('Total Teachers'), number_format($totalGuru))
+                ->description(__('All tenants'))
                 ->descriptionIcon('heroicon-o-briefcase')
                 ->color('primary')
                 ->icon('heroicon-o-briefcase'),

@@ -64,6 +64,7 @@ class UserResource extends Resource
 
                 Forms\Components\Section::make(__('Tenant'))
                     ->icon('heroicon-o-building-office-2')
+                    ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('tenant_id')
                             ->label(__('School'))
@@ -71,6 +72,12 @@ class UserResource extends Resource
                             ->searchable()
                             ->preload()
                             ->nullable(),
+                        Forms\Components\Select::make('roles')
+                            ->label(__('Roles'))
+                            ->relationship('roles', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable(),
                     ]),
             ]);
     }
@@ -96,6 +103,11 @@ class UserResource extends Resource
                     ->label(__('Type'))
                     ->badge()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label(__('Roles'))
+                    ->badge()
+                    ->color('info')
+                    ->separator(','),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label(__('Active'))
                     ->sortable()
