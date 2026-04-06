@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the method used to make a payment
 enum PaymentMethod: string
 {
     case CASH = 'cash';

@@ -11,6 +11,7 @@ use App\Models\Tenant;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
+// Displays platform-wide summary statistics for the super admin dashboard
 class SuperAdminStatsOverview extends BaseWidget
 {
     protected function getStats(): array

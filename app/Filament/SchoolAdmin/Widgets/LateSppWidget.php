@@ -8,6 +8,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
+// Displays overdue tuition fee bills in a table
 class LateSppWidget extends BaseWidget
 {
     protected static ?string $heading = 'Tunggakan SPP';

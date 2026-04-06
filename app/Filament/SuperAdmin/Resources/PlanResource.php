@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages subscription plan definitions and pricing
 class PlanResource extends Resource
 {
     protected static ?string $model = Plan::class;

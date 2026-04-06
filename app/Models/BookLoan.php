@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a library book loan transaction with due dates and fines
 class BookLoan extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

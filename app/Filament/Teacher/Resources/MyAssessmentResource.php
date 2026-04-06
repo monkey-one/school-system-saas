@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+// Allows teachers to manage their own assessments
 class MyAssessmentResource extends Resource
 {
     protected static ?string $model = Assessment::class;

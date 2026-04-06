@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Records a student score for a specific assessment
 class StudentGrade extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

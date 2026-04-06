@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages admission enrollment waves and periods
 class PPDBWaveResource extends Resource
 {
     protected static ?string $model = PPDBWave::class;

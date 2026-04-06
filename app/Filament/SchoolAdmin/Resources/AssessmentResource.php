@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages student assessments and evaluations
 class AssessmentResource extends Resource
 {
     protected static ?string $model = Assessment::class;

@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the current status of a billing payment
 enum PaymentStatus: string
 {
     case UNPAID = 'unpaid';

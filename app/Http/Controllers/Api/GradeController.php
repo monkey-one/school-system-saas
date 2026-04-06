@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+// Retrieves grades and assessment results for the authenticated student
 class GradeController extends Controller
 {
     public function index(Request $request): JsonResponse

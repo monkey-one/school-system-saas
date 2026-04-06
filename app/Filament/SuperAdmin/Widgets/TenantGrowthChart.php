@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
+// Displays tenant growth trend over the last twelve months
 class TenantGrowthChart extends ChartWidget
 {
     protected static ?string $heading = 'Pertumbuhan Tenant 12 Bulan Terakhir';

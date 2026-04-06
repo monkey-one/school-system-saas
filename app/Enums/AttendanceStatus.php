@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the attendance status of a student for a given session
 enum AttendanceStatus: string
 {
     case HADIR = 'hadir';

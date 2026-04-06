@@ -22,6 +22,10 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+// Configures the school administration panel (path: /school). This panel is
+// accessible to users with type SCHOOL_ADMIN or OPERATOR. Tenant resolution
+// runs as part of the middleware stack so all Filament resources are scoped
+// to the active school automatically.
 class SchoolAdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel

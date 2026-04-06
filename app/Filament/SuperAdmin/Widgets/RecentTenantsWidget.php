@@ -7,6 +7,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
+// Displays recently registered tenants in a table
 class RecentTenantsWidget extends BaseWidget
 {
     protected static ?string $heading = 'Tenant Terbaru';

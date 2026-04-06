@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the level and type of an Indonesian school
 enum SchoolType: string
 {
     case SD = 'SD';

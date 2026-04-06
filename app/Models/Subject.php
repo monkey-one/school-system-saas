@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents an academic subject offered by the school
 class Subject extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

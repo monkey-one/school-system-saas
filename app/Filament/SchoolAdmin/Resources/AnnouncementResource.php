@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages school announcements and communications
 class AnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;

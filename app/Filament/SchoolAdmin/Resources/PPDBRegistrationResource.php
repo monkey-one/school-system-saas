@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 
+// Manages new student admission registrations
 class PPDBRegistrationResource extends Resource
 {
     protected static ?string $model = PPDBRegistration::class;

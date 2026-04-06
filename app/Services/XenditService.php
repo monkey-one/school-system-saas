@@ -5,6 +5,8 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+// Wraps the Xendit Invoice API. Creates invoice-based payment links and
+// validates incoming webhook tokens for payment status callbacks.
 class XenditService
 {
     protected string $secretKey;

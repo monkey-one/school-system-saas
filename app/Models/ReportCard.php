@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a student report card issued for a specific semester
 class ReportCard extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

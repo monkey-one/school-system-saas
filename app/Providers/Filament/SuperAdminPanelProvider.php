@@ -19,6 +19,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+// Configures the super admin panel (path: /super-admin). This panel is only
+// accessible to users with type SUPER_ADMIN and does not apply any tenant
+// middleware because the super admin operates across all schools.
 class SuperAdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel

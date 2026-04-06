@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages teacher profiles and employment data
 class TeacherResource extends Resource
 {
     protected static ?string $model = Teacher::class;

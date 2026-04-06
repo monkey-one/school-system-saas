@@ -10,6 +10,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+// Displays the teacher's personal teaching schedule
 class MyScheduleResource extends Resource
 {
     protected static ?string $model = TeachingSchedule::class;

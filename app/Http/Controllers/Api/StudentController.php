@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+// Manages CRUD operations for student records
 class StudentController extends Controller
 {
     public function index(Request $request): JsonResponse

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a parent or guardian associated with a student
 class StudentParent extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

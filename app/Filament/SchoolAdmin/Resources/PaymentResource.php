@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages tuition fee payment records and transactions
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;

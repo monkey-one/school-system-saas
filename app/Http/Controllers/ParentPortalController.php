@@ -19,8 +19,13 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+// Serves the parent-facing portal. A parent can have multiple children, so
+// many actions receive a Student model parameter. The authorizeParent()
+// method verifies that the authenticated user is indeed a registered parent
+// of the given student within the current tenant.
 class ParentPortalController extends Controller
 {
+    // Dashboard: lists all children linked to the parent's email.
     public function dashboard()
     {
         $user = Auth::user();
@@ -36,6 +41,7 @@ class ParentPortalController extends Controller
         return view('parent-portal.dashboard', compact('children', 'tenant'));
     }
 
+    // Attendance records for a specific child.
     public function attendance(Student $student)
     {
         $this->authorizeParent($student);
@@ -48,6 +54,7 @@ class ParentPortalController extends Controller
         return view('parent-portal.attendance', compact('attendances', 'student'));
     }
 
+    // Grades for a specific child, grouped by subject.
     public function grades(Student $student)
     {
         $this->authorizeParent($student);
@@ -60,6 +67,7 @@ class ParentPortalController extends Controller
         return view('parent-portal.grades', compact('grades', 'student'));
     }
 
+    // Download report card PDF for a child's semester.
     public function rapor(Student $student, Semester $semester)
     {
         $this->authorizeParent($student);
@@ -74,6 +82,7 @@ class ParentPortalController extends Controller
         return $pdf->download('rapor-' . $student->nis . '-' . $semester->name . '.pdf');
     }
 
+    // SPP bills for a specific child.
     public function spp(Student $student)
     {
         $this->authorizeParent($student);
@@ -86,6 +95,7 @@ class ParentPortalController extends Controller
         return view('parent-portal.spp', compact('bills', 'student'));
     }
 
+    // Create a Midtrans payment session for an unpaid bill.
     public function pay(SppBill $bill)
     {
         $student = $bill->student;
@@ -94,7 +104,9 @@ class ParentPortalController extends Controller
 
         $midtransService = app(MidtransService::class);
 
-        $orderId = 'SPP-' . $bill->id . '-' . time();
+        // Build a unique order ID for the payment gateway. Using uniqid()
+        // instead of time() avoids collisions on sub-second requests.
+        $orderId = 'SPP-' . $bill->id . '-' . uniqid();
         $snapToken = $midtransService->createSnapToken(
             $orderId,
             (int) $bill->final_amount,
@@ -131,15 +143,18 @@ class ParentPortalController extends Controller
         return view('parent-portal.payment', compact('snapToken', 'bill'));
     }
 
+    // Show sent and received messages for the current user.
     public function messages()
     {
         $user = Auth::user();
         $tenant = Tenant::current();
 
+        // Fetch messages the user sent or was a recipient of. The recipients
+        // column stores a JSON array of user IDs.
         $messages = Message::where('tenant_id', $tenant->id)
             ->where(function ($q) use ($user) {
                 $q->where('sender_id', $user->id)
-                  ->orWhereRaw("JSON_CONTAINS(?, CAST(sender_id AS CHAR))", [json_encode([$user->id])]);
+                  ->orWhereRaw("JSON_CONTAINS(recipients, ?)", [json_encode($user->id)]);
             })
             ->with('sender')
             ->orderByDesc('created_at')
@@ -148,6 +163,8 @@ class ParentPortalController extends Controller
         return view('parent-portal.messages', compact('messages'));
     }
 
+    // Ensures the logged-in user is a registered parent of the given student
+    // and that both belong to the current tenant.
     protected function authorizeParent(Student $student): void
     {
         $user = Auth::user();

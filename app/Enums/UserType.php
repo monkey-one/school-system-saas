@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the role type of a user in the system
 enum UserType: string
 {
     case SUPER_ADMIN = 'super_admin';

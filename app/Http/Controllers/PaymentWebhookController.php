@@ -13,8 +13,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+// Receives asynchronous payment notifications from Midtrans and Xendit.
+// On successful payment the corresponding SPP bills are marked as paid,
+// and an optional WhatsApp receipt is sent to the student's parent.
 class PaymentWebhookController extends Controller
 {
+    // Midtrans sends a POST with a signature derived from the server key.
+    // Invalid signatures are rejected with 403.
     public function midtrans(Request $request)
     {
         $notification = $request->all();
@@ -54,6 +59,7 @@ class PaymentWebhookController extends Controller
         return response()->json(['message' => 'OK']);
     }
 
+    // Xendit sends a POST with an x-callback-token header for verification.
     public function xendit(Request $request)
     {
         $callbackToken = $request->header('x-callback-token', '');
@@ -91,6 +97,9 @@ class PaymentWebhookController extends Controller
         return response()->json(['message' => 'OK']);
     }
 
+    // Mark all SPP bills linked to this payment as paid. When no explicit
+    // bill allocations exist, auto-allocate the payment amount to unpaid
+    // bills ordered by due date until the balance runs out.
     protected function markBillsPaid(Payment $payment): void
     {
         $allocations = PaymentBillAllocation::where('payment_id', $payment->id)->get();
@@ -127,6 +136,8 @@ class PaymentWebhookController extends Controller
         }
     }
 
+    // Try to send a payment receipt to the student's parent via WhatsApp.
+    // Silently returns when no phone number is available.
     protected function sendPaymentReceipt(Payment $payment): void
     {
         $student = $payment->student;
@@ -134,8 +145,9 @@ class PaymentWebhookController extends Controller
             return;
         }
 
+        // Prefer the parent's WhatsApp number; fall back to the student's phone.
         $parent = $student->parents()->where('is_whatsapp_active', true)->first();
-        $phone = $parent->phone ?? $student->phone;
+        $phone = $parent?->phone ?? $student->phone;
 
         if (! $phone) {
             return;

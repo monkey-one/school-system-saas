@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a subject entry within a student report card
 class ReportCardSubject extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

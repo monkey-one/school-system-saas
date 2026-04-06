@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages teaching schedule assignments
 class TeachingScheduleResource extends Resource
 {
     protected static ?string $model = TeachingSchedule::class;

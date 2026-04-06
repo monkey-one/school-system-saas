@@ -9,12 +9,17 @@ use App\Models\Tenant;
 use App\Services\QRCodeService;
 use Illuminate\Http\Request;
 
+// Handles the public-facing QR attendance flow. Teachers generate a QR code
+// that encodes a signed JWT. Students scan the code on their phone, which
+// hits the scan endpoint to verify the token, then confirm their attendance.
 class AttendanceController extends Controller
 {
     public function __construct(
         protected QRCodeService $qrCodeService,
     ) {}
 
+    // Display the scan page after validating the JWT token from the QR code.
+    // Shows the session info so the student can confirm their identity.
     public function scan(Request $request)
     {
         $request->validate([
@@ -41,6 +46,9 @@ class AttendanceController extends Controller
         ]);
     }
 
+    // Record the student's attendance after a second validation of the token.
+    // Checks for duplicates and marks late arrivals (more than 15 minutes
+    // after the scheduled start time).
     public function confirm(Request $request)
     {
         $request->validate([

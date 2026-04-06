@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages grade level definitions for the school
 class GradeLevelResource extends Resource
 {
     protected static ?string $model = GradeLevel::class;

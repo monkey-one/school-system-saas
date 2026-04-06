@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
+// Allows teachers to manage their own attendance sessions
 class MyAttendanceSessionResource extends Resource
 {
     protected static ?string $model = AttendanceSession::class;

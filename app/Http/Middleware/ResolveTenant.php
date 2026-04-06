@@ -7,12 +7,15 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+// Resolves the current tenant from the incoming request. Tenant detection
+// follows this order: subdomain extraction, ?tenant= query parameter, and
+// finally the configured default slug. The resolved tenant is stored in
+// Tenant::$currentTenant so it can be read anywhere via Tenant::current().
 class ResolveTenant
 {
-    /**
-     * Known base domains that should NOT be treated as subdomains.
-     * Add your production domain here to prevent false subdomain detection.
-     */
+    // Domains that should never be treated as having a subdomain prefix.
+    // Loaded from config/app.php 'base_domains' on each request so that
+    // production domains can be added without touching this file.
     private array $baseDomains = [
         'localhost',
         '127.0.0.1',
@@ -20,32 +23,36 @@ class ResolveTenant
 
     public function handle(Request $request, Closure $next): Response
     {
+        // Merge any extra base domains defined in configuration.
+        $configDomains = config('app.base_domains', []);
+        $this->baseDomains = array_merge($this->baseDomains, $configDomains);
+
         $host = $request->getHost();
 
-        // Check if accessing super-admin panel (no tenant needed)
+        // Super admin panel operates without any tenant context.
         if ($request->is('super-admin*')) {
             Tenant::forgetCurrent();
             return $next($request);
         }
 
-        // Resolve tenant slug from subdomain
+        // Resolve tenant slug from the subdomain of the host.
         $slug = null;
 
-        // Only extract subdomain if the host is NOT a known base domain
         if (! in_array($host, $this->baseDomains)) {
             $parts = explode('.', $host);
-            // Require at least 3 parts for subdomain detection (e.g., demo.example.com)
+            // A valid subdomain requires at least 3 parts (e.g. demo.example.com).
+            // Two-part hosts like example.com are treated as the base domain.
             if (count($parts) >= 3 && $parts[0] !== 'www') {
                 $slug = $parts[0];
             }
         }
 
-        // Support query parameter for testing: ?tenant=slug
+        // Allow overriding via query parameter for local testing.
         if (! $slug) {
             $slug = $request->query('tenant');
         }
 
-        // Fallback to default tenant from config
+        // When no slug could be determined, fall back to the configured default.
         if (! $slug) {
             $slug = config('app.default_tenant_slug', 'demo');
         }

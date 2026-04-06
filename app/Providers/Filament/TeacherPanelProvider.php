@@ -21,6 +21,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+// Configures the teacher panel (path: /teacher). Accessible to users with
+// type TEACHER. Runs ResolveTenant and EnsureTenantIsSet middleware so
+// teacher resources are scoped to their school.
 class TeacherPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel

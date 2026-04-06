@@ -11,6 +11,7 @@ use App\Services\QRCodeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+// Handles student attendance check-in via QR code scanning
 class AttendanceController extends Controller
 {
     public function __construct(

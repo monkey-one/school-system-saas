@@ -9,10 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a single school (tenant) in the multi-tenant architecture.
+// A static property holds the current tenant for the duration of the request.
+// The ResolveTenant middleware is responsible for calling setCurrent().
 class Tenant extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Holds the active tenant for the current request lifecycle. Null when
+    // no tenant has been resolved (e.g. on the super admin panel).
     protected static ?Tenant $currentTenant = null;
 
     protected $fillable = [

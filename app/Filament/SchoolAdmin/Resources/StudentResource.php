@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages student profiles and enrollment data
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;

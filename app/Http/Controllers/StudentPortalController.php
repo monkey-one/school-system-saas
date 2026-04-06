@@ -17,8 +17,14 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+// Serves the student-facing portal: dashboard overview, attendance history,
+// grades, report card PDF download, SPP bills with online payment, and
+// school announcements. Every action ensures the authenticated user has an
+// associated Student record before proceeding.
 class StudentPortalController extends Controller
 {
+    // Aggregates key data for the student dashboard: schedule, recent grades,
+    // attendance breakdown, unpaid SPP bills, and pinned announcements.
     public function dashboard()
     {
         $user = Auth::user();
@@ -71,6 +77,7 @@ class StudentPortalController extends Controller
         ));
     }
 
+    // Paginated attendance records for the logged-in student.
     public function attendance()
     {
         $student = Auth::user()->student;
@@ -84,6 +91,7 @@ class StudentPortalController extends Controller
         return view('student-portal.attendance', compact('attendances', 'student'));
     }
 
+    // All grades grouped by subject, with semester filter options.
     public function grades()
     {
         $student = Auth::user()->student;
@@ -103,6 +111,7 @@ class StudentPortalController extends Controller
         return view('student-portal.grades', compact('grades', 'semesters', 'student'));
     }
 
+    // Generate and download the report card PDF for the given semester.
     public function rapor(Semester $semester)
     {
         $student = Auth::user()->student;
@@ -118,6 +127,7 @@ class StudentPortalController extends Controller
         return $pdf->download('rapor-' . $student->nis . '-' . $semester->name . '.pdf');
     }
 
+    // Paginated list of SPP bills for the student.
     public function spp()
     {
         $student = Auth::user()->student;
@@ -131,6 +141,9 @@ class StudentPortalController extends Controller
         return view('student-portal.spp', compact('bills', 'student'));
     }
 
+    // Create a Midtrans Snap payment session for an unpaid bill and redirect
+    // the student to the payment page. A Payment record is created immediately
+    // with a 'pending' gateway status; the webhook will finalize it.
     public function pay(SppBill $bill)
     {
         $student = Auth::user()->student;
@@ -139,7 +152,9 @@ class StudentPortalController extends Controller
 
         $midtransService = app(MidtransService::class);
 
-        $orderId = 'SPP-' . $bill->id . '-' . time();
+        // Build a unique order ID for the payment gateway. Using uniqid()
+        // instead of time() avoids collisions on sub-second requests.
+        $orderId = 'SPP-' . $bill->id . '-' . uniqid();
         $snapToken = $midtransService->createSnapToken(
             $orderId,
             (int) $bill->final_amount,
@@ -176,6 +191,7 @@ class StudentPortalController extends Controller
         return view('student-portal.payment', compact('snapToken', 'bill'));
     }
 
+    // Published announcements with pinned items at the top.
     public function announcements()
     {
         $tenant = Tenant::current();

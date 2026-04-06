@@ -5,8 +5,13 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 
+// Registers shared application services and performs one-time boot tasks
+// like HTTPS enforcement and locale setup.
 class AppServiceProvider extends ServiceProvider
 {
+    // Bind long-lived services as singletons so they are constructed once and
+    // reused across the entire request. This avoids repeated initialization of
+    // API clients and token reading.
     public function register(): void
     {
         $this->app->singleton(\App\Services\WhatsAppService::class);
@@ -22,11 +27,12 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Set Indonesian locale
-        config(['app.locale' => 'id']);
+        // Set the system-level locale for date/time formatting functions like
+        // Carbon's translatedFormat(). The application locale itself is handled
+        // by config/app.php and the SetLocale middleware.
         setlocale(LC_TIME, 'id_ID.UTF-8');
 
-        // Register Filament navigation
+        // Render a custom footer on every Filament panel page.
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             'panels::body.end',
             fn () => view('filament.footer'),

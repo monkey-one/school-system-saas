@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a reservation request for a school facility
 class FacilityBooking extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

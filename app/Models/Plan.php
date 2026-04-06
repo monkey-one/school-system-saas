@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a SaaS subscription plan with pricing and feature limits
 class Plan extends Model
 {
     use HasFactory, SoftDeletes;

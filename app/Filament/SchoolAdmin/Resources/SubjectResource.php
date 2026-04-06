@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages school subject definitions and configuration
 class SubjectResource extends Resource
 {
     protected static ?string $model = Subject::class;

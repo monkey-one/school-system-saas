@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a student admission registration in the PPDB enrollment process
 class PPDBRegistration extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

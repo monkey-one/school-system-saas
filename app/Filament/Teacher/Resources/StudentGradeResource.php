@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+// Allows teachers to input and manage student grades
 class StudentGradeResource extends Resource
 {
     protected static ?string $model = StudentGrade::class;

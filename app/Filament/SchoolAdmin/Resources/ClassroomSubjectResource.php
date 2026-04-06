@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages subject assignments to classrooms
 class ClassroomSubjectResource extends Resource
 {
     protected static ?string $model = ClassroomSubject::class;

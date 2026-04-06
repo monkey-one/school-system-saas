@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages school asset inventory and tracking
 class AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;

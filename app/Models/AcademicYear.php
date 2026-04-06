@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents an academic year period within a school tenant
 class AcademicYear extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

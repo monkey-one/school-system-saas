@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages school facility records and availability
 class FacilityResource extends Resource
 {
     protected static ?string $model = Facility::class;

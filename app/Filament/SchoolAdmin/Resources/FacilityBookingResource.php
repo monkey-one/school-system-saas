@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages facility booking requests and scheduling
 class FacilityBookingResource extends Resource
 {
     protected static ?string $model = FacilityBooking::class;

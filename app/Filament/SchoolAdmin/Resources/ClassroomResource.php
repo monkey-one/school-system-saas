@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 
+// Manages classroom definitions and student assignments
 class ClassroomResource extends Resource
 {
     protected static ?string $model = Classroom::class;

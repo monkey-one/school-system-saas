@@ -86,6 +86,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tenant Configuration
+    |--------------------------------------------------------------------------
+    |
+    | base_domains: Hostnames that should never be treated as having a
+    |   subdomain prefix. Add your production domains here so the tenant
+    |   middleware does not mistake them for a tenant slug.
+    | default_tenant_slug: The tenant that is loaded when no subdomain or
+    |   query parameter is present (e.g. direct IP access, local dev).
+    |
+    */
+
+    'base_domains' => array_filter(explode(',', env('APP_BASE_DOMAINS', ''))),
+
+    'default_tenant_slug' => env('APP_DEFAULT_TENANT', 'demo'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |
