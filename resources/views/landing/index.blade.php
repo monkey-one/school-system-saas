@@ -88,7 +88,7 @@
 
                 <div class="hidden md:flex items-center gap-4">
                     <a href="{{ url('/school/login') }}" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">{{ __('Sign In') }}</a>
-                    <a href="#kontak" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">{{ __('Try Free') }}</a>
+                    <a href="{{ route('register') }}" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">{{ __('Try Free') }}</a>
                     {{-- Language Switcher --}}
                     <div class="relative" x-data="{ langOpen: false }">
                         <button @click="langOpen = !langOpen" class="flex items-center gap-1 font-medium transition-colors px-2 py-1 rounded-lg" :class="scrolled ? 'text-gray-600 hover:text-navy-600' : 'text-white/80 hover:text-white'">
@@ -118,7 +118,7 @@
                 <a href="#kontak" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('Contact') }}</a>
                 <hr class="border-gray-200">
                 <a href="{{ url('/school/login') }}" class="block text-navy-600 font-medium">{{ __('Sign In') }}</a>
-                <a href="#kontak" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">{{ __('Try Free') }}</a>
+                <a href="{{ route('register') }}" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">{{ __('Try Free') }}</a>
                 <div class="flex gap-2">
                     <a href="{{ route('locale.switch', 'id') }}" class="flex-1 text-center py-2 rounded-lg text-sm font-medium {{ app()->getLocale() === 'id' ? 'bg-navy-600 text-white' : 'bg-gray-100 text-gray-600' }}">🇮🇩 ID</a>
                     <a href="{{ route('locale.switch', 'en') }}" class="flex-1 text-center py-2 rounded-lg text-sm font-medium {{ app()->getLocale() === 'en' ? 'bg-navy-600 text-white' : 'bg-gray-100 text-gray-600' }}">🇬🇧 EN</a>
@@ -149,7 +149,7 @@
                         {{ __('Manage all your school operations in one integrated platform. From student admissions, attendance, report cards, to tuition payments — everything becomes easier.') }}
                     </p>
                     <div class="flex flex-wrap gap-4">
-                        <a href="#kontak" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 text-lg">
+                        <a href="{{ route('register') }}" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 text-lg">
                             {{ __('Start Free') }}
                         </a>
                         <a href="#demo" class="group px-8 py-4 rounded-xl font-bold text-white border-2 border-white/20 hover:border-white/40 transition-all flex items-center gap-2">
@@ -349,7 +349,7 @@
                         <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>{{ __('WhatsApp Notifications') }}</li>
                         <li class="flex items-center gap-3 text-sm text-gray-400"><svg class="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>{{ __('Parent Portal') }}</li>
                     </ul>
-                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">{{ __('Start Free') }}</a>
+                    <a href="{{ route('register') }}" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">{{ __('Start Free') }}</a>
                 </div>
 
                 {{-- Professional --}}
@@ -374,7 +374,7 @@
                         <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Inventory Management') }}</li>
                         <li class="flex items-center gap-3 text-sm text-white/90"><svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Priority Support') }}</li>
                     </ul>
-                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-bold gradient-gold text-white hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">{{ __('Start Free') }}</a>
+                    <a href="{{ route('register') }}" class="block text-center w-full py-3.5 rounded-xl font-bold gradient-gold text-white hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">{{ __('Start Free') }}</a>
                 </div>
 
                 {{-- Enterprise --}}
@@ -398,7 +398,7 @@
                         <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{{ __('Dedicated Support') }}</li>
                         <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>SLA 99.99%</li>
                     </ul>
-                    <a href="#kontak" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">{{ __('Contact Us') }}</a>
+                    <a href="{{ route('register') }}" class="block text-center w-full py-3.5 rounded-xl font-semibold border-2 border-navy-600 text-navy-600 hover:bg-navy-600 hover:text-white transition-all">{{ __('Contact Us') }}</a>
                 </div>
             </div>
         </div>
@@ -502,13 +502,11 @@
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-white mb-6">{{ __('Start Managing Your School Now') }}</h2>
             <p class="text-white/60 text-lg mb-10 max-w-2xl mx-auto">{{ __('Join 500+ schools that have trusted EduSaaS with their school management.') }}</p>
 
-            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" action="{{ route('ppdb.index') }}" method="GET">
-                <input type="email" name="email" placeholder="{{ __('Enter your school email') }}" required
-                       class="flex-1 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent">
-                <button type="submit" class="px-8 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 whitespace-nowrap">
-                    {{ __('Try Free') }}
-                </button>
-            </form>
+            <div class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto justify-center">
+                <a href="{{ route('register') }}" class="px-10 py-4 rounded-xl font-bold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30 whitespace-nowrap text-lg">
+                    {{ __('Register Now') }}
+                </a>
+            </div>
             <p class="text-white/40 text-sm mt-4">{{ __('Free 14 days. No credit card.') }}</p>
         </div>
     </section>

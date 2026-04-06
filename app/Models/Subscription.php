@@ -19,6 +19,10 @@ class Subscription extends Model
         'ends_at',
         'status',
         'payment_method',
+        'payment_reference',
+        'payment_amount',
+        'payment_token',
+        'billing_cycle',
         'auto_renew',
         'notes',
     ];
@@ -27,6 +31,7 @@ class Subscription extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'auto_renew' => 'boolean',
+        'payment_amount' => 'decimal:2',
     ];
 
     public function tenant()
