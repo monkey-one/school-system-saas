@@ -17,50 +17,42 @@ class FacilityBookingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static ?string $navigationGroup = 'Inventaris';
-
-    protected static ?string $navigationLabel = 'Booking Fasilitas';
-
-    protected static ?string $modelLabel = 'Booking Fasilitas';
-
-    protected static ?string $pluralModelLabel = 'Booking Fasilitas';
-
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Booking')
+                Forms\Components\Section::make(__('Booking Data'))
                     ->description('Informasi booking fasilitas')
                     ->icon('heroicon-o-calendar-days')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('facility_id')
-                            ->label('Fasilitas')
+                            ->label(__('Facility'))
                             ->relationship('facility', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('date')
-                            ->label('Tanggal')
+                            ->label(__('Date'))
                             ->required()
                             ->default(now()),
                         Forms\Components\TimePicker::make('start_time')
-                            ->label('Jam Mulai')
+                            ->label(__('Start Time'))
                             ->required(),
                         Forms\Components\TimePicker::make('end_time')
-                            ->label('Jam Selesai')
+                            ->label(__('End Time'))
                             ->required()
                             ->after('start_time'),
                         Forms\Components\TextInput::make('purpose')
-                            ->label('Keperluan')
+                            ->label(__('Purpose'))
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options([
                                 'pending' => 'Menunggu',
                                 'approved' => 'Disetujui',
@@ -70,7 +62,7 @@ class FacilityBookingResource extends Resource
                             ->default('pending')
                             ->required(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -82,17 +74,17 @@ class FacilityBookingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('facility.name')
-                    ->label('Fasilitas')
+                    ->label(__('Facility'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('date')
-                    ->label('Tanggal')
+                    ->label(__('Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('start_time')
-                    ->label('Mulai')
+                    ->label(__('Start'))
                     ->time('H:i')
                     ->sortable()
                     ->toggleable(),
@@ -102,12 +94,12 @@ class FacilityBookingResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('purpose')
-                    ->label('Keperluan')
+                    ->label(__('Purpose'))
                     ->searchable()
                     ->toggleable()
                     ->limit(30),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'pending' => 'warning',
@@ -132,10 +124,10 @@ class FacilityBookingResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('facility_id')
-                    ->label('Fasilitas')
+                    ->label(__('Facility'))
                     ->relationship('facility', 'name'),
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options([
                         'pending' => 'Menunggu',
                         'approved' => 'Disetujui',
@@ -174,6 +166,26 @@ class FacilityBookingResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Inventory');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Facility Bookings');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Facility Booking');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Facility Bookings');
     }
 
     public static function getPages(): array

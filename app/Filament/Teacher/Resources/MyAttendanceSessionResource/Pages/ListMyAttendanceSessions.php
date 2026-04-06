@@ -14,7 +14,7 @@ class ListMyAttendanceSessions extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Buat Sesi Absensi'),
+                ->label(__('Create Attendance Session')),
         ];
     }
 }

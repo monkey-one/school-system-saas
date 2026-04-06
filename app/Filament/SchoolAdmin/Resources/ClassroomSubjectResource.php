@@ -17,39 +17,31 @@ class ClassroomSubjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-table-cells';
 
-    protected static ?string $navigationGroup = 'Akademik';
-
-    protected static ?string $navigationLabel = 'Jadwal Mapel';
-
-    protected static ?string $modelLabel = 'Jadwal Mapel';
-
-    protected static ?string $pluralModelLabel = 'Jadwal Mapel';
-
     protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Jadwal Mapel')
+                Forms\Components\Section::make(__('Subject Schedule Data'))
                     ->description('Penugasan mata pelajaran ke kelas')
                     ->icon('heroicon-o-table-cells')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('classroom_id')
-                            ->label('Kelas')
+                            ->label(__('Classroom'))
                             ->relationship('classroom', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('subject_id')
-                            ->label('Mata Pelajaran')
+                            ->label(__('Subject'))
                             ->relationship('subject', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('teacher_id')
-                            ->label('Guru')
+                            ->label(__('Teacher'))
                             ->relationship('teacher', 'full_name')
                             ->required()
                             ->searchable()
@@ -60,13 +52,13 @@ class ClassroomSubjectResource extends Resource
                             ->required()
                             ->default(2),
                         Forms\Components\Select::make('academic_year_id')
-                            ->label('Tahun Ajaran')
+                            ->label(__('Academic Year'))
                             ->relationship('academicYear', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('semester_id')
-                            ->label('Semester')
+                            ->label(__('Semester'))
                             ->relationship('semester', 'name')
                             ->required()
                             ->searchable()
@@ -80,17 +72,17 @@ class ClassroomSubjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('teacher.full_name')
-                    ->label('Guru')
+                    ->label(__('Teacher'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -99,23 +91,23 @@ class ClassroomSubjectResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('academicYear.name')
-                    ->label('Tahun Ajaran')
+                    ->label(__('Academic Year'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('semester.name')
-                    ->label('Semester')
+                    ->label(__('Semester'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('classroom_id')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->relationship('classroom', 'name'),
                 Tables\Filters\SelectFilter::make('subject_id')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->relationship('subject', 'name'),
                 Tables\Filters\SelectFilter::make('teacher_id')
-                    ->label('Guru')
+                    ->label(__('Teacher'))
                     ->relationship('teacher', 'full_name'),
             ])
             ->actions([
@@ -135,6 +127,26 @@ class ClassroomSubjectResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Academic');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Subject Schedules');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Subject Schedule');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Subject Schedules');
     }
 
     public static function getPages(): array

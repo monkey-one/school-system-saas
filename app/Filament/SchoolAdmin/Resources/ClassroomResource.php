@@ -18,49 +18,41 @@ class ClassroomResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
 
-    protected static ?string $navigationGroup = 'Akademik';
-
-    protected static ?string $navigationLabel = 'Kelas';
-
-    protected static ?string $modelLabel = 'Kelas';
-
-    protected static ?string $pluralModelLabel = 'Kelas';
-
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Kelas')
+                Forms\Components\Section::make(__('Classroom Data'))
                     ->description('Informasi kelas')
                     ->icon('heroicon-o-building-library')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('grade_id')
-                            ->label('Tingkat')
+                            ->label(__('Grade Level'))
                             ->relationship('grade', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('academic_year_id')
-                            ->label('Tahun Ajaran')
+                            ->label(__('Academic Year'))
                             ->relationship('academicYear', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Kelas')
+                            ->label(__('Classroom Name'))
                             ->placeholder('A / B / C')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('homeroom_teacher_id')
-                            ->label('Wali Kelas')
+                            ->label(__('Homeroom Teacher'))
                             ->relationship('homeroomTeacher', 'full_name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('capacity')
-                            ->label('Kapasitas')
+                            ->label(__('Capacity'))
                             ->numeric()
                             ->default(30),
                         Forms\Components\TextInput::make('room_name')
@@ -75,40 +67,40 @@ class ClassroomResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Kelas')
+                    ->label(__('Classroom Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('grade.name')
-                    ->label('Tingkat')
+                    ->label(__('Grade Level'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('homeroomTeacher.full_name')
-                    ->label('Wali Kelas')
+                    ->label(__('Homeroom Teacher'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('capacity')
-                    ->label('Kapasitas')
+                    ->label(__('Capacity'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('students_count')
-                    ->label('Jumlah Siswa')
+                    ->label(__('Student Count'))
                     ->counts('students')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('room_name')
-                    ->label('Ruangan')
+                    ->label(__('Room'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('grade_id')
-                    ->label('Tingkat')
+                    ->label(__('Grade Level'))
                     ->relationship('grade', 'name'),
                 Tables\Filters\SelectFilter::make('academic_year_id')
-                    ->label('Tahun Ajaran')
+                    ->label(__('Academic Year'))
                     ->relationship('academicYear', 'name'),
             ])
             ->actions([
@@ -139,6 +131,26 @@ class ClassroomResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Academic');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Classrooms');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Classroom');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Classrooms');
     }
 
     public static function getPages(): array

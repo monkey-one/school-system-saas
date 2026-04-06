@@ -18,14 +18,6 @@ class SppBillResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Keuangan';
-
-    protected static ?string $navigationLabel = 'Tagihan SPP';
-
-    protected static ?string $modelLabel = 'Tagihan SPP';
-
-    protected static ?string $pluralModelLabel = 'Tagihan SPP';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
@@ -39,7 +31,7 @@ class SppBillResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('student_id')
-                            ->label('Siswa')
+                            ->label(__('Student'))
                             ->relationship('student', 'full_name')
                             ->required()
                             ->searchable()
@@ -51,7 +43,7 @@ class SppBillResource extends Resource
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('period')
-                            ->label('Periode')
+                            ->label(__('Period'))
                             ->placeholder('2024-01')
                             ->required()
                             ->maxLength(20),
@@ -71,15 +63,15 @@ class SppBillResource extends Resource
                             ->prefix('Rp')
                             ->required(),
                         Forms\Components\DatePicker::make('due_date')
-                            ->label('Jatuh Tempo')
+                            ->label(__('Due Date'))
                             ->required(),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options(PaymentStatus::class)
                             ->default(PaymentStatus::UNPAID)
                             ->required(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -91,7 +83,7 @@ class SppBillResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('student.full_name')
-                    ->label('Siswa')
+                    ->label(__('Student'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -101,22 +93,22 @@ class SppBillResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('period')
-                    ->label('Periode')
+                    ->label(__('Period'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('final_amount')
-                    ->label('Jumlah')
+                    ->label(__('Total'))
                     ->money('IDR')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('due_date')
-                    ->label('Jatuh Tempo')
+                    ->label(__('Due Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->formatStateUsing(fn (PaymentStatus $state) => $state->label())
                     ->color(fn (PaymentStatus $state) => $state->color())
@@ -125,7 +117,7 @@ class SppBillResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options(PaymentStatus::class),
                 Tables\Filters\SelectFilter::make('spp_type_id')
                     ->label('Jenis SPP')
@@ -150,7 +142,7 @@ class SppBillResource extends Resource
                     ->modalDescription('Tagihan akan digenerate untuk semua siswa aktif berdasarkan jenis SPP bulanan.')
                     ->form([
                         Forms\Components\TextInput::make('period')
-                            ->label('Periode')
+                            ->label(__('Period'))
                             ->placeholder('2024-01')
                             ->required(),
                         Forms\Components\Select::make('spp_type_id')
@@ -170,6 +162,26 @@ class SppBillResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Finance');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Tuition Bills');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Tuition Bill');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Tuition Bills');
     }
 
     public static function getPages(): array

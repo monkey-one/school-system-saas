@@ -17,12 +17,6 @@ class MyScheduleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static ?string $navigationLabel = 'Jadwal Saya';
-
-    protected static ?string $modelLabel = 'Jadwal Mengajar';
-
-    protected static ?string $pluralModelLabel = 'Jadwal Mengajar';
-
     protected static ?int $navigationSort = 1;
 
     public static function getEloquentQuery(): Builder
@@ -38,39 +32,39 @@ class MyScheduleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('day_of_week')
-                    ->label('Hari')
+                    ->label(__('Day'))
                     ->formatStateUsing(fn (int $state) => match ($state) {
-                        1 => 'Senin',
-                        2 => 'Selasa',
-                        3 => 'Rabu',
-                        4 => 'Kamis',
-                        5 => 'Jumat',
-                        6 => 'Sabtu',
-                        7 => 'Minggu',
+                        1 => __('Monday'),
+                        2 => __('Tuesday'),
+                        3 => __('Wednesday'),
+                        4 => __('Thursday'),
+                        5 => __('Friday'),
+                        6 => __('Saturday'),
+                        7 => __('Sunday'),
                         default => '-',
                     })
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('start_time')
-                    ->label('Jam Mulai')
+                    ->label(__('Start Time'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('end_time')
-                    ->label('Jam Selesai')
+                    ->label(__('End Time'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('room')
-                    ->label('Ruangan')
+                    ->label(__('Room'))
                     ->searchable()
                     ->toggleable(),
             ])
@@ -90,6 +84,21 @@ class MyScheduleResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('My Schedule');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Teaching Schedule');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Teaching Schedules');
     }
 
     public static function getPages(): array

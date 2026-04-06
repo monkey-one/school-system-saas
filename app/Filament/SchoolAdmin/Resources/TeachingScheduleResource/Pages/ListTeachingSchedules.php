@@ -14,7 +14,7 @@ class ListTeachingSchedules extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Jadwal'),
+                ->label(__('Add Schedule')),
         ];
     }
 }

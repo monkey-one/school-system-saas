@@ -14,7 +14,7 @@ class ListBookLoans extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Peminjaman'),
+                ->label(__('Add Loan')),
         ];
     }
 }

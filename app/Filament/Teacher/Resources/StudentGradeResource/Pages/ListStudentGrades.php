@@ -14,7 +14,7 @@ class ListStudentGrades extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Input Nilai'),
+                ->label(__('Grade Input')),
         ];
     }
 }

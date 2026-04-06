@@ -14,7 +14,7 @@ class ListPlans extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Paket'),
+                ->label(__('Add Plan')),
         ];
     }
 }

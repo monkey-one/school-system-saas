@@ -14,7 +14,7 @@ class ListFacilityBookings extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Booking'),
+                ->label(__('Add Booking')),
         ];
     }
 }

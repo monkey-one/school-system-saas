@@ -14,7 +14,7 @@ class ListUsers extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah User'),
+                ->label(__('Add User')),
         ];
     }
 }

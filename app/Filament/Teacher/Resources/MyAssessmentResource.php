@@ -20,12 +20,6 @@ class MyAssessmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-pencil-square';
 
-    protected static ?string $navigationLabel = 'Penilaian';
-
-    protected static ?string $modelLabel = 'Penilaian';
-
-    protected static ?string $pluralModelLabel = 'Penilaian';
-
     protected static ?int $navigationSort = 4;
 
     public static function getEloquentQuery(): Builder
@@ -42,14 +36,14 @@ class MyAssessmentResource extends Resource
 
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Penilaian')
-                    ->description('Informasi penilaian')
+                Forms\Components\Section::make(__('Assessment Data'))
+                    ->description(__('Assessment information'))
                     ->icon('heroicon-o-pencil-square')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('classroom_subject_id')
-                            ->label('Kelas - Mapel')
+                            ->label(__('Classroom - Subject'))
                             ->options(function () use ($teacher) {
                                 return ClassroomSubject::where('teacher_id', $teacher?->id)
                                     ->with(['classroom', 'subject'])
@@ -60,32 +54,32 @@ class MyAssessmentResource extends Resource
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('assessment_type_id')
-                            ->label('Jenis Penilaian')
+                            ->label(__('Assessment Type'))
                             ->relationship('assessmentType', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('semester_id')
-                            ->label('Semester')
+                            ->label(__('Semester'))
                             ->relationship('semester', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Penilaian')
+                            ->label(__('Assessment Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\DatePicker::make('date')
-                            ->label('Tanggal')
+                            ->label(__('Date'))
                             ->required()
                             ->default(now()),
                         Forms\Components\TextInput::make('max_score')
-                            ->label('Nilai Maksimal')
+                            ->label(__('Max Score'))
                             ->numeric()
                             ->default(100)
                             ->required(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -97,32 +91,32 @@ class MyAssessmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Penilaian')
+                    ->label(__('Assessment Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('assessmentType.name')
-                    ->label('Jenis')
+                    ->label(__('Type'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('date')
-                    ->label('Tanggal')
+                    ->label(__('Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('max_score')
-                    ->label('Nilai Maks')
+                    ->label(__('Max Score'))
                     ->sortable()
                     ->toggleable(),
             ])
@@ -144,6 +138,21 @@ class MyAssessmentResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Assessments');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Assessment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Assessments');
     }
 
     public static function getPages(): array

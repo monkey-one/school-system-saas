@@ -20,14 +20,6 @@ class PPDBRegistrationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $navigationGroup = 'Kesiswaan';
-
-    protected static ?string $navigationLabel = 'Pendaftaran PPDB';
-
-    protected static ?string $modelLabel = 'Pendaftaran PPDB';
-
-    protected static ?string $pluralModelLabel = 'Pendaftaran PPDB';
-
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -52,21 +44,21 @@ class PPDBRegistrationResource extends Resource
                             ->maxLength(50)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('full_name')
-                            ->label('Nama Lengkap')
+                            ->label(__('Full Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\DatePicker::make('birth_date')
-                            ->label('Tanggal Lahir')
+                            ->label(__('Date of Birth'))
                             ->required(),
                         Forms\Components\Select::make('gender')
-                            ->label('Jenis Kelamin')
+                            ->label(__('Gender'))
                             ->options(Gender::class)
                             ->required(),
                         Forms\Components\TextInput::make('previous_school')
                             ->label('Sekolah Asal')
                             ->maxLength(255),
                         Forms\Components\TextInput::make('parent_name')
-                            ->label('Nama Orang Tua')
+                            ->label(__('Parent Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('parent_phone')
@@ -79,7 +71,7 @@ class PPDBRegistrationResource extends Resource
                             ->email()
                             ->maxLength(255),
                         Forms\Components\Textarea::make('address')
-                            ->label('Alamat')
+                            ->label(__('Address'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -90,12 +82,12 @@ class PPDBRegistrationResource extends Resource
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options(PPDBStatus::class)
                             ->default(PPDBStatus::PENDING)
                             ->required(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(3),
                     ]),
             ]);
@@ -106,22 +98,22 @@ class PPDBRegistrationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('registration_number')
-                    ->label('No. Pendaftaran')
+                    ->label(__('Registration Number'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('Nama Lengkap')
+                    ->label(__('Full Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('parent_name')
-                    ->label('Nama Orang Tua')
+                    ->label(__('Parent Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->formatStateUsing(fn (PPDBStatus $state) => $state->label())
                     ->color(fn (PPDBStatus $state) => $state->color())
@@ -134,16 +126,16 @@ class PPDBRegistrationResource extends Resource
                     ->toggleable()
                     ->placeholder('Belum ditinjau'),
                 Tables\Columns\TextColumn::make('ppdbWave.name')
-                    ->label('Gelombang')
+                    ->label(__('Wave'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options(PPDBStatus::class),
                 Tables\Filters\SelectFilter::make('ppdb_wave_id')
-                    ->label('Gelombang')
+                    ->label(__('Wave'))
                     ->relationship('ppdbWave', 'name'),
             ])
             ->actions([
@@ -182,7 +174,7 @@ class PPDBRegistrationResource extends Resource
                     ->requiresConfirmation()
                     ->form([
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan'),
+                            ->label(__('Notes')),
                     ])
                     ->action(fn (PPDBRegistration $record, array $data) => $record->update([
                         'status' => PPDBStatus::WAITLIST,
@@ -228,6 +220,26 @@ class PPDBRegistrationResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Student Affairs');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('PPDB Registrations');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('PPDB Registration');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('PPDB Registrations');
     }
 
     public static function getPages(): array

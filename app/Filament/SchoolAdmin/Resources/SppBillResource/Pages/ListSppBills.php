@@ -14,7 +14,7 @@ class ListSppBills extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Tagihan'),
+                ->label(__('Add Bill')),
         ];
     }
 }

@@ -20,14 +20,6 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Manajemen User';
-
-    protected static ?string $navigationLabel = 'Semua User';
-
-    protected static ?string $modelLabel = 'User';
-
-    protected static ?string $pluralModelLabel = 'User';
-
     protected static ?int $navigationSort = 1;
 
     public static function getEloquentQuery(): Builder
@@ -39,41 +31,42 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data User')
+                Forms\Components\Section::make(__('User Data'))
                     ->icon('heroicon-o-user')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label(__('Email'))
                             ->email()
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('password')
-                            ->label('Password')
+                            ->label(__('Password'))
                             ->password()
                             ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                             ->dehydrated(fn (?string $state): bool => filled($state))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->maxLength(255),
                         Forms\Components\Select::make('type')
-                            ->label('Tipe User')
+                            ->label(__('User Type'))
                             ->options(UserType::class)
                             ->required(),
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif')
-                            ->default(true),
+                            ->label(__('Active'))
+                            ->default(true)
+                            ->disabled(fn (?User $record) => $record?->id === auth()->id()),
                     ]),
 
-                Forms\Components\Section::make('Tenant')
+                Forms\Components\Section::make(__('Tenant'))
                     ->icon('heroicon-o-building-office-2')
                     ->schema([
                         Forms\Components\Select::make('tenant_id')
-                            ->label('Sekolah')
+                            ->label(__('School'))
                             ->relationship('tenant', 'name')
                             ->searchable()
                             ->preload()
@@ -87,46 +80,48 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('Email'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tenant.name')
-                    ->label('Sekolah')
+                    ->label(__('School'))
                     ->searchable()
                     ->sortable()
                     ->placeholder('—'),
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipe')
+                    ->label(__('Type'))
                     ->badge()
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')
-                    ->label('Aktif')
-                    ->sortable(),
+                    ->label(__('Active'))
+                    ->sortable()
+                    ->disabled(fn ($record) => $record?->id === auth()->id()),
                 Tables\Columns\TextColumn::make('last_login_at')
-                    ->label('Login Terakhir')
+                    ->label(__('Last Login'))
                     ->dateTime('d M Y H:i')
                     ->sortable()
-                    ->placeholder('Belum pernah'),
+                    ->placeholder(__('Never')),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipe User')
+                    ->label(__('User Type'))
                     ->options(UserType::class),
                 Tables\Filters\SelectFilter::make('tenant_id')
-                    ->label('Sekolah')
+                    ->label(__('School'))
                     ->relationship('tenant', 'name')
                     ->searchable()
                     ->preload(),
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status Aktif'),
+                    ->label(__('Active Status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->hidden(fn ($record) => $record->id === auth()->id()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -139,6 +134,26 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('User Management');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('All Users');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('User');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Users');
     }
 
     public static function getPages(): array

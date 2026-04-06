@@ -14,7 +14,7 @@ class ListAssets extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Aset'),
+                ->label(__('Add Asset')),
         ];
     }
 }

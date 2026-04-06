@@ -17,27 +17,19 @@ class AnnouncementResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-speaker-wave';
 
-    protected static ?string $navigationGroup = 'Komunikasi';
-
-    protected static ?string $navigationLabel = 'Pengumuman';
-
-    protected static ?string $modelLabel = 'Pengumuman';
-
-    protected static ?string $pluralModelLabel = 'Pengumuman';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Pengumuman')
+                Forms\Components\Section::make(__('Announcement Data'))
                     ->description('Informasi pengumuman')
                     ->icon('heroicon-o-speaker-wave')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('title')
-                            ->label('Judul')
+                            ->label(__('Title'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\RichEditor::make('content')
@@ -45,7 +37,7 @@ class AnnouncementResource extends Resource
                             ->required()
                             ->columnSpanFull(),
                         Forms\Components\Select::make('target_type')
-                            ->label('Target')
+                            ->label(__('Target'))
                             ->options([
                                 'all' => 'Semua',
                                 'teachers' => 'Guru',
@@ -85,7 +77,7 @@ class AnnouncementResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Judul')
+                    ->label(__('Title'))
                     ->searchable()
                     ->sortable()
                     ->toggleable()
@@ -96,7 +88,7 @@ class AnnouncementResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('target_type')
-                    ->label('Target')
+                    ->label(__('Target'))
                     ->badge()
                     ->formatStateUsing(fn (?string $state) => match ($state) {
                         'all' => 'Semua',
@@ -121,7 +113,7 @@ class AnnouncementResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('target_type')
-                    ->label('Target')
+                    ->label(__('Target'))
                     ->options([
                         'all' => 'Semua',
                         'teachers' => 'Guru',
@@ -149,6 +141,26 @@ class AnnouncementResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Communication');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Announcements');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Announcement');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Announcements');
     }
 
     public static function getPages(): array

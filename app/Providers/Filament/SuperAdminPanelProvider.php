@@ -7,6 +7,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -61,6 +62,14 @@ class SuperAdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 Widgets\AccountWidget::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label(__('User Management'))
+                    ->icon('heroicon-o-users'),
+                NavigationGroup::make()
+                    ->label(__('Tenant Management'))
+                    ->icon('heroicon-o-building-office-2'),
             ])
             ->middleware([
                 EncryptCookies::class,

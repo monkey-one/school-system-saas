@@ -14,7 +14,7 @@ class ListBooks extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Buku'),
+                ->label(__('Add Book')),
         ];
     }
 }

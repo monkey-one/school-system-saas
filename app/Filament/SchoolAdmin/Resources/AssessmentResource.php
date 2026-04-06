@@ -17,54 +17,46 @@ class AssessmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
 
-    protected static ?string $navigationGroup = 'Penilaian';
-
-    protected static ?string $navigationLabel = 'Penilaian';
-
-    protected static ?string $modelLabel = 'Penilaian';
-
-    protected static ?string $pluralModelLabel = 'Penilaian';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Penilaian')
-                    ->description('Informasi penilaian')
+                Forms\Components\Section::make(__('Assessment Data'))
+                    ->description(__('Assessment information'))
                     ->icon('heroicon-o-document-chart-bar')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Penilaian')
+                            ->label(__('Assessment Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('classroom_subject_id')
-                            ->label('Kelas - Mapel')
+                            ->label(__('Classroom - Subject'))
                             ->relationship('classroomSubject', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->classroom->name} - {$record->subject->name}")
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('assessment_type_id')
-                            ->label('Jenis Penilaian')
+                            ->label(__('Assessment Type'))
                             ->relationship('assessmentType', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('semester_id')
-                            ->label('Semester')
+                            ->label(__('Semester'))
                             ->relationship('semester', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('date')
-                            ->label('Tanggal')
+                            ->label(__('Date'))
                             ->required(),
                         Forms\Components\TextInput::make('max_score')
-                            ->label('Nilai Maksimal')
+                            ->label(__('Max Score'))
                             ->numeric()
                             ->default(100)
                             ->required(),
@@ -74,7 +66,7 @@ class AssessmentResource extends Resource
                             ->step(0.01)
                             ->helperText('Kosongkan untuk menggunakan bobot default'),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -86,41 +78,41 @@ class AssessmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('assessmentType.name')
-                    ->label('Jenis')
+                    ->label(__('Type'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('date')
-                    ->label('Tanggal')
+                    ->label(__('Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('max_score')
-                    ->label('Nilai Maks')
+                    ->label(__('Max Score'))
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('assessment_type_id')
-                    ->label('Jenis Penilaian')
+                    ->label(__('Assessment Type'))
                     ->relationship('assessmentType', 'name'),
                 Tables\Filters\SelectFilter::make('semester_id')
-                    ->label('Semester')
+                    ->label(__('Semester'))
                     ->relationship('semester', 'name'),
             ])
             ->actions([
@@ -140,6 +132,26 @@ class AssessmentResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Grading');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Assessments');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Assessment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Assessments');
     }
 
     public static function getPages(): array

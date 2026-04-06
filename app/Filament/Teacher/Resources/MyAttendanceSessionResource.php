@@ -21,12 +21,6 @@ class MyAttendanceSessionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-qr-code';
 
-    protected static ?string $navigationLabel = 'Sesi Absensi';
-
-    protected static ?string $modelLabel = 'Sesi Absensi';
-
-    protected static ?string $pluralModelLabel = 'Sesi Absensi';
-
     protected static ?int $navigationSort = 2;
 
     public static function getEloquentQuery(): Builder
@@ -43,8 +37,8 @@ class MyAttendanceSessionResource extends Resource
 
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Sesi Absensi')
-                    ->description('Informasi sesi absensi')
+                Forms\Components\Section::make(__('Attendance Session Data'))
+                    ->description(__('Attendance session information'))
                     ->icon('heroicon-o-clipboard-document-check')
                     ->collapsible()
                     ->columns(2)
@@ -52,7 +46,7 @@ class MyAttendanceSessionResource extends Resource
                         Forms\Components\Hidden::make('teacher_id')
                             ->default($teacher?->id),
                         Forms\Components\Select::make('classroom_subject_id')
-                            ->label('Kelas - Mapel')
+                            ->label(__('Classroom - Subject'))
                             ->options(function () use ($teacher) {
                                 return ClassroomSubject::where('teacher_id', $teacher?->id)
                                     ->with(['classroom', 'subject'])
@@ -63,19 +57,19 @@ class MyAttendanceSessionResource extends Resource
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('date')
-                            ->label('Tanggal')
+                            ->label(__('Date'))
                             ->required()
                             ->default(now()),
                         Forms\Components\TimePicker::make('start_time')
-                            ->label('Jam Mulai'),
+                            ->label(__('Start Time')),
                         Forms\Components\TimePicker::make('end_time')
-                            ->label('Jam Selesai'),
+                            ->label(__('End Time')),
                         Forms\Components\TextInput::make('topic')
-                            ->label('Topik/Materi')
+                            ->label(__('Topic/Material'))
                             ->maxLength(255)
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -87,28 +81,28 @@ class MyAttendanceSessionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('date')
-                    ->label('Tanggal')
+                    ->label(__('Date'))
                     ->date('d M Y')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('topic')
-                    ->label('Topik')
+                    ->label(__('Topic'))
                     ->searchable()
                     ->limit(30)
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'open' => 'success',
@@ -116,29 +110,29 @@ class MyAttendanceSessionResource extends Resource
                         default => 'warning',
                     })
                     ->formatStateUsing(fn (string $state) => match ($state) {
-                        'open' => 'Dibuka',
-                        'closed' => 'Ditutup',
+                        'open' => __('Open'),
+                        'closed' => __('Closed'),
                         default => $state,
                     })
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('student_attendances_count')
-                    ->label('Kehadiran')
+                    ->label(__('Attendance'))
                     ->counts('studentAttendances')
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options([
-                        'open' => 'Dibuka',
-                        'closed' => 'Ditutup',
+                        'open' => __('Open'),
+                        'closed' => __('Closed'),
                     ]),
             ])
             ->actions([
                 Tables\Actions\Action::make('generateQr')
-                    ->label('Generate QR')
+                    ->label(__('Generate QR'))
                     ->icon('heroicon-o-qr-code')
                     ->color('info')
                     ->action(function (AttendanceSession $record) {
@@ -150,20 +144,20 @@ class MyAttendanceSessionResource extends Resource
                         ]);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Generate QR Code')
-                    ->modalDescription('QR Code baru akan dibuat dan berlaku selama 30 menit.')
+                    ->modalHeading(__('Generate QR Code'))
+                    ->modalDescription(__('A new QR Code will be generated and valid for 30 minutes.'))
                     ->after(function (AttendanceSession $record, Tables\Actions\Action $action) {
-                        $action->successNotificationTitle('QR Code berhasil dibuat')
+                        $action->successNotificationTitle(__('QR Code generated successfully'))
                             ->sendSuccessNotification();
                     }),
                 Tables\Actions\Action::make('closeSession')
-                    ->label('Tutup Sesi')
+                    ->label(__('Close Session'))
                     ->icon('heroicon-o-lock-closed')
                     ->color('danger')
                     ->action(fn (AttendanceSession $record) => $record->update(['status' => 'closed']))
                     ->requiresConfirmation()
-                    ->modalHeading('Tutup Sesi Absensi')
-                    ->modalDescription('Sesi absensi akan ditutup dan siswa tidak bisa lagi melakukan absensi.')
+                    ->modalHeading(__('Close Attendance Session'))
+                    ->modalDescription(__('The attendance session will be closed and students can no longer submit attendance.'))
                     ->visible(fn (AttendanceSession $record) => $record->status === 'open'),
                 Tables\Actions\EditAction::make(),
             ])
@@ -180,6 +174,21 @@ class MyAttendanceSessionResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Attendance Sessions');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Attendance Session');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Attendance Sessions');
     }
 
     public static function getPages(): array

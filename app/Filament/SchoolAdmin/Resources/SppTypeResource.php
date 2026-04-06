@@ -17,31 +17,23 @@ class SppTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $navigationGroup = 'Keuangan';
-
-    protected static ?string $navigationLabel = 'Jenis SPP';
-
-    protected static ?string $modelLabel = 'Jenis SPP';
-
-    protected static ?string $pluralModelLabel = 'Jenis SPP';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Jenis SPP')
+                Forms\Components\Section::make(__('Tuition Type Data'))
                     ->description('Informasi jenis pembayaran SPP')
                     ->icon('heroicon-o-banknotes')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('code')
-                            ->label('Kode')
+                            ->label(__('Code'))
                             ->required()
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
@@ -68,7 +60,7 @@ class SppTypeResource extends Resource
                             ])
                             ->default('all'),
                         Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
+                            ->label(__('Description'))
                             ->rows(3)
                             ->maxLength(1000),
                     ]),
@@ -80,17 +72,17 @@ class SppTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Kode')
+                    ->label(__('Code'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Jumlah')
+                    ->label(__('Total'))
                     ->money('IDR')
                     ->sortable()
                     ->toggleable(),
@@ -134,6 +126,26 @@ class SppTypeResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Finance');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Tuition Types');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Tuition Type');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Tuition Types');
     }
 
     public static function getPages(): array

@@ -14,7 +14,7 @@ class ListMyAssessments extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Buat Penilaian'),
+                ->label(__('Create Assessment')),
         ];
     }
 }

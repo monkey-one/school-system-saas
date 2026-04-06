@@ -17,31 +17,23 @@ class AssessmentTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
 
-    protected static ?string $navigationGroup = 'Penilaian';
-
-    protected static ?string $navigationLabel = 'Jenis Penilaian';
-
-    protected static ?string $modelLabel = 'Jenis Penilaian';
-
-    protected static ?string $pluralModelLabel = 'Jenis Penilaian';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Jenis Penilaian')
+                Forms\Components\Section::make(__('Assessment Type Data'))
                     ->description('Informasi jenis penilaian')
                     ->icon('heroicon-o-clipboard-document')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('code')
-                            ->label('Kode')
+                            ->label(__('Code'))
                             ->required()
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
@@ -62,12 +54,12 @@ class AssessmentTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Kode')
+                    ->label(__('Code'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -103,6 +95,26 @@ class AssessmentTypeResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Grading');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Assessment Types');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Assessment Type');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Assessment Types');
     }
 
     public static function getPages(): array
