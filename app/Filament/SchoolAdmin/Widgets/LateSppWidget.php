@@ -47,11 +47,10 @@ class LateSppWidget extends BaseWidget
                     ->date('d M Y')
                     ->color('danger')
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->colors([
-                        'danger' => fn ($state) => in_array($state, [PaymentStatus::OVERDUE, PaymentStatus::UNPAID]),
-                    ]),
+                    ->badge()
+                    ->color(fn ($state) => in_array($state, [PaymentStatus::OVERDUE, PaymentStatus::UNPAID]) ? 'danger' : 'gray'),
             ])
             ->paginated(false);
     }
