@@ -699,5 +699,13 @@
     "Your school has been registered successfully.": "Sekolah Anda telah berhasil didaftarkan.",
     "Your subscription will be activated automatically after payment verification.": "Langganan Anda akan diaktifkan secara otomatis setelah verifikasi pembayaran.",
     "e.g. SMP Negeri 1 Jakarta": "contoh: SMP Negeri 1 Jakarta",
-    "teachers": "guru"
+    "students": "siswa",
+    "teachers": "guru",
+    "Api": "API",
+    "Custom domain": "Domain kustom",
+    "Ppdb": "PPDB",
+    "Priority support": "Dukungan prioritas",
+    "Reports": "Laporan",
+    "Spp": "SPP",
+    "Whatsapp": "WhatsApp"
 }

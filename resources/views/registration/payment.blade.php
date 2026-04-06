@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -34,12 +35,15 @@
     {{-- Header --}}
     <header class="gradient-navy">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <a href="{{ url('/') }}" class="inline-flex items-center gap-2 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-2">
                 <div class="w-10 h-10 rounded-xl bg-gold-500 flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                 </div>
                 <span class="text-2xl font-heading font-bold text-white">Edu<span class="text-gold-500">SaaS</span></span>
-            </a>
+                </a>
+                <x-language-switcher-public />
+            </div>
             <h1 class="text-3xl font-heading font-extrabold text-white mb-2">{{ __('Complete Payment') }}</h1>
             <p class="text-white/70">{{ __('Complete your payment to activate your subscription.') }}</p>
         </div>
