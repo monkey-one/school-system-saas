@@ -20,6 +20,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\SetLocale;
 
 // Configures the teacher panel (path: /teacher). Accessible to users with
 // type TEACHER. Runs ResolveTenant and EnsureTenantIsSet middleware so
@@ -74,6 +75,7 @@ class TeacherPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetLocale::class,
                 ResolveTenant::class,
                 EnsureTenantIsSet::class,
             ])
