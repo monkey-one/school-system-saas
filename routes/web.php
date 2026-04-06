@@ -5,6 +5,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Middleware\ResolveTenant;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,14 @@ Route::get('/locale/{locale}', function (string $locale) {
     }
     return redirect()->back();
 })->name('locale.switch');
+
+// School/tenant registration: public form for school owners to sign up,
+// pick a plan, and pay for a subscription (or start a free trial).
+Route::get('/register', [RegistrationController::class, 'create'])->name('register');
+Route::post('/register', [RegistrationController::class, 'store'])->name('register.store');
+Route::get('/register/payment/{subscription}', [RegistrationController::class, 'payment'])->name('register.payment');
+Route::get('/register/success', [RegistrationController::class, 'success'])->name('register.success');
+Route::get('/register/trial-success', [RegistrationController::class, 'trialSuccess'])->name('register.trial-success');
 
 // Generic logout used by the student and parent portals.
 Route::post('/logout', function () {
@@ -53,6 +62,7 @@ Route::middleware([ResolveTenant::class])->group(function () {
 // Xendit servers so they must be exempted from CSRF verification (see
 // bootstrap/app.php). Signature/token verification happens in the controller.
 Route::post('/webhooks/midtrans', [PaymentWebhookController::class, 'midtrans'])->name('webhooks.midtrans');
+Route::post('/webhooks/midtrans/subscription', [PaymentWebhookController::class, 'midtransSubscription'])->name('webhooks.midtrans.subscription');
 Route::post('/webhooks/xendit', [PaymentWebhookController::class, 'xendit'])->name('webhooks.xendit');
 
 // Student portal: authenticated students view their schedule, grades,

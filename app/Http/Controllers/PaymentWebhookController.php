@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentStatus;
+use App\Enums\TenantStatus;
 use App\Models\Payment;
 use App\Models\PaymentBillAllocation;
 use App\Models\SppBill;
+use App\Models\Subscription;
 use App\Services\MidtransService;
 use App\Services\WhatsAppService;
 use App\Services\XenditService;
@@ -160,5 +162,60 @@ class PaymentWebhookController extends Controller
             'reference' => $payment->reference_number,
             'date' => $payment->payment_date->format('d/m/Y'),
         ], 'payment', $payment->id);
+    }
+
+    public function midtransSubscription(Request $request)
+    {
+        $notification = $request->all();
+        $midtransService = app(MidtransService::class);
+
+        if (! $midtransService->verifySignature($notification)) {
+            Log::warning('Midtrans subscription webhook: invalid signature', $notification);
+            return response()->json(['message' => 'Invalid signature'], 403);
+        }
+
+        $orderId = $notification['order_id'] ?? null;
+        $transactionStatus = $notification['transaction_status'] ?? null;
+
+        $subscription = Subscription::where('payment_reference', $orderId)->first();
+
+        if (! $subscription) {
+            Log::warning('Midtrans subscription webhook: subscription not found', ['order_id' => $orderId]);
+            return response()->json(['message' => 'Subscription not found'], 404);
+        }
+
+        DB::transaction(function () use ($subscription, $transactionStatus) {
+            if (in_array($transactionStatus, ['capture', 'settlement'])) {
+                $duration = $subscription->billing_cycle === 'annual' ? 12 : 1;
+                $subscription->update([
+                    'status' => 'active',
+                    'starts_at' => now(),
+                    'ends_at' => now()->addMonths($duration),
+                ]);
+
+                $tenant = $subscription->tenant;
+                $tenant->update([
+                    'status' => TenantStatus::ACTIVE,
+                    'subscription_id' => $subscription->id,
+                ]);
+
+                $tenant->users()
+                    ->where('is_active', false)
+                    ->update(['is_active' => true]);
+
+                Log::info('Subscription activated via Midtrans', [
+                    'subscription_id' => $subscription->id,
+                    'tenant_id' => $tenant->id,
+                ]);
+            } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+                $subscription->update(['status' => 'cancelled']);
+                Log::info('Subscription payment failed', [
+                    'subscription_id' => $subscription->id,
+                    'status' => $transactionStatus,
+                ]);
+            }
+        });
+
+        return response()->json(['message' => 'OK']);
     }
 }
