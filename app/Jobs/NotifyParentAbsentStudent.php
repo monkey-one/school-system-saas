@@ -13,6 +13,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
+// Sends a WhatsApp notification to the parent of a student who was marked
+// absent (ALFA) in a specific attendance session. Only fires when the
+// student's parent has WhatsApp notifications enabled.
 class NotifyParentAbsentStudent implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -44,10 +47,12 @@ class NotifyParentAbsentStudent implements ShouldQueue
             return;
         }
 
+        // Variable names must match the double-brace placeholders in the
+        // absen_alfa notification template: {{student_name}}, {{date}}, {{subject}}.
         $whatsApp->sendTemplate($parent->phone, 'absen_alfa', [
-            'nama_siswa' => $student->full_name,
-            'tanggal' => $attendance->attendanceSession->date ?? now()->format('d/m/Y'),
-            'kelas' => $student->classroom->name ?? '-',
+            'student_name' => $student->full_name,
+            'date' => $attendance->attendanceSession->date ?? now()->format('d/m/Y'),
+            'subject' => $student->classroom->name ?? '-',
         ], 'student_attendance', $attendance->id);
 
         $attendance->update(['notified_parent_at' => now()]);

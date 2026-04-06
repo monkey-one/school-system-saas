@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents an enrollment wave period for the PPDB admission process
 class PPDBWave extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

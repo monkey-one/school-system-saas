@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a school announcement published by staff to targeted audiences
 class Announcement extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

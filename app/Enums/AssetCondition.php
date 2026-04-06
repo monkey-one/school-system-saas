@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the physical condition of a school asset
 enum AssetCondition: string
 {
     case GOOD = 'good';

@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
+// Manages student attendance sessions and records
 class AttendanceSessionResource extends Resource
 {
     protected static ?string $model = AttendanceSession::class;

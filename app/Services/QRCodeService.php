@@ -10,6 +10,9 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Support\Facades\Log;
 
+// Creates and validates JWT tokens embedded in QR codes for the attendance
+// scan workflow.  A teacher generates a QR code containing a signed token
+// that students scan to confirm their attendance.
 class QRCodeService
 {
     protected string $secret;

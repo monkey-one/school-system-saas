@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the religious affiliation of a user
 enum Religion: string
 {
     case ISLAM = 'islam';

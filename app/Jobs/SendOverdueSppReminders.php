@@ -13,6 +13,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
+// Finds all overdue SPP bills for a specific tenant, updates their status to
+// OVERDUE, and sends a WhatsApp reminder to each student's parent via the
+// spp_reminder notification template.
 class SendOverdueSppReminders implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -48,12 +51,14 @@ class SendOverdueSppReminders implements ShouldQueue
                 continue;
             }
 
+            // Variable names must match the double-brace placeholders in the
+            // spp_reminder notification template: {{student_name}}, {{period}},
+            // {{amount}}, {{due_date}}.
             $whatsApp->sendTemplate($parent->phone, 'spp_reminder', [
-                'nama_siswa' => $bill->student->full_name,
-                'jenis_spp' => $bill->sppType->name,
-                'periode' => $bill->period,
-                'jumlah' => number_format($bill->final_amount, 0, ',', '.'),
-                'jatuh_tempo' => $bill->due_date->format('d/m/Y'),
+                'student_name' => $bill->student->full_name,
+                'period' => $bill->period,
+                'amount' => number_format($bill->final_amount, 0, ',', '.'),
+                'due_date' => $bill->due_date->format('d/m/Y'),
             ], 'spp_bill', $bill->id);
 
             $sent++;

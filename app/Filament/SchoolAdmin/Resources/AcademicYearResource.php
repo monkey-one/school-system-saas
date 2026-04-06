@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+// Manages academic year records for the school
 class AcademicYearResource extends Resource
 {
     protected static ?string $model = AcademicYear::class;

@@ -12,6 +12,9 @@ use App\Models\CurriculumSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
+// Generates student report cards by aggregating grades, computing weighted
+// averages based on curriculum settings, and producing a ReportCard record
+// with per-subject breakdowns and an attendance summary.
 class RaporService
 {
     public function generateForStudent(Student $student, int $semesterId): ReportCard

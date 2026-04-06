@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents the allocation of a payment amount to a specific tuition bill
 class PaymentBillAllocation extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

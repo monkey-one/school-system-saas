@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the employment classification of a teacher or staff member
 enum EmploymentStatus: string
 {
     case PNS = 'PNS';

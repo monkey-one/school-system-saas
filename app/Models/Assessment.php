@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents an individual assessment or exam for a classroom subject
 class Assessment extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

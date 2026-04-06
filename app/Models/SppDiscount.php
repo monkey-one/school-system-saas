@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a discount applied to student tuition fees
 class SppDiscount extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

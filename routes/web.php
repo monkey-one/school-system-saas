@@ -10,10 +10,11 @@ use App\Http\Middleware\ResolveTenant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// Landing page
+// Public landing page (no auth, no tenant required)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-// Locale switcher
+// Stores the chosen language in the session so the SetLocale middleware can
+// apply it on every subsequent request. Invalid values are silently ignored.
 Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['id', 'en'])) {
         session()->put('locale', $locale);
@@ -21,7 +22,7 @@ Route::get('/locale/{locale}', function (string $locale) {
     return redirect()->back();
 })->name('locale.switch');
 
-// Logout (for portals)
+// Generic logout used by the student and parent portals.
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
@@ -29,7 +30,9 @@ Route::post('/logout', function () {
     return redirect('/');
 })->name('logout');
 
-// PPDB (public, no auth, but needs tenant)
+// PPDB (student admission) pages. Public visitors can browse open waves,
+// submit a registration form, and check their application status.
+// Tenant context is required so records are scoped to the correct school.
 Route::prefix('ppdb')->name('ppdb.')->middleware([ResolveTenant::class])->group(function () {
     Route::get('/', [PPDBController::class, 'index'])->name('index');
     Route::get('/register/{wave}', [PPDBController::class, 'register'])->name('register');
@@ -39,15 +42,21 @@ Route::prefix('ppdb')->name('ppdb.')->middleware([ResolveTenant::class])->group(
     Route::get('/acceptance/{id}', [PPDBController::class, 'acceptanceLetter'])->name('acceptance-letter');
 });
 
-// Attendance scan (public, mobile)
-Route::get('/attendance/scan', [AttendanceController::class, 'scan'])->name('attendance.scan');
-Route::post('/attendance/confirm', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
+// QR-based attendance scan (public facing, but tenant context is required
+// so the session record can be looked up within the correct school)
+Route::middleware([ResolveTenant::class])->group(function () {
+    Route::get('/attendance/scan', [AttendanceController::class, 'scan'])->name('attendance.scan');
+    Route::post('/attendance/confirm', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
+});
 
-// Payment webhooks (no CSRF)
+// Payment gateway callbacks. These are POST endpoints called by Midtrans and
+// Xendit servers so they must be exempted from CSRF verification (see
+// bootstrap/app.php). Signature/token verification happens in the controller.
 Route::post('/webhooks/midtrans', [PaymentWebhookController::class, 'midtrans'])->name('webhooks.midtrans');
 Route::post('/webhooks/xendit', [PaymentWebhookController::class, 'xendit'])->name('webhooks.xendit');
 
-// Student Portal (auth required)
+// Student portal: authenticated students view their schedule, grades,
+// attendance, SPP bills, pay tuition, and read school announcements.
 Route::prefix('student-portal')->name('student.')->middleware(['auth', 'tenant', 'tenant.required'])->group(function () {
     Route::get('/', [StudentPortalController::class, 'dashboard'])->name('dashboard');
     Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('attendance');
@@ -58,7 +67,8 @@ Route::prefix('student-portal')->name('student.')->middleware(['auth', 'tenant',
     Route::get('/announcements', [StudentPortalController::class, 'announcements'])->name('announcements');
 });
 
-// Parent Portal (auth required)
+// Parent portal: authenticated parents view their children's data including
+// attendance, grades, SPP bills, and can send/receive messages.
 Route::prefix('parent-portal')->name('parent.')->middleware(['auth', 'tenant', 'tenant.required'])->group(function () {
     Route::get('/', [ParentPortalController::class, 'dashboard'])->name('dashboard');
     Route::get('/attendance/{student}', [ParentPortalController::class, 'attendance'])->name('attendance');

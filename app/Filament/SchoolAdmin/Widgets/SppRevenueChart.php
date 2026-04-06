@@ -6,6 +6,7 @@ use App\Models\Payment;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
+// Displays tuition fee revenue over the last six months
 class SppRevenueChart extends ChartWidget
 {
     protected static ?string $heading = 'Pendapatan SPP 6 Bulan Terakhir';

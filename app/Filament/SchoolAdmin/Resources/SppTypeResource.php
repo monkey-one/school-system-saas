@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages tuition fee type definitions
 class SppTypeResource extends Resource
 {
     protected static ?string $model = SppType::class;

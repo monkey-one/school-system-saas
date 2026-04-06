@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages library book loan transactions
 class BookLoanResource extends Resource
 {
     protected static ?string $model = BookLoan::class;

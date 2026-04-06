@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a grade level (e.g. Grade 1, Grade 2) within the school
 class GradeLevel extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

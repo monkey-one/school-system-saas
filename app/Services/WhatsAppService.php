@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\WhatsappLog;
 
+// Sends WhatsApp messages via the Fonnte HTTP API and logs every attempt
+// (success or failure) into the whatsapp_logs table for auditing.
 class WhatsAppService
 {
     protected string $apiUrl;
@@ -17,6 +19,8 @@ class WhatsAppService
         $this->apiToken = config('services.fonnte.token', '');
     }
 
+    // Send a single message to a phone number. Logs the outcome regardless
+    // of whether the call succeeds or throws.
     public function send(string $phone, string $message, ?string $referenceType = null, ?int $referenceId = null): bool
     {
         if (empty($this->apiToken)) {
@@ -62,6 +66,8 @@ class WhatsAppService
         }
     }
 
+    // Resolve a notification template by its key, replace the {{variable}}
+    // placeholders with the provided values, and send via the Fonnte API.
     public function sendTemplate(string $phone, string $templateKey, array $variables = [], ?string $refType = null, ?int $refId = null): bool
     {
         $template = \App\Models\NotificationTemplate::where('key', $templateKey)
@@ -73,14 +79,18 @@ class WhatsAppService
             return false;
         }
 
+        // Templates use double-brace placeholders like {{student_name}}.
         $message = $template->body;
         foreach ($variables as $key => $value) {
-            $message = str_replace('{' . $key . '}', $value, $message);
+            $message = str_replace('{{' . $key . '}}', $value, $message);
         }
 
         return $this->send($phone, $message, $refType, $refId);
     }
 
+    // Send the same message to multiple numbers with a short delay between
+    // each call to avoid rate-limiting from Fonnte. Returns the count of
+    // successfully delivered messages.
     public function blast(array $phones, string $message): int
     {
         $sent = 0;

@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages curriculum configuration and settings
 class CurriculumSettingResource extends Resource
 {
     protected static ?string $model = CurriculumSetting::class;

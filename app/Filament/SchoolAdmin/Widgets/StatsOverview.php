@@ -12,6 +12,7 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
 
+// Displays summary statistics for the school admin dashboard
 class StatsOverview extends BaseWidget
 {
     protected function getStats(): array

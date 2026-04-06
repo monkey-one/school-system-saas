@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+// Handles API authentication including login, logout, and user profile retrieval
 class AuthController extends Controller
 {
     public function login(Request $request): JsonResponse

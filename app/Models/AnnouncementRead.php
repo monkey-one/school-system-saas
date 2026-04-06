@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Tracks which users have read a specific announcement
 class AnnouncementRead extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

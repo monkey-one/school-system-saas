@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the category of a school subject
 enum SubjectType: string
 {
     case TEORI = 'teori';

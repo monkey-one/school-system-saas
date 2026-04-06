@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
+// Manages tenant subscription records and billing
 class SubscriptionResource extends Resource
 {
     protected static ?string $model = Subscription::class;

@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the gender of a user
 enum Gender: string
 {
     case MALE = 'L';

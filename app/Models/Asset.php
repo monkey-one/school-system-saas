@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a physical asset or inventory item owned by the school
 class Asset extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

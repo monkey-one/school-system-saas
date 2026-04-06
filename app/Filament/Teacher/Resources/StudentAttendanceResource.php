@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
+// Allows teachers to view and manage student attendance records
 class StudentAttendanceResource extends Resource
 {
     protected static ?string $model = StudentAttendance::class;

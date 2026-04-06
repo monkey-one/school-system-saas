@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a class group assigned to a grade level and academic year
 class Classroom extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

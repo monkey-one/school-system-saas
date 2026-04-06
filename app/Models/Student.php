@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a student enrolled in the school
 class Student extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

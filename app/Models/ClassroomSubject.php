@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents the assignment of a subject and teacher to a classroom
 class ClassroomSubject extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a book in the school library catalog
 class Book extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

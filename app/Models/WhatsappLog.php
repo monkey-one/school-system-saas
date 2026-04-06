@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Logs outgoing WhatsApp messages sent by the system
 class WhatsappLog extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

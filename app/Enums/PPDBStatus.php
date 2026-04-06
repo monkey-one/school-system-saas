@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the status of a student admission (PPDB) application
 enum PPDBStatus: string
 {
     case PENDING = 'pending';

@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages tuition fee billing records
 class SppBillResource extends Resource
 {
     protected static ?string $model = SppBill::class;

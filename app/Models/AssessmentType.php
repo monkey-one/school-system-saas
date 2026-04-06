@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Defines a category of assessment with default weight for grading
 class AssessmentType extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

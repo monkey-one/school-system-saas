@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Records a teacher daily attendance entry with check-in and check-out times
 class TeacherAttendance extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

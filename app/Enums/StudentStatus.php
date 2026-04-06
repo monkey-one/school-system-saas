@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the enrollment status of a student
 enum StudentStatus: string
 {
     case ACTIVE = 'active';

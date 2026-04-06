@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a weekly teaching schedule slot for a teacher and subject
 class TeachingSchedule extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

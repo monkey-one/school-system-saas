@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents an uploaded document associated with a student record
 class StudentDocument extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

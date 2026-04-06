@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+// Represents the subscription status of a tenant school
 enum TenantStatus: string
 {
     case TRIAL = 'trial';

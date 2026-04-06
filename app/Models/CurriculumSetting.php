@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Stores curriculum configuration such as assessment weights and passing grades
 class CurriculumSetting extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+// Handles listing and viewing published school announcements
 class AnnouncementController extends Controller
 {
     public function index(Request $request): JsonResponse

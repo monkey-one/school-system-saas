@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
+// Manages tenant school registrations and configuration
 class TenantResource extends Resource
 {
     protected static ?string $model = Tenant::class;

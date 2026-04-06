@@ -16,6 +16,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
+// Creates SPP bills for every active student in a tenant for the specified
+// billing period. Skips students who already have a bill for that period
+// and SPP type combination. Designed to run once per month via a scheduler.
 class GenerateMonthlyBills implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

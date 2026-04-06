@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+// Retrieves tuition fee bills for the authenticated student
 class SppBillController extends Controller
 {
     public function index(Request $request): JsonResponse

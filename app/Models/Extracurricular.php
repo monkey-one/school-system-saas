@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents an extracurricular activity offered by the school
 class Extracurricular extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

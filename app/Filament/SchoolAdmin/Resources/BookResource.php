@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages library book catalog and inventory
 class BookResource extends Resource
 {
     protected static ?string $model = Book::class;

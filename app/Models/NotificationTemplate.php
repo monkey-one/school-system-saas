@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Defines a reusable notification template for automated messages
 class NotificationTemplate extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

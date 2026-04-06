@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages assessment type definitions and categories
 class AssessmentTypeResource extends Resource
 {
     protected static ?string $model = AssessmentType::class;

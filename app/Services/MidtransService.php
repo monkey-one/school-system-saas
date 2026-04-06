@@ -5,6 +5,8 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+// Wraps the Midtrans Snap API. Creates payment tokens for the checkout page
+// and verifies webhook signatures on incoming notifications.
 class MidtransService
 {
     protected string $serverKey;

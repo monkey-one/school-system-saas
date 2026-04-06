@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 
+// Manages platform user accounts across all tenants
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;

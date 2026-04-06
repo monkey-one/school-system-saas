@@ -14,11 +14,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
+// Central authentication model shared by every Filament panel (super admin,
+// school admin, teacher). Panel access is controlled by the UserType enum
+// inside canAccessPanel(), not by role/permission tables.
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, Notifiable, HasRoles, SoftDeletes, HasApiTokens, BelongsToTenant;
+    use HasFactory, Notifiable, SoftDeletes, HasApiTokens, BelongsToTenant;
 
     protected $fillable = [
         'tenant_id',
@@ -48,6 +50,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         ];
     }
 
+    // Determines which Filament panel this user is allowed to access.
+    // Returns false for inactive accounts regardless of type.
     public function canAccessPanel(Panel $panel): bool
     {
         if (! $this->is_active) {
@@ -62,6 +66,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         };
     }
 
+    // Returns the full URL to the user's uploaded avatar, or null when no
+    // avatar has been set.
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar ? asset('storage/' . $this->avatar) : null;
@@ -87,6 +93,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $query->where('is_active', true);
     }
 
+    // Override the trait's boot method so super admin users (tenant_id = null)
+    // are not filtered out by the global tenant scope. The trait's generic
+    // version would hide the super admin row whenever a tenant is active.
     protected static function bootBelongsToTenant(): void
     {
         static::creating(function ($model) {

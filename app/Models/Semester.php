@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+// Represents a semester period within an academic year
 class Semester extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;

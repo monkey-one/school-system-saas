@@ -11,6 +11,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
+// Displays recent student activity in a table
 class RecentActivityWidget extends BaseWidget
 {
     protected static ?string $heading = 'Aktivitas Terbaru';

@@ -7,6 +7,7 @@ use App\Models\StudentAttendance;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
+// Displays weekly student attendance statistics as a chart
 class AttendanceChart extends ChartWidget
 {
     protected static ?string $heading = 'Kehadiran Minggu Ini';

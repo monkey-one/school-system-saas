@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
+// Manages semester periods within academic years
 class SemesterResource extends Resource
 {
     protected static ?string $model = Semester::class;

@@ -1,0 +1,21 @@
+fix: critical bugs, security patches, and comprehensive code comments
+
+Bug Fixes:
+- PPDBController: null tenant guard + DB transaction for registration numbers
+- WhatsAppService: fix template variable replacement {key} -> {{key}}
+- SendOverdueSppReminders: fix mismatched template variable names
+- NotifyParentAbsentStudent: fix mismatched template variable names
+- PaymentWebhookController: null-safe parent phone access
+- ParentPortalController: fix broken JSON_CONTAINS message query
+- StudentPortalController + ParentPortalController: time() -> uniqid() for payment IDs
+- Attendance routes: add ResolveTenant middleware (security fix)
+
+Code Cleanup:
+- User model: remove dead Spatie HasRoles trait
+- AppServiceProvider: remove redundant locale config override
+- ResolveTenant: externalize baseDomains to config
+- config/app.php: add base_domains and default_tenant_slug from env
+
+Comments:
+- Added English comments to all 136 files: models, enums, controllers,
+  services, jobs, middleware, routes, config, Filament resources/widgets

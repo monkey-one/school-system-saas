@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+// Manages CRUD operations for attendance sessions
 class AttendanceSessionController extends Controller
 {
     public function index(Request $request): JsonResponse
