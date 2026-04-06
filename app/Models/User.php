@@ -14,13 +14,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 // Central authentication model shared by every Filament panel (super admin,
 // school admin, teacher). Panel access is controlled by the UserType enum
 // inside canAccessPanel(), not by role/permission tables.
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, Notifiable, SoftDeletes, HasApiTokens, BelongsToTenant;
+    use HasFactory, Notifiable, SoftDeletes, HasApiTokens, BelongsToTenant, HasRoles;
 
     protected $fillable = [
         'tenant_id',

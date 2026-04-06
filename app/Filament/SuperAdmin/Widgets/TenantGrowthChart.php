@@ -9,7 +9,10 @@ use Illuminate\Support\Carbon;
 // Displays tenant growth trend over the last twelve months
 class TenantGrowthChart extends ChartWidget
 {
-    protected static ?string $heading = 'Pertumbuhan Tenant 12 Bulan Terakhir';
+    public function getHeading(): string
+    {
+        return __('Tenant Growth Last 12 Months');
+    }
 
     protected static ?int $sort = 2;
 
@@ -32,7 +35,7 @@ class TenantGrowthChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Tenant Baru',
+                    'label' => __('New Tenants'),
                     'data' => $counts->toArray(),
                     'backgroundColor' => '#1E3A5F',
                     'borderColor' => '#1E3A5F',

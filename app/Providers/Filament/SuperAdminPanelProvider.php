@@ -70,6 +70,10 @@ class SuperAdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label(__('Tenant Management'))
                     ->icon('heroicon-o-building-office-2'),
+                NavigationGroup::make()
+                    ->label(__('System'))
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsed(),
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -10,7 +10,10 @@ use Filament\Widgets\TableWidget as BaseWidget;
 // Displays recently registered tenants in a table
 class RecentTenantsWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Tenant Terbaru';
+    public function getHeading(): string
+    {
+        return __('Recent Tenants');
+    }
 
     protected static ?int $sort = 3;
 
@@ -26,22 +29,22 @@ class RecentTenantsWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Sekolah')
+                    ->label(__('School Name'))
                     ->searchable()
                     ->icon('heroicon-o-building-office'),
                 Tables\Columns\TextColumn::make('school_type')
-                    ->label('Jenis')
+                    ->label(__('Type'))
                     ->badge(),
                 Tables\Columns\TextColumn::make('city')
-                    ->label('Kota'),
+                    ->label(__('City')),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge(),
                 Tables\Columns\TextColumn::make('students_count')
-                    ->label('Siswa')
+                    ->label(__('Students'))
                     ->counts('students'),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Terdaftar')
+                    ->label(__('Registered'))
                     ->since()
                     ->sortable(),
             ])
