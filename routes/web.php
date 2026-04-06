@@ -2,13 +2,13 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\MiscController;
 use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Middleware\ResolveTenant;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Public landing page (no auth, no tenant required)
@@ -16,12 +16,7 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // Stores the chosen language in the session so the SetLocale middleware can
 // apply it on every subsequent request. Invalid values are silently ignored.
-Route::get('/locale/{locale}', function (string $locale) {
-    if (in_array($locale, ['id', 'en'])) {
-        session()->put('locale', $locale);
-    }
-    return redirect()->back();
-})->name('locale.switch');
+Route::get('/locale/{locale}', [MiscController::class, 'switchLocale'])->name('locale.switch');
 
 // School/tenant registration: public form for school owners to sign up,
 // pick a plan, and pay for a subscription (or start a free trial).
@@ -32,12 +27,7 @@ Route::get('/register/success', [RegistrationController::class, 'success'])->nam
 Route::get('/register/trial-success', [RegistrationController::class, 'trialSuccess'])->name('register.trial-success');
 
 // Generic logout used by the student and parent portals.
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/');
-})->name('logout');
+Route::post('/logout', [MiscController::class, 'logout'])->name('logout');
 
 // PPDB (student admission) pages. Public visitors can browse open waves,
 // submit a registration form, and check their application status.
