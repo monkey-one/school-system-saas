@@ -12,38 +12,47 @@ class DocumentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'documents';
 
-    protected static ?string $title = 'Dokumen';
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('Documents');
+    }
 
-    protected static ?string $modelLabel = 'Dokumen';
+    public static function getModelLabel(): string
+    {
+        return __('Document');
+    }
 
-    protected static ?string $pluralModelLabel = 'Dokumen';
+    public static function getPluralModelLabel(): string
+    {
+        return __('Documents');
+    }
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('type')
-                    ->label('Tipe Dokumen')
+                    ->label(__('Document Type'))
                     ->options([
-                        'akta_lahir' => 'Akta Lahir',
-                        'kartu_keluarga' => 'Kartu Keluarga',
-                        'ijazah' => 'Ijazah',
-                        'rapor' => 'Rapor',
-                        'foto' => 'Pas Foto',
-                        'skhun' => 'SKHUN',
-                        'lainnya' => 'Lainnya',
+                        'akta_lahir' => __('Birth Certificate'),
+                        'kartu_keluarga' => __('Family Card'),
+                        'ijazah' => __('Diploma'),
+                        'rapor' => __('Report Card'),
+                        'foto' => __('Passport Photo'),
+                        'skhun' => __('SKHUN'),
+                        'lainnya' => __('Other'),
                     ])
                     ->required(),
                 Forms\Components\FileUpload::make('file_path')
-                    ->label('File')
+                    ->label(__('File'))
                     ->directory('students/documents')
                     ->required()
                     ->maxSize(5120),
                 Forms\Components\TextInput::make('file_name')
-                    ->label('Nama File')
+                    ->label(__('File Name'))
                     ->maxLength(255),
                 Forms\Components\Textarea::make('notes')
-                    ->label('Catatan')
+                    ->label(__('Notes'))
                     ->rows(2),
             ]);
     }
@@ -53,34 +62,34 @@ class DocumentsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipe')
+                    ->label(__('Type'))
                     ->formatStateUsing(fn (string $state) => match ($state) {
-                        'akta_lahir' => 'Akta Lahir',
-                        'kartu_keluarga' => 'Kartu Keluarga',
-                        'ijazah' => 'Ijazah',
-                        'rapor' => 'Rapor',
-                        'foto' => 'Pas Foto',
-                        'skhun' => 'SKHUN',
-                        default => 'Lainnya',
+                        'akta_lahir' => __('Birth Certificate'),
+                        'kartu_keluarga' => __('Family Card'),
+                        'ijazah' => __('Diploma'),
+                        'rapor' => __('Report Card'),
+                        'foto' => __('Passport Photo'),
+                        'skhun' => __('SKHUN'),
+                        default => __('Other'),
                     })
                     ->badge()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('file_name')
-                    ->label('Nama File')
+                    ->label(__('File Name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('verified_at')
-                    ->label('Diverifikasi')
+                    ->label(__('Verified'))
                     ->dateTime('d M Y H:i')
-                    ->placeholder('Belum diverifikasi'),
+                    ->placeholder(__('Not verified')),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Diunggah')
+                    ->label(__('Uploaded'))
                     ->dateTime('d M Y'),
             ])
             ->filters([])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->label('Tambah Dokumen'),
+                    ->label(__('Add Document')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

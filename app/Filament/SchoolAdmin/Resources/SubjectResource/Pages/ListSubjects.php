@@ -14,7 +14,7 @@ class ListSubjects extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Mata Pelajaran'),
+                ->label(__('Add Subject')),
         ];
     }
 }

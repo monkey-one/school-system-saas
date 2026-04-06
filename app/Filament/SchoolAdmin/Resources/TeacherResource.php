@@ -20,14 +20,6 @@ class TeacherResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
-    protected static ?string $navigationGroup = 'Kepegawaian';
-
-    protected static ?string $navigationLabel = 'Guru';
-
-    protected static ?string $modelLabel = 'Guru';
-
-    protected static ?string $pluralModelLabel = 'Guru';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -41,27 +33,27 @@ class TeacherResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('nip')
-                            ->label('NIP')
+                            ->label(__('NIP'))
                             ->maxLength(30)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('nuptk')
                             ->label('NUPTK')
                             ->maxLength(30),
                         Forms\Components\TextInput::make('full_name')
-                            ->label('Nama Lengkap')
+                            ->label(__('Full Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('gender')
-                            ->label('Jenis Kelamin')
+                            ->label(__('Gender'))
                             ->options(Gender::class)
                             ->required(),
                         Forms\Components\TextInput::make('birth_place')
-                            ->label('Tempat Lahir')
+                            ->label(__('Place of Birth'))
                             ->maxLength(100),
                         Forms\Components\DatePicker::make('birth_date')
-                            ->label('Tanggal Lahir'),
+                            ->label(__('Date of Birth')),
                         Forms\Components\Select::make('religion')
-                            ->label('Agama')
+                            ->label(__('Religion'))
                             ->options(Religion::class),
                     ]),
 
@@ -80,10 +72,10 @@ class TeacherResource extends Resource
                             ->label('Golongan')
                             ->maxLength(20),
                         Forms\Components\TextInput::make('position')
-                            ->label('Jabatan')
+                            ->label(__('Position'))
                             ->maxLength(100),
                         Forms\Components\TextInput::make('education')
-                            ->label('Pendidikan Terakhir')
+                            ->label(__('Last Education'))
                             ->maxLength(50),
                         Forms\Components\TextInput::make('major')
                             ->label('Jurusan')
@@ -91,7 +83,7 @@ class TeacherResource extends Resource
                         Forms\Components\DatePicker::make('joined_at')
                             ->label('Tanggal Bergabung'),
                         Forms\Components\Toggle::make('is_homeroom_teacher')
-                            ->label('Wali Kelas'),
+                            ->label(__('Homeroom Teacher')),
                         Forms\Components\Select::make('homeroom_classroom_id')
                             ->label('Kelas Wali')
                             ->relationship('homeroomClassroom', 'name')
@@ -99,12 +91,12 @@ class TeacherResource extends Resource
                             ->preload()
                             ->visible(fn (Forms\Get $get) => $get('is_homeroom_teacher')),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
 
-                Forms\Components\Section::make('Kontak')
+                Forms\Components\Section::make(__('Contact'))
                     ->description('Informasi kontak')
                     ->icon('heroicon-o-phone')
                     ->collapsible()
@@ -112,23 +104,23 @@ class TeacherResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('phone')
-                            ->label('Telepon')
+                            ->label(__('Phone'))
                             ->tel()
                             ->maxLength(20),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label(__('Email'))
                             ->email()
                             ->maxLength(255),
                     ]),
 
-                Forms\Components\Section::make('Foto')
+                Forms\Components\Section::make(__('Photo'))
                     ->description('Foto guru')
                     ->icon('heroicon-o-camera')
                     ->collapsible()
                     ->collapsed()
                     ->schema([
                         Forms\Components\FileUpload::make('photo')
-                            ->label('Foto')
+                            ->label(__('Photo'))
                             ->image()
                             ->imageEditor()
                             ->directory('teachers/photos')
@@ -142,21 +134,21 @@ class TeacherResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('photo')
-                    ->label('Foto')
+                    ->label(__('Photo'))
                     ->circular()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('nip')
-                    ->label('NIP')
+                    ->label(__('NIP'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('Nama Lengkap')
+                    ->label(__('Full Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('employment_status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->formatStateUsing(fn (EmploymentStatus $state) => $state->label())
                     ->color(fn (EmploymentStatus $state) => match ($state) {
@@ -168,11 +160,11 @@ class TeacherResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Telepon')
+                    ->label(__('Phone'))
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('position')
-                    ->label('Jabatan')
+                    ->label(__('Position'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
@@ -186,10 +178,10 @@ class TeacherResource extends Resource
                     ->label('Status Kepegawaian')
                     ->options(EmploymentStatus::class),
                 Tables\Filters\SelectFilter::make('gender')
-                    ->label('Jenis Kelamin')
+                    ->label(__('Gender'))
                     ->options(Gender::class),
                 Tables\Filters\TernaryFilter::make('is_homeroom_teacher')
-                    ->label('Wali Kelas'),
+                    ->label(__('Homeroom Teacher')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -208,6 +200,26 @@ class TeacherResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Staff Management');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Teachers');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Teacher');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Teachers');
     }
 
     public static function getPages(): array

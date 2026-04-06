@@ -21,12 +21,6 @@ class StudentAttendanceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationLabel = 'Kehadiran Siswa';
-
-    protected static ?string $modelLabel = 'Kehadiran Siswa';
-
-    protected static ?string $pluralModelLabel = 'Kehadiran Siswa';
-
     protected static ?int $navigationSort = 3;
 
     public static function getEloquentQuery(): Builder
@@ -46,21 +40,21 @@ class StudentAttendanceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Kehadiran')
-                    ->description('Edit status kehadiran siswa')
+                Forms\Components\Section::make(__('Attendance Data'))
+                    ->description(__('Edit student attendance status'))
                     ->icon('heroicon-o-clipboard-document-check')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('status')
-                            ->label('Status Kehadiran')
+                            ->label(__('Attendance Status'))
                             ->options(
                                 collect(AttendanceStatus::cases())
                                     ->mapWithKeys(fn (AttendanceStatus $status) => [$status->value => $status->label()])
                             )
                             ->required(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -72,40 +66,40 @@ class StudentAttendanceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('student.full_name')
-                    ->label('Nama Siswa')
+                    ->label(__('Student Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('student.nis')
-                    ->label('NIS')
+                    ->label(__('NIS'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('attendanceSession.date')
-                    ->label('Tanggal')
+                    ->label(__('Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (AttendanceStatus $state) => $state->color())
                     ->formatStateUsing(fn (AttendanceStatus $state) => $state->label())
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('check_in_time')
-                    ->label('Waktu Masuk')
+                    ->label(__('Check-in Time'))
                     ->time('H:i')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('method')
-                    ->label('Metode')
+                    ->label(__('Method'))
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options(
                         collect(AttendanceStatus::cases())
                             ->mapWithKeys(fn (AttendanceStatus $status) => [$status->value => $status->label()])
@@ -117,14 +111,14 @@ class StudentAttendanceResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('markHadir')
-                        ->label('Tandai Hadir')
+                        ->label(__('Mark Present'))
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->action(fn (Collection $records) => $records->each(fn ($record) => $record->update(['status' => AttendanceStatus::HADIR->value])))
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
                     Tables\Actions\BulkAction::make('markAlfa')
-                        ->label('Tandai Alfa')
+                        ->label(__('Mark Absent'))
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->action(fn (Collection $records) => $records->each(fn ($record) => $record->update(['status' => AttendanceStatus::ALFA->value])))
@@ -140,6 +134,21 @@ class StudentAttendanceResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Student Attendance');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Student Attendance');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Student Attendance');
     }
 
     public static function getPages(): array

@@ -17,57 +17,49 @@ class BookLoanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static ?string $navigationGroup = 'Perpustakaan';
-
-    protected static ?string $navigationLabel = 'Peminjaman';
-
-    protected static ?string $modelLabel = 'Peminjaman Buku';
-
-    protected static ?string $pluralModelLabel = 'Peminjaman Buku';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Peminjaman')
+                Forms\Components\Section::make(__('Book Loan Data'))
                     ->description('Informasi peminjaman buku')
                     ->icon('heroicon-o-arrow-path')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('book_id')
-                            ->label('Buku')
+                            ->label(__('Book'))
                             ->relationship('book', 'title')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\MorphToSelect::make('borrower')
-                            ->label('Peminjam')
+                            ->label(__('Borrower'))
                             ->types([
                                 Forms\Components\MorphToSelect\Type::make(\App\Models\Student::class)
                                     ->titleAttribute('full_name')
-                                    ->label('Siswa'),
+                                    ->label(__('Student')),
                                 Forms\Components\MorphToSelect\Type::make(\App\Models\Teacher::class)
                                     ->titleAttribute('full_name')
-                                    ->label('Guru'),
+                                    ->label(__('Teacher')),
                             ])
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('loan_date')
-                            ->label('Tanggal Pinjam')
+                            ->label(__('Borrow Date'))
                             ->required()
                             ->default(now()),
                         Forms\Components\DatePicker::make('due_date')
-                            ->label('Jatuh Tempo')
+                            ->label(__('Due Date'))
                             ->required()
                             ->default(now()->addDays(14)),
                         Forms\Components\DatePicker::make('return_date')
-                            ->label('Tanggal Kembali'),
+                            ->label(__('Return Date')),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options([
                                 'borrowed' => 'Dipinjam',
                                 'returned' => 'Dikembalikan',
@@ -84,7 +76,7 @@ class BookLoanResource extends Resource
                         Forms\Components\Toggle::make('fine_paid')
                             ->label('Denda Dibayar'),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -96,13 +88,13 @@ class BookLoanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('book.title')
-                    ->label('Buku')
+                    ->label(__('Book'))
                     ->searchable()
                     ->sortable()
                     ->toggleable()
                     ->limit(30),
                 Tables\Columns\TextColumn::make('borrower.full_name')
-                    ->label('Peminjam')
+                    ->label(__('Borrower'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -112,7 +104,7 @@ class BookLoanResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('due_date')
-                    ->label('Jatuh Tempo')
+                    ->label(__('Due Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
@@ -123,7 +115,7 @@ class BookLoanResource extends Resource
                     ->toggleable()
                     ->placeholder('Belum dikembalikan'),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'borrowed' => 'warning',
@@ -144,7 +136,7 @@ class BookLoanResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options([
                         'borrowed' => 'Dipinjam',
                         'returned' => 'Dikembalikan',
@@ -179,6 +171,26 @@ class BookLoanResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Library');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Book Loans');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Book Loan');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Book Loans');
     }
 
     public static function getPages(): array

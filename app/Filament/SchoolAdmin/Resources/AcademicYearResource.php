@@ -18,39 +18,31 @@ class AcademicYearResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
-    protected static ?string $navigationGroup = 'Akademik';
-
-    protected static ?string $navigationLabel = 'Tahun Ajaran';
-
-    protected static ?string $modelLabel = 'Tahun Ajaran';
-
-    protected static ?string $pluralModelLabel = 'Tahun Ajaran';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Tahun Ajaran')
+                Forms\Components\Section::make(__('Academic Year Data'))
                     ->description('Informasi tahun ajaran')
                     ->icon('heroicon-o-calendar')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Tahun Ajaran')
+                            ->label(__('Academic Year Name'))
                             ->placeholder('2024/2025')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\DatePicker::make('starts_at')
-                            ->label('Tanggal Mulai')
+                            ->label(__('Start Date'))
                             ->required(),
                         Forms\Components\DatePicker::make('ends_at')
-                            ->label('Tanggal Selesai')
+                            ->label(__('End Date'))
                             ->required()
                             ->after('starts_at'),
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif')
+                            ->label(__('Active'))
                             ->helperText('Hanya satu tahun ajaran yang bisa aktif'),
                     ]),
             ]);
@@ -61,22 +53,22 @@ class AcademicYearResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('starts_at')
-                    ->label('Tanggal Mulai')
+                    ->label(__('Start Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('ends_at')
-                    ->label('Tanggal Selesai')
+                    ->label(__('End Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label(__('Active'))
                     ->boolean()
                     ->sortable()
                     ->toggleable(),
@@ -88,11 +80,11 @@ class AcademicYearResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status Aktif'),
+                    ->label(__('Active Status')),
             ])
             ->actions([
                 Tables\Actions\Action::make('activate')
-                    ->label('Aktifkan')
+                    ->label(__('Activate'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
@@ -121,6 +113,26 @@ class AcademicYearResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Academic');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Academic Years');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Academic Year');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Academic Years');
     }
 
     public static function getPages(): array

@@ -17,14 +17,6 @@ class CurriculumSettingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationGroup = 'Akademik';
-
-    protected static ?string $navigationLabel = 'Kurikulum';
-
-    protected static ?string $modelLabel = 'Pengaturan Kurikulum';
-
-    protected static ?string $pluralModelLabel = 'Pengaturan Kurikulum';
-
     protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
@@ -37,7 +29,7 @@ class CurriculumSettingResource extends Resource
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('academic_year_id')
-                            ->label('Tahun Ajaran')
+                            ->label(__('Academic Year'))
                             ->relationship('academicYear', 'name')
                             ->required()
                             ->searchable()
@@ -73,7 +65,7 @@ class CurriculumSettingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('academicYear.name')
-                    ->label('Tahun Ajaran')
+                    ->label(__('Academic Year'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -99,7 +91,7 @@ class CurriculumSettingResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('academic_year_id')
-                    ->label('Tahun Ajaran')
+                    ->label(__('Academic Year'))
                     ->relationship('academicYear', 'name'),
             ])
             ->actions([
@@ -119,6 +111,26 @@ class CurriculumSettingResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Academic');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Curriculum');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Curriculum Setting');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Curriculum Settings');
     }
 
     public static function getPages(): array

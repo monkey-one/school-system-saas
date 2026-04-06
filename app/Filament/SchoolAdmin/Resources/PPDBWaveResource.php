@@ -17,14 +17,6 @@ class PPDBWaveResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-megaphone';
 
-    protected static ?string $navigationGroup = 'Kesiswaan';
-
-    protected static ?string $navigationLabel = 'Gelombang PPDB';
-
-    protected static ?string $modelLabel = 'Gelombang PPDB';
-
-    protected static ?string $pluralModelLabel = 'Gelombang PPDB';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
@@ -37,11 +29,11 @@ class PPDBWaveResource extends Resource
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Gelombang')
+                            ->label(__('Wave Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('academic_year_id')
-                            ->label('Tahun Ajaran')
+                            ->label(__('Academic Year'))
                             ->relationship('academicYear', 'name')
                             ->required()
                             ->searchable()
@@ -63,7 +55,7 @@ class PPDBWaveResource extends Resource
                             ->valueLabel('Keterangan')
                             ->addActionLabel('Tambah Persyaratan'),
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif'),
+                            ->label(__('Active')),
                     ]),
             ]);
     }
@@ -73,22 +65,22 @@ class PPDBWaveResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('academicYear.name')
-                    ->label('Tahun Ajaran')
+                    ->label(__('Academic Year'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('opens_at')
-                    ->label('Dibuka')
+                    ->label(__('Open'))
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('closes_at')
-                    ->label('Ditutup')
+                    ->label(__('Closed'))
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(),
@@ -97,17 +89,17 @@ class PPDBWaveResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label(__('Active'))
                     ->boolean()
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('academic_year_id')
-                    ->label('Tahun Ajaran')
+                    ->label(__('Academic Year'))
                     ->relationship('academicYear', 'name'),
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status Aktif'),
+                    ->label(__('Active Status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -126,6 +118,26 @@ class PPDBWaveResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Student Affairs');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('PPDB Waves');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('PPDB Wave');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('PPDB Waves');
     }
 
     public static function getPages(): array

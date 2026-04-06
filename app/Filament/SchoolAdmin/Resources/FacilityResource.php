@@ -17,31 +17,23 @@ class FacilityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?string $navigationGroup = 'Inventaris';
-
-    protected static ?string $navigationLabel = 'Fasilitas';
-
-    protected static ?string $modelLabel = 'Fasilitas';
-
-    protected static ?string $pluralModelLabel = 'Fasilitas';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Fasilitas')
+                Forms\Components\Section::make(__('Facility Data'))
                     ->description('Informasi fasilitas sekolah')
                     ->icon('heroicon-o-building-office')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('type')
-                            ->label('Tipe')
+                            ->label(__('Type'))
                             ->options([
                                 'ruangan' => 'Ruangan',
                                 'lapangan' => 'Lapangan',
@@ -52,13 +44,13 @@ class FacilityResource extends Resource
                             ])
                             ->required(),
                         Forms\Components\TextInput::make('capacity')
-                            ->label('Kapasitas')
+                            ->label(__('Capacity'))
                             ->numeric(),
                         Forms\Components\TextInput::make('location')
-                            ->label('Lokasi')
+                            ->label(__('Location'))
                             ->maxLength(255),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options([
                                 'available' => 'Tersedia',
                                 'maintenance' => 'Perbaikan',
@@ -67,7 +59,7 @@ class FacilityResource extends Resource
                             ->default('available')
                             ->required(),
                         Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
+                            ->label(__('Description'))
                             ->rows(3),
                     ]),
             ]);
@@ -78,12 +70,12 @@ class FacilityResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipe')
+                    ->label(__('Type'))
                     ->badge()
                     ->formatStateUsing(fn (?string $state) => match ($state) {
                         'ruangan' => 'Ruangan',
@@ -97,11 +89,11 @@ class FacilityResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('capacity')
-                    ->label('Kapasitas')
+                    ->label(__('Capacity'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (?string $state) => match ($state) {
                         'available' => 'success',
@@ -120,7 +112,7 @@ class FacilityResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipe')
+                    ->label(__('Type'))
                     ->options([
                         'ruangan' => 'Ruangan',
                         'lapangan' => 'Lapangan',
@@ -130,7 +122,7 @@ class FacilityResource extends Resource
                         'lainnya' => 'Lainnya',
                     ]),
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options([
                         'available' => 'Tersedia',
                         'maintenance' => 'Perbaikan',
@@ -154,6 +146,26 @@ class FacilityResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Inventory');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Facilities');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Facility');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Facilities');
     }
 
     public static function getPages(): array

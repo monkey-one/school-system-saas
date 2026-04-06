@@ -14,7 +14,7 @@ class ListSubscriptions extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Langganan'),
+                ->label(__('Add Subscription')),
         ];
     }
 }

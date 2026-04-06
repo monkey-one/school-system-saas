@@ -18,14 +18,6 @@ class SubscriptionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $navigationGroup = 'Manajemen Tenant';
-
-    protected static ?string $navigationLabel = 'Langganan';
-
-    protected static ?string $modelLabel = 'Langganan';
-
-    protected static ?string $pluralModelLabel = 'Langganan';
-
     protected static ?int $navigationSort = 3;
 
     public static function getEloquentQuery(): Builder
@@ -37,50 +29,50 @@ class SubscriptionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Langganan')
+                Forms\Components\Section::make(__('Subscription Data'))
                     ->icon('heroicon-o-credit-card')
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('tenant_id')
-                            ->label('Sekolah')
+                            ->label(__('School'))
                             ->relationship('tenant', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                         Forms\Components\Select::make('plan_id')
-                            ->label('Paket')
+                            ->label(__('Plan'))
                             ->relationship('plan', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                         Forms\Components\DateTimePicker::make('starts_at')
-                            ->label('Mulai')
+                            ->label(__('Start'))
                             ->required(),
                         Forms\Components\DateTimePicker::make('ends_at')
-                            ->label('Berakhir')
+                            ->label(__('Ends'))
                             ->required(),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options([
-                                'active' => 'Aktif',
-                                'expired' => 'Kadaluarsa',
-                                'cancelled' => 'Dibatalkan',
-                                'pending' => 'Menunggu',
+                                'active' => __('Active'),
+                                'expired' => __('Expired'),
+                                'cancelled' => __('Cancelled'),
+                                'pending' => __('Pending'),
                             ])
                             ->required(),
                         Forms\Components\Select::make('payment_method')
-                            ->label('Metode Pembayaran')
+                            ->label(__('Payment Method'))
                             ->options([
-                                'bank_transfer' => 'Transfer Bank',
-                                'credit_card' => 'Kartu Kredit',
-                                'ewallet' => 'E-Wallet',
-                                'manual' => 'Manual',
+                                'bank_transfer' => __('Bank Transfer'),
+                                'credit_card' => __('Credit Card'),
+                                'ewallet' => __('E-Wallet'),
+                                'manual' => __('Manual'),
                             ]),
                         Forms\Components\Toggle::make('auto_renew')
-                            ->label('Perpanjang Otomatis')
+                            ->label(__('Auto Renew'))
                             ->default(false),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
@@ -92,23 +84,23 @@ class SubscriptionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('tenant.name')
-                    ->label('Sekolah')
+                    ->label(__('School'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('plan.name')
-                    ->label('Paket')
+                    ->label(__('Plan'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('starts_at')
-                    ->label('Mulai')
+                    ->label(__('Start'))
                     ->dateTime('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ends_at')
-                    ->label('Berakhir')
+                    ->label(__('Ends'))
                     ->dateTime('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'active' => 'success',
@@ -119,21 +111,21 @@ class SubscriptionResource extends Resource
                     })
                     ->sortable(),
                 Tables\Columns\IconColumn::make('auto_renew')
-                    ->label('Auto Renew')
+                    ->label(__('Auto Renew'))
                     ->boolean()
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options([
-                        'active' => 'Aktif',
-                        'expired' => 'Kadaluarsa',
-                        'cancelled' => 'Dibatalkan',
-                        'pending' => 'Menunggu',
+                        'active' => __('Active'),
+                        'expired' => __('Expired'),
+                        'cancelled' => __('Cancelled'),
+                        'pending' => __('Pending'),
                     ]),
                 Tables\Filters\SelectFilter::make('plan_id')
-                    ->label('Paket')
+                    ->label(__('Plan'))
                     ->relationship('plan', 'name'),
             ])
             ->actions([
@@ -151,6 +143,26 @@ class SubscriptionResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Tenant Management');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Subscriptions');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Subscription');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Subscriptions');
     }
 
     public static function getPages(): array

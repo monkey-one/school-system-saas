@@ -14,7 +14,7 @@ class ListAnnouncements extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Pengumuman'),
+                ->label(__('Add Announcement')),
         ];
     }
 }

@@ -12,57 +12,66 @@ class ParentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'parents';
 
-    protected static ?string $title = 'Orang Tua / Wali';
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('Parent / Guardian');
+    }
 
-    protected static ?string $modelLabel = 'Orang Tua';
+    public static function getModelLabel(): string
+    {
+        return __('Parent');
+    }
 
-    protected static ?string $pluralModelLabel = 'Orang Tua';
+    public static function getPluralModelLabel(): string
+    {
+        return __('Parent');
+    }
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('relation')
-                    ->label('Hubungan')
+                    ->label(__('Relation'))
                     ->options([
-                        'ayah' => 'Ayah',
-                        'ibu' => 'Ibu',
-                        'wali' => 'Wali',
+                        'ayah' => __('Father'),
+                        'ibu' => __('Mother'),
+                        'wali' => __('Guardian'),
                     ])
                     ->required(),
                 Forms\Components\TextInput::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('nik')
-                    ->label('NIK')
+                    ->label(__('NIK'))
                     ->maxLength(20),
                 Forms\Components\DatePicker::make('birth_date')
-                    ->label('Tanggal Lahir'),
+                    ->label(__('Date of Birth')),
                 Forms\Components\TextInput::make('education')
-                    ->label('Pendidikan')
+                    ->label(__('Education'))
                     ->maxLength(100),
                 Forms\Components\TextInput::make('occupation')
                     ->label('Pekerjaan')
                     ->maxLength(100),
                 Forms\Components\TextInput::make('income')
-                    ->label('Penghasilan')
+                    ->label(__('Income'))
                     ->maxLength(100),
                 Forms\Components\TextInput::make('phone')
-                    ->label('Telepon')
+                    ->label(__('Phone'))
                     ->tel()
                     ->maxLength(20),
                 Forms\Components\TextInput::make('email')
-                    ->label('Email')
+                    ->label(__('Email'))
                     ->email()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('address')
-                    ->label('Alamat')
+                    ->label(__('Address'))
                     ->rows(2),
                 Forms\Components\Toggle::make('is_emergency_contact')
-                    ->label('Kontak Darurat'),
+                    ->label(__('Emergency Contact')),
                 Forms\Components\Toggle::make('is_whatsapp_active')
-                    ->label('WhatsApp Aktif'),
+                    ->label(__('WhatsApp Active')),
             ]);
     }
 
@@ -71,26 +80,26 @@ class ParentsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('relation')
-                    ->label('Hubungan')
+                    ->label(__('Relation'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Telepon')
+                    ->label(__('Phone'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('occupation')
-                    ->label('Pekerjaan'),
+                    ->label(__('Occupation')),
                 Tables\Columns\IconColumn::make('is_emergency_contact')
-                    ->label('Kontak Darurat')
+                    ->label(__('Emergency Contact'))
                     ->boolean(),
             ])
             ->filters([])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->label('Tambah Orang Tua'),
+                    ->label(__('Add Parent')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

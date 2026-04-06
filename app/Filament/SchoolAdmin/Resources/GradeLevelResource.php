@@ -17,27 +17,19 @@ class GradeLevelResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static ?string $navigationGroup = 'Akademik';
-
-    protected static ?string $navigationLabel = 'Tingkat';
-
-    protected static ?string $modelLabel = 'Tingkat';
-
-    protected static ?string $pluralModelLabel = 'Tingkat';
-
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Tingkat')
+                Forms\Components\Section::make(__('Grade Level Data'))
                     ->description('Informasi tingkat kelas')
                     ->icon('heroicon-o-academic-cap')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Tingkat')
+                            ->label(__('Grade Level Name'))
                             ->placeholder('Kelas 1')
                             ->required()
                             ->maxLength(255),
@@ -46,7 +38,7 @@ class GradeLevelResource extends Resource
                             ->numeric()
                             ->required(),
                         Forms\Components\TextInput::make('sort_order')
-                            ->label('Urutan')
+                            ->label(__('Sort Order'))
                             ->numeric()
                             ->default(0),
                     ]),
@@ -58,7 +50,7 @@ class GradeLevelResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -67,7 +59,7 @@ class GradeLevelResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('sort_order')
-                    ->label('Urutan')
+                    ->label(__('Sort Order'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classrooms_count')
@@ -94,6 +86,26 @@ class GradeLevelResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Academic');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Grade Levels');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Grade Level');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Grade Levels');
     }
 
     public static function getPages(): array

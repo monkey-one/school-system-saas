@@ -14,7 +14,7 @@ class ListTenants extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Sekolah'),
+                ->label(__('Add School')),
         ];
     }
 }

@@ -18,21 +18,13 @@ class PaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $navigationGroup = 'Keuangan';
-
-    protected static ?string $navigationLabel = 'Pembayaran';
-
-    protected static ?string $modelLabel = 'Pembayaran';
-
-    protected static ?string $pluralModelLabel = 'Pembayaran';
-
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Pembayaran')
+                Forms\Components\Section::make(__('Payment Data'))
                     ->description('Informasi pembayaran')
                     ->icon('heroicon-o-credit-card')
                     ->collapsible()
@@ -44,7 +36,7 @@ class PaymentResource extends Resource
                             ->maxLength(50)
                             ->unique(ignoreRecord: true),
                         Forms\Components\Select::make('student_id')
-                            ->label('Siswa')
+                            ->label(__('Student'))
                             ->relationship('student', 'full_name')
                             ->required()
                             ->searchable()
@@ -55,11 +47,11 @@ class PaymentResource extends Resource
                             ->prefix('Rp')
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')
-                            ->label('Tanggal Bayar')
+                            ->label(__('Payment Date'))
                             ->required()
                             ->default(now()),
                         Forms\Components\Select::make('method')
-                            ->label('Metode Pembayaran')
+                            ->label(__('Payment Method'))
                             ->options(PaymentMethod::class)
                             ->required(),
                         Forms\Components\TextInput::make('gateway_transaction_id')
@@ -73,7 +65,7 @@ class PaymentResource extends Resource
                             ->directory('payments/receipts')
                             ->maxSize(5120),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -90,22 +82,22 @@ class PaymentResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('student.full_name')
-                    ->label('Siswa')
+                    ->label(__('Student'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->label('Jumlah')
+                    ->label(__('Total'))
                     ->money('IDR')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('payment_date')
-                    ->label('Tanggal Bayar')
+                    ->label(__('Payment Date'))
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('method')
-                    ->label('Metode')
+                    ->label(__('Method'))
                     ->badge()
                     ->formatStateUsing(fn (PaymentMethod $state) => $state->label())
                     ->color(fn (PaymentMethod $state) => match ($state) {
@@ -123,7 +115,7 @@ class PaymentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('method')
-                    ->label('Metode')
+                    ->label(__('Method'))
                     ->options(PaymentMethod::class),
                 Tables\Filters\Filter::make('payment_date')
                     ->form([
@@ -155,6 +147,26 @@ class PaymentResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Finance');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Payments');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Payment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Payments');
     }
 
     public static function getPages(): array

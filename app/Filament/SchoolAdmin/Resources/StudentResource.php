@@ -21,14 +21,6 @@ class StudentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Kesiswaan';
-
-    protected static ?string $navigationLabel = 'Siswa';
-
-    protected static ?string $modelLabel = 'Siswa';
-
-    protected static ?string $pluralModelLabel = 'Siswa';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -42,33 +34,33 @@ class StudentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('nis')
-                            ->label('NIS')
+                            ->label(__('NIS'))
                             ->required()
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('nisn')
-                            ->label('NISN')
+                            ->label(__('NISN'))
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('full_name')
-                            ->label('Nama Lengkap')
+                            ->label(__('Full Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('nickname')
                             ->label('Nama Panggilan')
                             ->maxLength(100),
                         Forms\Components\Select::make('gender')
-                            ->label('Jenis Kelamin')
+                            ->label(__('Gender'))
                             ->options(Gender::class)
                             ->required(),
                         Forms\Components\TextInput::make('birth_place')
-                            ->label('Tempat Lahir')
+                            ->label(__('Place of Birth'))
                             ->maxLength(100),
                         Forms\Components\DatePicker::make('birth_date')
-                            ->label('Tanggal Lahir')
+                            ->label(__('Date of Birth'))
                             ->required(),
                         Forms\Components\Select::make('religion')
-                            ->label('Agama')
+                            ->label(__('Religion'))
                             ->options(Religion::class),
                         Forms\Components\TextInput::make('nationality')
                             ->label('Kewarganegaraan')
@@ -97,7 +89,7 @@ class StudentResource extends Resource
                             ->maxLength(255),
                     ]),
 
-                Forms\Components\Section::make('Alamat')
+                Forms\Components\Section::make(__('Address'))
                     ->description('Informasi alamat siswa')
                     ->icon('heroicon-o-map-pin')
                     ->collapsible()
@@ -105,7 +97,7 @@ class StudentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Textarea::make('address')
-                            ->label('Alamat')
+                            ->label(__('Address'))
                             ->rows(2)
                             ->columnSpanFull(),
                         Forms\Components\TextInput::make('rt')
@@ -121,10 +113,10 @@ class StudentResource extends Resource
                             ->label('Kecamatan')
                             ->maxLength(100),
                         Forms\Components\TextInput::make('city')
-                            ->label('Kota/Kabupaten')
+                            ->label(__('City/District'))
                             ->maxLength(100),
                         Forms\Components\TextInput::make('province')
-                            ->label('Provinsi')
+                            ->label(__('Province'))
                             ->maxLength(100),
                         Forms\Components\TextInput::make('postal_code')
                             ->label('Kode Pos')
@@ -139,17 +131,17 @@ class StudentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('classroom_id')
-                            ->label('Kelas')
+                            ->label(__('Classroom'))
                             ->relationship('classroom', 'name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('academic_year_id')
-                            ->label('Tahun Ajaran')
+                            ->label(__('Academic Year'))
                             ->relationship('academicYear', 'name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options(StudentStatus::class)
                             ->default(StudentStatus::ACTIVE)
                             ->required(),
@@ -163,27 +155,27 @@ class StudentResource extends Resource
                             ->label('Tahun Lulus')
                             ->numeric(),
                         Forms\Components\TextInput::make('phone')
-                            ->label('Telepon')
+                            ->label(__('Phone'))
                             ->tel()
                             ->maxLength(20),
                         Forms\Components\TextInput::make('email')
-                            ->label('Email')
+                            ->label(__('Email'))
                             ->email()
                             ->maxLength(255),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
 
-                Forms\Components\Section::make('Foto')
+                Forms\Components\Section::make(__('Photo'))
                     ->description('Foto siswa')
                     ->icon('heroicon-o-camera')
                     ->collapsible()
                     ->collapsed()
                     ->schema([
                         Forms\Components\FileUpload::make('photo')
-                            ->label('Foto')
+                            ->label(__('Photo'))
                             ->image()
                             ->imageEditor()
                             ->directory('students/photos')
@@ -197,21 +189,21 @@ class StudentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('photo')
-                    ->label('Foto')
+                    ->label(__('Photo'))
                     ->circular()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('nis')
-                    ->label('NIS')
+                    ->label(__('NIS'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('Nama Lengkap')
+                    ->label(__('Full Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -221,14 +213,14 @@ class StudentResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->formatStateUsing(fn (StudentStatus $state) => $state->label())
                     ->color(fn (StudentStatus $state) => $state->color())
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Telepon')
+                    ->label(__('Phone'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
@@ -239,13 +231,13 @@ class StudentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('classroom_id')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->relationship('classroom', 'name'),
                 Tables\Filters\SelectFilter::make('gender')
-                    ->label('Jenis Kelamin')
+                    ->label(__('Gender'))
                     ->options(Gender::class),
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options(StudentStatus::class),
             ])
             ->actions([
@@ -276,6 +268,26 @@ class StudentResource extends Resource
             RelationManagers\ParentsRelationManager::class,
             RelationManagers\DocumentsRelationManager::class,
         ];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Student Affairs');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Students');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Student');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Students');
     }
 
     public static function getPages(): array

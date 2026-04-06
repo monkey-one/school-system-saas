@@ -17,14 +17,6 @@ class TeachingScheduleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
-    protected static ?string $navigationGroup = 'Kepegawaian';
-
-    protected static ?string $navigationLabel = 'Jadwal Mengajar';
-
-    protected static ?string $modelLabel = 'Jadwal Mengajar';
-
-    protected static ?string $pluralModelLabel = 'Jadwal Mengajar';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
@@ -38,20 +30,20 @@ class TeachingScheduleResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('teacher_id')
-                            ->label('Guru')
+                            ->label(__('Teacher'))
                             ->relationship('teacher', 'full_name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('classroom_subject_id')
-                            ->label('Kelas - Mapel')
+                            ->label(__('Classroom - Subject'))
                             ->relationship('classroomSubject', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->classroom->name} - {$record->subject->name}")
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('day_of_week')
-                            ->label('Hari')
+                            ->label(__('Day'))
                             ->options([
                                 1 => 'Senin',
                                 2 => 'Selasa',
@@ -62,23 +54,23 @@ class TeachingScheduleResource extends Resource
                             ])
                             ->required(),
                         Forms\Components\TimePicker::make('start_time')
-                            ->label('Jam Mulai')
+                            ->label(__('Start Time'))
                             ->required(),
                         Forms\Components\TimePicker::make('end_time')
-                            ->label('Jam Selesai')
+                            ->label(__('End Time'))
                             ->required()
                             ->after('start_time'),
                         Forms\Components\TextInput::make('room')
-                            ->label('Ruangan')
+                            ->label(__('Room'))
                             ->maxLength(100),
                         Forms\Components\Select::make('semester_id')
-                            ->label('Semester')
+                            ->label(__('Semester'))
                             ->relationship('semester', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif')
+                            ->label(__('Active'))
                             ->default(true),
                     ]),
             ]);
@@ -89,12 +81,12 @@ class TeachingScheduleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('teacher.full_name')
-                    ->label('Guru')
+                    ->label(__('Teacher'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('day_of_week')
-                    ->label('Hari')
+                    ->label(__('Day'))
                     ->formatStateUsing(fn (int $state) => match ($state) {
                         1 => 'Senin',
                         2 => 'Selasa',
@@ -107,7 +99,7 @@ class TeachingScheduleResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('start_time')
-                    ->label('Mulai')
+                    ->label(__('Start'))
                     ->time('H:i')
                     ->sortable()
                     ->toggleable(),
@@ -117,26 +109,26 @@ class TeachingScheduleResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('room')
-                    ->label('Ruangan')
+                    ->label(__('Room'))
                     ->searchable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('teacher_id')
-                    ->label('Guru')
+                    ->label(__('Teacher'))
                     ->relationship('teacher', 'full_name'),
                 Tables\Filters\SelectFilter::make('day_of_week')
-                    ->label('Hari')
+                    ->label(__('Day'))
                     ->options([
                         1 => 'Senin',
                         2 => 'Selasa',
@@ -146,7 +138,7 @@ class TeachingScheduleResource extends Resource
                         6 => 'Sabtu',
                     ]),
                 Tables\Filters\SelectFilter::make('semester_id')
-                    ->label('Semester')
+                    ->label(__('Semester'))
                     ->relationship('semester', 'name'),
             ])
             ->actions([
@@ -166,6 +158,26 @@ class TeachingScheduleResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Staff Management');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Teaching Schedules');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Teaching Schedule');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Teaching Schedules');
     }
 
     public static function getPages(): array

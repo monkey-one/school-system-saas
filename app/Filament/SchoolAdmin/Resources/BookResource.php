@@ -17,46 +17,38 @@ class BookResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
-    protected static ?string $navigationGroup = 'Perpustakaan';
-
-    protected static ?string $navigationLabel = 'Buku';
-
-    protected static ?string $modelLabel = 'Buku';
-
-    protected static ?string $pluralModelLabel = 'Buku';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Buku')
+                Forms\Components\Section::make(__('Book Data'))
                     ->description('Informasi buku perpustakaan')
                     ->icon('heroicon-o-book-open')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('isbn')
-                            ->label('ISBN')
+                            ->label(__('ISBN'))
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('title')
-                            ->label('Judul')
+                            ->label(__('Title'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('author')
-                            ->label('Pengarang')
+                            ->label(__('Author'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('publisher')
-                            ->label('Penerbit')
+                            ->label(__('Publisher'))
                             ->maxLength(255),
                         Forms\Components\TextInput::make('year')
-                            ->label('Tahun Terbit')
+                            ->label(__('Publication Year'))
                             ->numeric(),
                         Forms\Components\Select::make('category_id')
-                            ->label('Kategori')
+                            ->label(__('Category'))
                             ->relationship('category', 'name')
                             ->searchable()
                             ->preload()
@@ -83,7 +75,7 @@ class BookResource extends Resource
                             ->directory('books/covers')
                             ->maxSize(2048),
                         Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
+                            ->label(__('Description'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
@@ -95,23 +87,23 @@ class BookResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('isbn')
-                    ->label('ISBN')
+                    ->label(__('ISBN'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Judul')
+                    ->label(__('Title'))
                     ->searchable()
                     ->sortable()
                     ->toggleable()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('author')
-                    ->label('Pengarang')
+                    ->label(__('Author'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('category.name')
-                    ->label('Kategori')
+                    ->label(__('Category'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -120,13 +112,13 @@ class BookResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('available_stock')
-                    ->label('Tersedia')
+                    ->label(__('Available'))
                     ->sortable()
                     ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Kategori')
+                    ->label(__('Category'))
                     ->relationship('category', 'name'),
             ])
             ->actions([
@@ -146,6 +138,26 @@ class BookResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Library');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Books');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Book');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Books');
     }
 
     public static function getPages(): array

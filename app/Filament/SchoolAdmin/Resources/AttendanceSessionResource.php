@@ -18,60 +18,52 @@ class AttendanceSessionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationGroup = 'Absensi';
-
-    protected static ?string $navigationLabel = 'Sesi Absensi';
-
-    protected static ?string $modelLabel = 'Sesi Absensi';
-
-    protected static ?string $pluralModelLabel = 'Sesi Absensi';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Sesi Absensi')
-                    ->description('Informasi sesi absensi')
+                Forms\Components\Section::make(__('Attendance Session Data'))
+                    ->description(__('Attendance session information'))
                     ->icon('heroicon-o-clipboard-document-check')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('classroom_subject_id')
-                            ->label('Kelas - Mapel')
+                            ->label(__('Classroom - Subject'))
                             ->relationship('classroomSubject', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->classroom->name} - {$record->subject->name}")
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('teacher_id')
-                            ->label('Guru')
+                            ->label(__('Teacher'))
                             ->relationship('teacher', 'full_name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\DatePicker::make('date')
-                            ->label('Tanggal')
+                            ->label(__('Date'))
                             ->required()
                             ->default(now()),
                         Forms\Components\TimePicker::make('start_time')
-                            ->label('Jam Mulai'),
+                            ->label(__('Start Time')),
                         Forms\Components\TimePicker::make('end_time')
-                            ->label('Jam Selesai'),
+                            ->label(__('End Time')),
                         Forms\Components\Select::make('status')
-                            ->label('Status')
+                            ->label(__('Status'))
                             ->options([
                                 'open' => 'Dibuka',
                                 'closed' => 'Ditutup',
                             ])
                             ->default('open'),
                         Forms\Components\TextInput::make('topic')
-                            ->label('Topik/Materi')
+                            ->label(__('Topic/Material'))
                             ->maxLength(255)
                             ->columnSpanFull(),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -83,28 +75,28 @@ class AttendanceSessionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('date')
-                    ->label('Tanggal')
+                    ->label(__('Date'))
                     ->date('d M Y')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.classroom.name')
-                    ->label('Kelas')
+                    ->label(__('Classroom'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('classroomSubject.subject.name')
-                    ->label('Mata Pelajaran')
+                    ->label(__('Subject'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('teacher.full_name')
-                    ->label('Guru')
+                    ->label(__('Teacher'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'open' => 'success',
@@ -126,18 +118,18 @@ class AttendanceSessionResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->options([
                         'open' => 'Dibuka',
                         'closed' => 'Ditutup',
                     ]),
                 Tables\Filters\SelectFilter::make('teacher_id')
-                    ->label('Guru')
+                    ->label(__('Teacher'))
                     ->relationship('teacher', 'full_name'),
             ])
             ->actions([
                 Tables\Actions\Action::make('generateQr')
-                    ->label('Generate QR')
+                    ->label(__('Generate QR'))
                     ->icon('heroicon-o-qr-code')
                     ->color('info')
                     ->action(function (AttendanceSession $record) {
@@ -148,8 +140,8 @@ class AttendanceSessionResource extends Resource
                         ]);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Generate QR Code')
-                    ->modalDescription('QR Code baru akan dibuat dan berlaku selama 30 menit.'),
+                    ->modalHeading(__('Generate QR Code'))
+                    ->modalDescription(__('A new QR Code will be generated and valid for 30 minutes.')),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -166,6 +158,26 @@ class AttendanceSessionResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Attendance');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Attendance Sessions');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Attendance Session');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Attendance Sessions');
     }
 
     public static function getPages(): array

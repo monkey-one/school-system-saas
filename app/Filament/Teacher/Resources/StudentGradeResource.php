@@ -20,12 +20,6 @@ class StudentGradeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
-    protected static ?string $navigationLabel = 'Input Nilai';
-
-    protected static ?string $modelLabel = 'Nilai Siswa';
-
-    protected static ?string $pluralModelLabel = 'Nilai Siswa';
-
     protected static ?int $navigationSort = 5;
 
     public static function getEloquentQuery(): Builder
@@ -42,14 +36,14 @@ class StudentGradeResource extends Resource
 
         return $form
             ->schema([
-                Forms\Components\Section::make('Input Nilai')
-                    ->description('Masukkan nilai siswa')
+                Forms\Components\Section::make(__('Grade Input'))
+                    ->description(__('Enter student scores'))
                     ->icon('heroicon-o-document-check')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('assessment_id')
-                            ->label('Penilaian')
+                            ->label(__('Assessment'))
                             ->options(function () use ($teacher) {
                                 return Assessment::whereHas('classroomSubject', fn (Builder $query) => $query->where('teacher_id', $teacher?->id))
                                     ->with('classroomSubject.classroom', 'classroomSubject.subject')
@@ -60,29 +54,29 @@ class StudentGradeResource extends Resource
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('student_id')
-                            ->label('Siswa')
+                            ->label(__('Student'))
                             ->relationship('student', 'full_name')
                             ->required()
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('score')
-                            ->label('Nilai')
+                            ->label(__('Score'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(100)
                             ->required(),
                         Forms\Components\Toggle::make('is_remedial')
-                            ->label('Remedial')
+                            ->label(__('Remedial'))
                             ->default(false)
                             ->reactive(),
                         Forms\Components\TextInput::make('remedial_score')
-                            ->label('Nilai Remedial')
+                            ->label(__('Remedial Score'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(100)
                             ->visible(fn (Forms\Get $get) => $get('is_remedial')),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2)
                             ->columnSpanFull(),
                     ]),
@@ -94,31 +88,31 @@ class StudentGradeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('student.full_name')
-                    ->label('Nama Siswa')
+                    ->label(__('Student Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('student.nis')
-                    ->label('NIS')
+                    ->label(__('NIS'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('assessment.name')
-                    ->label('Penilaian')
+                    ->label(__('Assessment'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('score')
-                    ->label('Nilai')
+                    ->label(__('Score'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\IconColumn::make('is_remedial')
-                    ->label('Remedial')
+                    ->label(__('Remedial'))
                     ->boolean()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('remedial_score')
-                    ->label('Nilai Remedial')
+                    ->label(__('Remedial Score'))
                     ->sortable()
                     ->toggleable()
                     ->placeholder('-'),
@@ -141,6 +135,21 @@ class StudentGradeResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Grade Input');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Student Grade');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Student Grades');
     }
 
     public static function getPages(): array

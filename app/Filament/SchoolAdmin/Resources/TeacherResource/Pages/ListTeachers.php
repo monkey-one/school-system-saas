@@ -14,7 +14,7 @@ class ListTeachers extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Guru'),
+                ->label(__('Add Teacher')),
         ];
     }
 }

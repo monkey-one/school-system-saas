@@ -14,7 +14,7 @@ class ListAcademicYears extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Tahun Ajaran'),
+                ->label(__('Add Academic Year')),
         ];
     }
 }

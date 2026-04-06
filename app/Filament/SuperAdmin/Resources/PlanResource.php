@@ -17,65 +17,57 @@ class PlanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Manajemen Tenant';
-
-    protected static ?string $navigationLabel = 'Paket Langganan';
-
-    protected static ?string $modelLabel = 'Paket Langganan';
-
-    protected static ?string $pluralModelLabel = 'Paket Langganan';
-
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Informasi Paket')
+                Forms\Components\Section::make(__('Plan Information'))
                     ->icon('heroicon-o-rectangle-stack')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama Paket')
+                            ->label(__('Plan Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
+                            ->label(__('Slug'))
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('price_monthly')
-                            ->label('Harga Bulanan')
+                            ->label(__('Monthly Price'))
                             ->numeric()
                             ->prefix('Rp')
                             ->required(),
                         Forms\Components\TextInput::make('price_annual')
-                            ->label('Harga Tahunan')
+                            ->label(__('Annual Price'))
                             ->numeric()
                             ->prefix('Rp')
                             ->required(),
                         Forms\Components\TextInput::make('max_students')
-                            ->label('Maks. Siswa')
+                            ->label(__('Max. Students'))
                             ->numeric()
                             ->required(),
                         Forms\Components\TextInput::make('max_teachers')
-                            ->label('Maks. Guru')
+                            ->label(__('Max. Teachers'))
                             ->numeric()
                             ->required(),
                         Forms\Components\Repeater::make('features')
-                            ->label('Fitur')
+                            ->label(__('Features'))
                             ->simple(
                                 Forms\Components\TextInput::make('feature')
-                                    ->label('Fitur')
+                                    ->label(__('Features'))
                                     ->required(),
                             )
                             ->columnSpanFull()
                             ->defaultItems(1),
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Aktif')
+                            ->label(__('Active'))
                             ->default(true),
                         Forms\Components\TextInput::make('sort_order')
-                            ->label('Urutan')
+                            ->label(__('Sort Order'))
                             ->numeric()
                             ->default(0),
                     ]),
@@ -87,36 +79,36 @@ class PlanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Paket')
+                    ->label(__('Plan Name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_monthly')
-                    ->label('Harga Bulanan')
+                    ->label(__('Monthly Price'))
                     ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_annual')
-                    ->label('Harga Tahunan')
+                    ->label(__('Annual Price'))
                     ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('max_students')
-                    ->label('Maks. Siswa')
+                    ->label(__('Max. Students'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('max_teachers')
-                    ->label('Maks. Guru')
+                    ->label(__('Max. Teachers'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')
-                    ->label('Aktif')
+                    ->label(__('Active'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sort_order')
-                    ->label('Urutan')
+                    ->label(__('Sort Order'))
                     ->numeric()
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status Aktif'),
+                    ->label(__('Active Status')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -135,6 +127,26 @@ class PlanResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Tenant Management');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Subscription Plans');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Subscription Plan');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Subscription Plans');
     }
 
     public static function getPages(): array

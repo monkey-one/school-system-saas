@@ -14,7 +14,7 @@ class ListPayments extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Pembayaran'),
+                ->label(__('Add Payment')),
         ];
     }
 }

@@ -14,7 +14,7 @@ class ListClassrooms extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Kelas'),
+                ->label(__('Add Classroom')),
         ];
     }
 }

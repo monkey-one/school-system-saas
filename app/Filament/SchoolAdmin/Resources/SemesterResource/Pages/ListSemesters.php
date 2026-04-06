@@ -14,7 +14,7 @@ class ListSemesters extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Tambah Semester'),
+                ->label(__('Add Semester')),
         ];
     }
 }

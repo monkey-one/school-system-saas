@@ -18,37 +18,29 @@ class AssetResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
-    protected static ?string $navigationGroup = 'Inventaris';
-
-    protected static ?string $navigationLabel = 'Aset';
-
-    protected static ?string $modelLabel = 'Aset';
-
-    protected static ?string $pluralModelLabel = 'Aset';
-
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Aset')
+                Forms\Components\Section::make(__('Asset Data'))
                     ->description('Informasi aset sekolah')
                     ->icon('heroicon-o-archive-box')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('code')
-                            ->label('Kode Aset')
+                            ->label(__('Asset Code'))
                             ->required()
                             ->maxLength(50)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('category_id')
-                            ->label('Kategori')
+                            ->label(__('Category'))
                             ->relationship('category', 'name')
                             ->searchable()
                             ->preload()
@@ -58,14 +50,14 @@ class AssetResource extends Resource
                                     ->required(),
                             ]),
                         Forms\Components\Select::make('condition')
-                            ->label('Kondisi')
+                            ->label(__('Condition'))
                             ->options(AssetCondition::class)
                             ->required(),
                         Forms\Components\TextInput::make('location')
-                            ->label('Lokasi')
+                            ->label(__('Location'))
                             ->maxLength(255),
                         Forms\Components\TextInput::make('quantity')
-                            ->label('Jumlah')
+                            ->label(__('Total'))
                             ->numeric()
                             ->default(1)
                             ->required(),
@@ -74,17 +66,17 @@ class AssetResource extends Resource
                             ->numeric()
                             ->prefix('Rp'),
                         Forms\Components\DatePicker::make('acquisition_date')
-                            ->label('Tanggal Perolehan'),
+                            ->label(__('Acquisition Date')),
                         Forms\Components\FileUpload::make('photo')
-                            ->label('Foto')
+                            ->label(__('Photo'))
                             ->image()
                             ->directory('assets/photos')
                             ->maxSize(2048),
                         Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
+                            ->label(__('Description'))
                             ->rows(2),
                         Forms\Components\Textarea::make('notes')
-                            ->label('Catatan')
+                            ->label(__('Notes'))
                             ->rows(2),
                     ]),
             ]);
@@ -95,42 +87,42 @@ class AssetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Kode')
+                    ->label(__('Code'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('category.name')
-                    ->label('Kategori')
+                    ->label(__('Category'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('condition')
-                    ->label('Kondisi')
+                    ->label(__('Condition'))
                     ->badge()
                     ->formatStateUsing(fn (AssetCondition $state) => $state->label())
                     ->color(fn (AssetCondition $state) => $state->color())
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('quantity')
-                    ->label('Jumlah')
+                    ->label(__('Total'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('location')
-                    ->label('Lokasi')
+                    ->label(__('Location'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('condition')
-                    ->label('Kondisi')
+                    ->label(__('Condition'))
                     ->options(AssetCondition::class),
                 Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Kategori')
+                    ->label(__('Category'))
                     ->relationship('category', 'name'),
             ])
             ->actions([
@@ -150,6 +142,26 @@ class AssetResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Inventory');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Assets');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Asset');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Assets');
     }
 
     public static function getPages(): array

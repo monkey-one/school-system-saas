@@ -18,36 +18,28 @@ class SubjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
-    protected static ?string $navigationGroup = 'Akademik';
-
-    protected static ?string $navigationLabel = 'Mata Pelajaran';
-
-    protected static ?string $modelLabel = 'Mata Pelajaran';
-
-    protected static ?string $pluralModelLabel = 'Mata Pelajaran';
-
     protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Mata Pelajaran')
+                Forms\Components\Section::make(__('Subject Data'))
                     ->description('Informasi mata pelajaran')
                     ->icon('heroicon-o-book-open')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('code')
-                            ->label('Kode')
+                            ->label(__('Code'))
                             ->required()
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('name')
-                            ->label('Nama')
+                            ->label(__('Name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Select::make('type')
-                            ->label('Tipe')
+                            ->label(__('Type'))
                             ->options(SubjectType::class)
                             ->required(),
                         Forms\Components\ColorPicker::make('color')
@@ -56,7 +48,7 @@ class SubjectResource extends Resource
                             ->label('Ikon')
                             ->maxLength(255),
                         Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
+                            ->label(__('Description'))
                             ->rows(3)
                             ->maxLength(1000),
                     ]),
@@ -68,17 +60,17 @@ class SubjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Kode')
+                    ->label(__('Code'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama')
+                    ->label(__('Name'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipe')
+                    ->label(__('Type'))
                     ->badge()
                     ->formatStateUsing(fn (SubjectType $state) => $state->label())
                     ->color(fn (SubjectType $state) => match ($state) {
@@ -95,7 +87,7 @@ class SubjectResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipe')
+                    ->label(__('Type'))
                     ->options(SubjectType::class),
             ])
             ->actions([
@@ -115,6 +107,26 @@ class SubjectResource extends Resource
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('Academic');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Subjects');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Subject');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Subjects');
     }
 
     public static function getPages(): array
