@@ -24,7 +24,7 @@ class SuperAdminStatsOverview extends BaseWidget
             ->whereHas('plan')
             ->get()
             ->sum(function ($subscription) {
-                return $subscription->plan?->price ?? 0;
+                return $subscription->plan?->price_monthly ?? 0;
             });
 
         $totalGuru = Teacher::count();
