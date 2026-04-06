@@ -1,0 +1,3 @@
+always create new branch for changes, open PR (create pr body only in pr-bodies directory/folder) against main then merge to main, deploy to VPS (ssh root@46.250.230.62). dont remove branch for backup.
+
+always write summary after the code changes, and include the summary in the PR description. The summary should be concise and explain the purpose of the changes, any important details, and any potential impacts on the project. with indonesian language. The summary should be written in a way that is easy to understand for other developers who may be reviewing the PR.

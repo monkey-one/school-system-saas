@@ -12,6 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust Cloudflare proxy headers so Laravel correctly detects HTTPS,
+        // real client IP, and forwarded host/port behind the CDN.
+        $middleware->trustProxies(
+            at: '*',
+            headers: \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
+                     \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
+                     \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
+                     \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
+        );
+
         // SetLocale runs on every web request to apply the user's language
         // preference stored in the session by the /locale/{locale} route.
         $middleware->web(append: [

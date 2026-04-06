@@ -37,5 +37,22 @@ class AppServiceProvider extends ServiceProvider
             'panels::body.end',
             fn () => view('filament.footer'),
         );
+
+        // CSS fallback: if Alpine.js takes too long to initialize (due to slow
+        // network, Cloudflare challenge, or script delay), make the main content
+        // visible after 2 seconds instead of staying invisible with opacity-0.
+        \Filament\Support\Facades\FilamentView::registerRenderHook(
+            \Filament\View\PanelsRenderHook::STYLES_AFTER,
+            fn () => new \Illuminate\Support\HtmlString('
+                <style>
+                    .fi-main-ctn.opacity-0 {
+                        animation: fi-opacity-fallback 0s 2s forwards;
+                    }
+                    @keyframes fi-opacity-fallback {
+                        to { opacity: 1 !important; display: flex; }
+                    }
+                </style>
+            '),
+        );
     }
 }
