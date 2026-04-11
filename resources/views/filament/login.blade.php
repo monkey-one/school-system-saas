@@ -8,48 +8,14 @@
                 </svg>
             </div>
         </div>
-
-        @if(str_contains(request()->path(), 'super-admin'))
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Super Administrator Panel') }}</p>
-        @elseif(str_contains(request()->path(), 'teacher'))
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Teacher Panel') }}</p>
-        @else
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('School Administration Panel') }}</p>
-        @endif
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ __('Welcome Back') }}</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Sign in to your account to continue') }}</p>
     </div>
 
-    @if(config('app.default_tenant_slug') === 'demo')
-        <div class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950">
-            <p class="mb-2 text-xs font-semibold text-blue-700 dark:text-blue-300">🔑 {{ __('Demo Credentials:') }}</p>
-            @if(str_contains(request()->path(), 'super-admin'))
-                <div class="text-xs text-blue-600 dark:text-blue-400 space-y-0.5">
-                    <p><span class="font-medium">Email:</span> superadmin@edusaas.id</p>
-                    <p><span class="font-medium">Password:</span> password</p>
-                </div>
-            @elseif(str_contains(request()->path(), 'teacher'))
-                <div class="text-xs text-blue-600 dark:text-blue-400 space-y-0.5">
-                    <p><span class="font-medium">Email:</span> hadi.santoso@smpn1demo.id</p>
-                    <p><span class="font-medium">Password:</span> password</p>
-                </div>
-            @else
-                <div class="text-xs text-blue-600 dark:text-blue-400 space-y-0.5">
-                    <p><span class="font-medium">Email:</span> admin@smpn1demo.id</p>
-                    <p><span class="font-medium">Password:</span> password</p>
-                </div>
-            @endif
-            <div class="mt-2 flex flex-wrap gap-2 text-xs">
-                @unless(str_contains(request()->path(), 'super-admin'))
-                    <a href="{{ url('/super-admin/login') }}" class="text-blue-500 hover:text-blue-700 underline">{{ __('Super Admin') }}</a>
-                @endunless
-                @unless(str_contains(request()->path(), 'school') && !str_contains(request()->path(), 'super-admin') && !str_contains(request()->path(), 'teacher'))
-                    <a href="{{ url('/school/login') }}" class="text-blue-500 hover:text-blue-700 underline">{{ __('School Admin') }}</a>
-                @endunless
-                @unless(str_contains(request()->path(), 'teacher'))
-                    <a href="{{ url('/teacher/login') }}" class="text-blue-500 hover:text-blue-700 underline">{{ __('Teacher') }}</a>
-                @endunless
-            </div>
-        </div>
-    @endif
+    {{-- Language Switcher --}}
+    <div class="flex justify-center mb-4">
+        @include('filament.language-switcher')
+    </div>
 
     <x-filament-panels::form wire:submit="authenticate">
         {{ $this->form }}

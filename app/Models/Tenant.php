@@ -32,6 +32,14 @@ class Tenant extends Model
         'npsn',
         'school_type',
         'principal_name',
+        'vision',
+        'mission',
+        'description',
+        'accreditation',
+        'founded_year',
+        'website',
+        'gallery',
+        'social_links',
         'status',
         'trial_ends_at',
         'subscription_id',
@@ -43,6 +51,9 @@ class Tenant extends Model
         'school_type' => SchoolType::class,
         'trial_ends_at' => 'datetime',
         'settings' => 'array',
+        'gallery' => 'array',
+        'social_links' => 'array',
+        'founded_year' => 'integer',
     ];
 
     public static function current(): ?static
