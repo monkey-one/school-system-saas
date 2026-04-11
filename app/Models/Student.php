@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Represents a student enrolled in the school
@@ -105,5 +106,10 @@ class Student extends Model
     public function sppBills(): HasMany
     {
         return $this->hasMany(SppBill::class);
+    }
+
+    public function alumniProfile(): HasOne
+    {
+        return $this->hasOne(AlumniProfile::class);
     }
 }

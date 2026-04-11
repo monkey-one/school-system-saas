@@ -7,12 +7,20 @@ use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\SchoolProfileController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Middleware\ResolveTenant;
 use Illuminate\Support\Facades\Route;
 
 // Public landing page (no auth, no tenant required)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+// Unified login: redirect all panel login routes to the school panel login
+// so all user roles log in from one page. After authentication, users are
+// automatically redirected to their respective panel by the Login class.
+Route::get('/login', fn () => redirect('/school/login'))->name('login');
+Route::get('/super-admin/login', fn () => redirect('/school/login'));
+Route::get('/teacher/login', fn () => redirect('/school/login'));
 
 // Stores the chosen language in the session so the SetLocale middleware can
 // apply it on every subsequent request. Invalid values are silently ignored.
@@ -46,6 +54,12 @@ Route::prefix('ppdb')->name('ppdb.')->middleware([ResolveTenant::class])->group(
 Route::middleware([ResolveTenant::class])->group(function () {
     Route::get('/attendance/scan', [AttendanceController::class, 'scan'])->name('attendance.scan');
     Route::post('/attendance/confirm', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
+});
+
+// Public school profile website. Displays the school's about page, teacher
+// directory, facilities, news, and contact information.
+Route::prefix('profile')->name('profile.')->middleware([ResolveTenant::class])->group(function () {
+    Route::get('/', [SchoolProfileController::class, 'index'])->name('index');
 });
 
 // Payment gateway callbacks. These are POST endpoints called by Midtrans and
