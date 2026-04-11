@@ -12,7 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use App\Helpers\CurrencyHelper;
 
-// Manages school asset inventory and trackingclass AssetResource extends Resource
+// Manages school asset inventory and tracking
+class AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;
 

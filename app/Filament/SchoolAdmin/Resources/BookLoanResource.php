@@ -11,7 +11,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use App\Helpers\CurrencyHelper;
 
-// Manages library book loan transactionsclass BookLoanResource extends Resource
+// Manages library book loan transactions
+class BookLoanResource extends Resource
 {
     protected static ?string $model = BookLoan::class;
 
