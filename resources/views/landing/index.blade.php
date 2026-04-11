@@ -336,7 +336,7 @@
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-heading font-extrabold text-navy-600">Rp <span x-text="annual ? '400.000' : '500.000'"></span></span>
+                            <span class="text-4xl font-heading font-extrabold text-navy-600">{{ \App\Helpers\CurrencyHelper::symbol() }} <span x-text="annual ? '400.000' : '500.000'"></span></span>
                         </div>
                         <span class="text-gray-400 text-sm">{{ __('/month') }}</span>
                     </div>
@@ -361,7 +361,7 @@
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-heading font-extrabold text-white">Rp <span x-text="annual ? '800.000' : '1.000.000'"></span></span>
+                            <span class="text-4xl font-heading font-extrabold text-white">{{ \App\Helpers\CurrencyHelper::symbol() }} <span x-text="annual ? '800.000' : '1.000.000'"></span></span>
                         </div>
                         <span class="text-white/50 text-sm">{{ __('/month') }}</span>
                     </div>
@@ -385,7 +385,7 @@
                     </div>
                     <div class="mb-8">
                         <div class="flex items-baseline gap-1">
-                            <span class="text-4xl font-heading font-extrabold text-navy-600">Rp <span x-text="annual ? '1.600.000' : '2.000.000'"></span></span>
+                            <span class="text-4xl font-heading font-extrabold text-navy-600">{{ \App\Helpers\CurrencyHelper::symbol() }} <span x-text="annual ? '1.600.000' : '2.000.000'"></span></span>
                         </div>
                         <span class="text-gray-400 text-sm">{{ __('/month') }}</span>
                     </div>

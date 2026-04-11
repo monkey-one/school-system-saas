@@ -11,6 +11,7 @@ use App\Models\Teacher;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
+use App\Helpers\CurrencyHelper;
 
 // Displays summary statistics for the school admin dashboard
 class StatsOverview extends BaseWidget
@@ -48,7 +49,7 @@ class StatsOverview extends BaseWidget
                 ->color('info')
                 ->icon('heroicon-o-briefcase'),
 
-            Stat::make(__('Monthly SPP Revenue'), 'Rp ' . number_format($pendapatanSppBulanIni, 0, ',', '.'))
+            Stat::make(__('Monthly SPP Revenue'), CurrencyHelper::format($pendapatanSppBulanIni))
                 ->description(__('Month') . ' ' . Carbon::now()->translatedFormat('F Y'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('warning')

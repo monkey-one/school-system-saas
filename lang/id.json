@@ -960,5 +960,14 @@
     "Students": "Siswa",
     "Teachers": "Guru",
     "Pursuing Education": "Melanjutkan Pendidikan",
-    "Employed": "Bekerja"
+    "Employed": "Bekerja",
+    "Currency": "Mata Uang",
+    "Default Currency": "Mata Uang Default",
+    "Default currency for all schools. Schools can override this in their settings.": "Mata uang default untuk semua sekolah. Sekolah dapat mengubahnya di pengaturan masing-masing.",
+    "Currency used for tuition and payment display": "Mata uang yang digunakan untuk tampilan SPP dan pembayaran",
+    "Amount": "Jumlah",
+    "Discount": "Diskon",
+    "Final Amount": "Jumlah Akhir",
+    "Fine": "Denda",
+    "Value": "Nilai"
 }

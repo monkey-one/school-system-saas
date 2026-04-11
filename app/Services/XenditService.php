@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\CurrencyHelper;
 
 // Wraps the Xendit Invoice API. Creates invoice-based payment links and
 // validates incoming webhook tokens for payment status callbacks.
@@ -47,7 +48,7 @@ class XenditService
             'amount' => $amount,
             'description' => $description,
             'payer_email' => $payerEmail,
-            'currency' => 'IDR',
+            'currency' => CurrencyHelper::code(),
             'should_send_email' => true,
         ]);
     }

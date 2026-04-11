@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
 // Manages tuition fee payment records and transactions
 class PaymentResource extends Resource
@@ -42,9 +43,9 @@ class PaymentResource extends Resource
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('amount')
-                            ->label('Jumlah (Rp)')
+                            ->label(__('Amount'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->required(),
                         Forms\Components\DatePicker::make('payment_date')
                             ->label(__('Payment Date'))
@@ -88,7 +89,7 @@ class PaymentResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label(__('Total'))
-                    ->money('IDR')
+                    ->money(CurrencyHelper::code())
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('payment_date')

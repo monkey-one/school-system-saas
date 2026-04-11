@@ -65,7 +65,7 @@
                   return this.billingCycle === 'annual' ? parseInt(p.price_annual) : parseInt(p.price_monthly);
               },
               formatCurrency(n) {
-                  return 'Rp ' + new Intl.NumberFormat('id-ID').format(n);
+                  return '{{ \App\Helpers\CurrencyHelper::symbol() }} ' + new Intl.NumberFormat('id-ID').format(n);
               }
           }">
 

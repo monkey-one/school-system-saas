@@ -10,6 +10,7 @@ use App\Models\Teacher;
 use App\Models\Tenant;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use App\Helpers\CurrencyHelper;
 
 // Displays platform-wide summary statistics for the super admin dashboard
 class SuperAdminStatsOverview extends BaseWidget
@@ -42,7 +43,7 @@ class SuperAdminStatsOverview extends BaseWidget
                 ->color('info')
                 ->icon('heroicon-o-users'),
 
-            Stat::make('MRR', 'Rp ' . number_format($mrr, 0, ',', '.'))
+            Stat::make('MRR', CurrencyHelper::format($mrr))
                 ->description(__('Monthly Recurring Revenue'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('warning')

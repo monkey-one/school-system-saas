@@ -272,7 +272,7 @@
                     <td class="center">{{ $index + 1 }}</td>
                     <td>{{ $item['description'] ?? '-' }}</td>
                     <td class="center">{{ $item['period'] ?? '-' }}</td>
-                    <td class="right">Rp {{ number_format($item['amount'] ?? 0, 0, ',', '.') }}</td>
+                    <td class="right">{{ \App\Helpers\CurrencyHelper::format($item['amount'] ?? 0) }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -286,7 +286,7 @@
         <div class="total-section">
             <div class="total-box">
                 <div class="total-label">Total Pembayaran</div>
-                <div class="total-amount">Rp {{ number_format($payment->amount ?? 0, 0, ',', '.') }}</div>
+                <div class="total-amount">{{ \App\Helpers\CurrencyHelper::format($payment->amount ?? 0) }}</div>
             </div>
         </div>
 

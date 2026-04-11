@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
 // Manages tuition fee type definitions
 class SppTypeResource extends Resource
@@ -38,9 +39,9 @@ class SppTypeResource extends Resource
                             ->maxLength(20)
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('amount')
-                            ->label('Jumlah (Rp)')
+                            ->label(__('Amount'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->required(),
                         Forms\Components\Select::make('frequency')
                             ->label('Frekuensi')
@@ -83,7 +84,7 @@ class SppTypeResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label(__('Total'))
-                    ->money('IDR')
+                    ->money(CurrencyHelper::code())
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('frequency')

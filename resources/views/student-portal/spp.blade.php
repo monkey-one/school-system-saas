@@ -9,15 +9,15 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <p class="text-sm text-gray-500 mb-1">Total Tagihan</p>
-            <p class="text-2xl font-heading font-bold text-navy-600">Rp {{ number_format($totalBills ?? 0, 0, ',', '.') }}</p>
+            <p class="text-2xl font-heading font-bold text-navy-600">{{ \App\Helpers\CurrencyHelper::format($totalBills ?? 0) }}</p>
         </div>
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <p class="text-sm text-gray-500 mb-1">Sudah Dibayar</p>
-            <p class="text-2xl font-heading font-bold text-green-600">Rp {{ number_format($totalPaid ?? 0, 0, ',', '.') }}</p>
+            <p class="text-2xl font-heading font-bold text-green-600">{{ \App\Helpers\CurrencyHelper::format($totalPaid ?? 0) }}</p>
         </div>
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <p class="text-sm text-gray-500 mb-1">Belum Dibayar</p>
-            <p class="text-2xl font-heading font-bold text-red-600">Rp {{ number_format($totalUnpaid ?? 0, 0, ',', '.') }}</p>
+            <p class="text-2xl font-heading font-bold text-red-600">{{ \App\Helpers\CurrencyHelper::format($totalUnpaid ?? 0) }}</p>
         </div>
     </div>
 
@@ -43,7 +43,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-3 font-medium">{{ $bill->period }}</td>
                         <td class="px-6 py-3">{{ $bill->sppType->name ?? '-' }}</td>
-                        <td class="px-6 py-3 text-right font-semibold">Rp {{ number_format($bill->final_amount, 0, ',', '.') }}</td>
+                        <td class="px-6 py-3 text-right font-semibold">{{ \App\Helpers\CurrencyHelper::format($bill->final_amount) }}</td>
                         <td class="px-6 py-3 text-gray-500">{{ $bill->due_date->format('d/m/Y') }}</td>
                         <td class="px-6 py-3 text-center">
                             @php

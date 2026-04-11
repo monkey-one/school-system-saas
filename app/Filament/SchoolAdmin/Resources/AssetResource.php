@@ -10,9 +10,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
-// Manages school asset inventory and tracking
-class AssetResource extends Resource
+// Manages school asset inventory and trackingclass AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;
 
@@ -62,9 +62,9 @@ class AssetResource extends Resource
                             ->default(1)
                             ->required(),
                         Forms\Components\TextInput::make('value')
-                            ->label('Nilai (Rp)')
+                            ->label(__('Value'))
                             ->numeric()
-                            ->prefix('Rp'),
+                            ->prefix(CurrencyHelper::symbol()),
                         Forms\Components\DatePicker::make('acquisition_date')
                             ->label(__('Acquisition Date')),
                         Forms\Components\FileUpload::make('photo')

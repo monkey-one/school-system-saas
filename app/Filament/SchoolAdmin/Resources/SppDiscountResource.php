@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
 class SppDiscountResource extends Resource
 {
@@ -96,7 +97,7 @@ class SppDiscountResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('value')
                     ->label(__('Value'))
-                    ->formatStateUsing(fn ($record) => $record->type === 'percentage' ? $record->value . '%' : 'Rp ' . number_format($record->value, 0, ',', '.'))
+                    ->formatStateUsing(fn ($record) => $record->type === 'percentage' ? $record->value . '%' : CurrencyHelper::format($record->value))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('valid_from')
                     ->label(__('Valid From'))
