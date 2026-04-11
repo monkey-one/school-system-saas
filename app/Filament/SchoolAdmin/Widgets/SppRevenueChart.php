@@ -9,7 +9,12 @@ use Illuminate\Support\Carbon;
 // Displays tuition fee revenue over the last six months
 class SppRevenueChart extends ChartWidget
 {
-    protected static ?string $heading = 'Pendapatan SPP 6 Bulan Terakhir';
+    protected static ?string $heading = null;
+
+    public function getHeading(): string
+    {
+        return __('SPP Revenue Last 6 Months');
+    }
 
     protected static ?int $sort = 2;
 
@@ -32,7 +37,7 @@ class SppRevenueChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Pendapatan SPP',
+                    'label' => __('SPP Revenue'),
                     'data' => $revenues->toArray(),
                     'backgroundColor' => '#F59E0B',
                     'borderColor' => '#D97706',

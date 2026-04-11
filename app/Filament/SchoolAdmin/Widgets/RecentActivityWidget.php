@@ -14,7 +14,12 @@ use Illuminate\Support\Collection;
 // Displays recent student activity in a table
 class RecentActivityWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Aktivitas Terbaru';
+    protected static ?string $heading = null;
+
+    public function getHeading(): string
+    {
+        return __('Recent Activity');
+    }
 
     protected static ?int $sort = 4;
 
@@ -30,15 +35,15 @@ class RecentActivityWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('Siswa Baru')
+                    ->label(__('New Student'))
                     ->icon('heroicon-o-user-plus')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nis')
-                    ->label('NIS'),
+                    ->label(__('NIS')),
                 Tables\Columns\TextColumn::make('classroom.name')
-                    ->label('Kelas'),
+                    ->label(__('Class')),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Terdaftar')
+                    ->label(__('Registered'))
                     ->since()
                     ->sortable(),
             ])
