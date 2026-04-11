@@ -7,6 +7,7 @@ use App\Models\SppBill;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use App\Helpers\CurrencyHelper;
 
 // Displays overdue tuition fee bills in a table
 class LateSppWidget extends BaseWidget
@@ -45,7 +46,7 @@ class LateSppWidget extends BaseWidget
                     ->label(__('Period')),
                 Tables\Columns\TextColumn::make('final_amount')
                     ->label(__('Amount'))
-                    ->money('IDR')
+                    ->money(CurrencyHelper::code())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->label(__('Due Date'))

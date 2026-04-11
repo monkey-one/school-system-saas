@@ -41,6 +41,7 @@ class Tenant extends Model
         'gallery',
         'social_links',
         'status',
+        'currency',
         'trial_ends_at',
         'subscription_id',
         'settings',

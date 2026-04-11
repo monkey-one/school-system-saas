@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
 // Manages subscription plan definitions and pricing
 class PlanResource extends Resource
@@ -39,12 +40,12 @@ class PlanResource extends Resource
                         Forms\Components\TextInput::make('price_monthly')
                             ->label(__('Monthly Price'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->required(),
                         Forms\Components\TextInput::make('price_annual')
                             ->label(__('Annual Price'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->required(),
                         Forms\Components\TextInput::make('max_students')
                             ->label(__('Max. Students'))
@@ -84,11 +85,11 @@ class PlanResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_monthly')
                     ->label(__('Monthly Price'))
-                    ->money('IDR')
+                    ->money(CurrencyHelper::code())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_annual')
                     ->label(__('Annual Price'))
-                    ->money('IDR')
+                    ->money(CurrencyHelper::code())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('max_students')
                     ->label(__('Max. Students'))

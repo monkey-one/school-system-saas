@@ -950,5 +950,14 @@
     "Students": "Students",
     "Teachers": "Teachers",
     "Pursuing Education": "Pursuing Education",
-    "Employed": "Employed"
+    "Employed": "Employed",
+    "Currency": "Currency",
+    "Default Currency": "Default Currency",
+    "Default currency for all schools. Schools can override this in their settings.": "Default currency for all schools. Schools can override this in their settings.",
+    "Currency used for tuition and payment display": "Currency used for tuition and payment display",
+    "Amount": "Amount",
+    "Discount": "Discount",
+    "Final Amount": "Final Amount",
+    "Fine": "Fine",
+    "Value": "Value"
 }

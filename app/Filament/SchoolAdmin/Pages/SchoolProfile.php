@@ -9,6 +9,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use App\Helpers\CurrencyHelper;
 
 // Settings page where school admins manage their public profile website content
 // including vision, mission, description, social links, and gallery images.
@@ -64,6 +65,7 @@ class SchoolProfile extends Page implements HasForms
             'email' => $tenant->email,
             'website' => $tenant->website,
             'social_links' => $tenant->social_links ?? [],
+            'currency' => $tenant->currency ?? 'IDR',
         ]);
     }
 
@@ -95,6 +97,12 @@ class SchoolProfile extends Page implements HasForms
                             ->numeric()
                             ->minValue(1900)
                             ->maxValue(date('Y')),
+                        Forms\Components\Select::make('currency')
+                            ->label(__('Currency'))
+                            ->options(CurrencyHelper::options())
+                            ->required()
+                            ->searchable()
+                            ->helperText(__('Currency used for tuition and payment display')),
                         Forms\Components\TextInput::make('website')
                             ->label(__('Website'))
                             ->url()

@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Cache;
+use App\Helpers\CurrencyHelper;
 
 class SystemSettings extends Page implements HasForms
 {
@@ -47,6 +48,7 @@ class SystemSettings extends Page implements HasForms
             'max_students_free' => Cache::get('system.max_students_free', 50),
             'maintenance_mode' => app()->isDownForMaintenance(),
             'allow_registration' => Cache::get('system.allow_registration', true),
+            'default_currency' => Cache::get('system.default_currency', 'IDR'),
         ]);
     }
 
@@ -77,8 +79,12 @@ class SystemSettings extends Page implements HasForms
                                 'Asia/Makassar' => 'WITA (Asia/Makassar)',
                                 'Asia/Jayapura' => 'WIT (Asia/Jayapura)',
                             ])
-                            ->required(),
-                    ]),
+                            ->required(),                        Forms\Components\Select::make('default_currency')
+                            ->label(__('Default Currency'))
+                            ->options(CurrencyHelper::options())
+                            ->required()
+                            ->searchable()
+                            ->helperText(__('Default currency for all schools. Schools can override this in their settings.')),                    ]),
                 Forms\Components\Section::make(__('Registration & Trial'))
                     ->icon('heroicon-o-user-plus')
                     ->collapsible()
@@ -108,6 +114,7 @@ class SystemSettings extends Page implements HasForms
         Cache::forever('system.trial_days', $data['trial_days'] ?? 14);
         Cache::forever('system.max_students_free', $data['max_students_free'] ?? 50);
         Cache::forever('system.allow_registration', $data['allow_registration'] ?? true);
+        Cache::forever('system.default_currency', $data['default_currency'] ?? 'IDR');
 
         Notification::make()
             ->title(__('Settings saved successfully'))

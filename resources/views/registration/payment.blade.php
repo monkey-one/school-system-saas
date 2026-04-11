@@ -82,7 +82,7 @@
                 <div class="flex justify-between items-center">
                     <span class="font-heading font-bold text-navy-600 text-lg">{{ __('Total') }}</span>
                     <span class="font-heading font-extrabold text-navy-600 text-2xl">
-                        Rp {{ number_format($amount, 0, ',', '.') }}
+                        {{ \App\Helpers\CurrencyHelper::format($amount) }}
                     </span>
                 </div>
             </div>

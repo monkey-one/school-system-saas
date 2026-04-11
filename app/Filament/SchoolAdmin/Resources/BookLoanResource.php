@@ -9,9 +9,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
-// Manages library book loan transactions
-class BookLoanResource extends Resource
+// Manages library book loan transactionsclass BookLoanResource extends Resource
 {
     protected static ?string $model = BookLoan::class;
 
@@ -69,9 +69,9 @@ class BookLoanResource extends Resource
                             ->default('borrowed')
                             ->required(),
                         Forms\Components\TextInput::make('fine_amount')
-                            ->label('Denda (Rp)')
+                            ->label(__('Fine'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->default(0),
                         Forms\Components\Toggle::make('fine_paid')
                             ->label('Denda Dibayar'),

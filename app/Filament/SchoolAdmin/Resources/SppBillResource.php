@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Helpers\CurrencyHelper;
 
 // Manages tuition fee billing records
 class SppBillResource extends Resource
@@ -48,19 +49,19 @@ class SppBillResource extends Resource
                             ->required()
                             ->maxLength(20),
                         Forms\Components\TextInput::make('amount')
-                            ->label('Jumlah (Rp)')
+                            ->label(__('Amount'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->required(),
                         Forms\Components\TextInput::make('discount_amount')
-                            ->label('Diskon (Rp)')
+                            ->label(__('Discount'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->default(0),
                         Forms\Components\TextInput::make('final_amount')
-                            ->label('Jumlah Akhir (Rp)')
+                            ->label(__('Final Amount'))
                             ->numeric()
-                            ->prefix('Rp')
+                            ->prefix(CurrencyHelper::symbol())
                             ->required(),
                         Forms\Components\DatePicker::make('due_date')
                             ->label(__('Due Date'))
@@ -99,7 +100,7 @@ class SppBillResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('final_amount')
                     ->label(__('Total'))
-                    ->money('IDR')
+                    ->money(CurrencyHelper::code())
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('due_date')
