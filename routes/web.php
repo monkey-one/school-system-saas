@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\MiscController;
@@ -61,6 +62,11 @@ Route::middleware([ResolveTenant::class])->group(function () {
 // directory, facilities, news, and contact information.
 Route::prefix('profile')->name('profile.')->middleware([ResolveTenant::class])->group(function () {
     Route::get('/', [SchoolProfileController::class, 'index'])->name('index');
+});
+
+// Public alumni directory page
+Route::prefix('alumni')->name('alumni.')->middleware([ResolveTenant::class])->group(function () {
+    Route::get('/', [AlumniController::class, 'index'])->name('index');
 });
 
 // Payment gateway callbacks. These are POST endpoints called by Midtrans and
