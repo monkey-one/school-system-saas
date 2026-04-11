@@ -88,7 +88,7 @@
             </div>
 
             {{-- Login Button --}}
-            <a href="{{ url('/school') }}" class="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-white text-lg gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">
+            <a href="{{ url('/edusaas-admin') }}" class="inline-flex items-center gap-2 px-10 py-4 rounded-xl font-bold text-white text-lg gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/30">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                 {{ __('Login to Dashboard') }}
             </a>

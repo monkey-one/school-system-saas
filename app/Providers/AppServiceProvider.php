@@ -19,6 +19,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\MidtransService::class);
         $this->app->singleton(\App\Services\XenditService::class);
         $this->app->singleton(\App\Services\RaporService::class);
+
+        // Override Filament's default LogoutResponse so ALL panels redirect
+        // to the unified login page at /edusaas-admin/login after logout.
+        $this->app->bind(
+            \Filament\Http\Responses\Auth\Contracts\LogoutResponse::class,
+            \App\Http\Responses\LogoutResponse::class,
+        );
     }
 
     public function boot(): void

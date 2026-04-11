@@ -23,17 +23,16 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Http\Middleware\SetLocale;
 
-// Configures the school administration panel (path: /school). This panel is
-// accessible to users with type SCHOOL_ADMIN or OPERATOR. Tenant resolution
-// runs as part of the middleware stack so all Filament resources are scoped
-// to the active school automatically.
+// Configures the school administration panel (path: /edusaas-admin). This is
+// also the SINGLE login page for ALL user roles. After authentication the
+// Login class redirects each role to its own panel.
 class SchoolAdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->id('school-admin')
-            ->path('school')
+            ->path('edusaas-admin')
             ->login(Login::class)
             ->passwordReset()
             ->colors([

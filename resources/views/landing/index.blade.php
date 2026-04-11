@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="{{ url('/school/login') }}" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">{{ __('Sign In') }}</a>
+                    <a href="{{ url('/edusaas-admin/login') }}" class="font-medium transition-colors" :class="scrolled ? 'text-navy-600 hover:text-navy-700' : 'text-white hover:text-gold-400'">{{ __('Sign In') }}</a>
                     <a href="{{ route('register') }}" class="px-6 py-2.5 rounded-xl font-semibold text-white gradient-gold hover:opacity-90 transition-all shadow-lg shadow-gold-500/25">{{ __('Try Free') }}</a>
                     {{-- Language Switcher --}}
                     <div class="relative" x-data="{ langOpen: false }">
@@ -117,7 +117,7 @@
                 <a href="#faq" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('FAQ') }}</a>
                 <a href="#kontak" @click="mobileOpen = false" class="block text-gray-700 hover:text-navy-600 font-medium">{{ __('Contact') }}</a>
                 <hr class="border-gray-200">
-                <a href="{{ url('/school/login') }}" class="block text-navy-600 font-medium">{{ __('Sign In') }}</a>
+                <a href="{{ url('/edusaas-admin/login') }}" class="block text-navy-600 font-medium">{{ __('Sign In') }}</a>
                 <a href="{{ route('register') }}" class="block text-center px-6 py-3 rounded-xl font-semibold text-white gradient-gold">{{ __('Try Free') }}</a>
                 <div class="flex gap-2">
                     <a href="{{ route('locale.switch', 'id') }}" class="flex-1 text-center py-2 rounded-lg text-sm font-medium {{ app()->getLocale() === 'id' ? 'bg-navy-600 text-white' : 'bg-gray-100 text-gray-600' }}">🇮🇩 ID</a>
@@ -495,7 +495,7 @@
                         <p><span class="font-medium text-gray-700">Email:</span> <code class="text-navy-600">admin@smpn1demo.id</code></p>
                         <p><span class="font-medium text-gray-700">Password:</span> <code class="text-navy-600">password</code></p>
                     </div>
-                    <a href="{{ url('/school/login') }}" class="block w-full text-center py-2.5 rounded-xl bg-navy-600 hover:bg-navy-700 text-white font-semibold text-sm transition-colors">
+                    <a href="{{ url('/edusaas-admin/login') }}" class="block w-full text-center py-2.5 rounded-xl bg-navy-600 hover:bg-navy-700 text-white font-semibold text-sm transition-colors">
                         {{ __('Login as School Admin') }} →
                     </a>
                 </div>
