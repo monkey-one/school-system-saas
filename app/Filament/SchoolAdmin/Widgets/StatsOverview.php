@@ -36,26 +36,26 @@ class StatsOverview extends BaseWidget
             : 0;
 
         return [
-            Stat::make('Total Siswa Aktif', number_format($totalSiswaAktif))
-                ->description('Siswa terdaftar aktif')
+            Stat::make(__('Total Active Students'), number_format($totalSiswaAktif))
+                ->description(__('Registered active students'))
                 ->descriptionIcon('heroicon-o-users')
                 ->color('success')
                 ->icon('heroicon-o-users'),
 
-            Stat::make('Total Guru Aktif', number_format($totalGuruAktif))
-                ->description('Tenaga pengajar')
+            Stat::make(__('Total Active Teachers'), number_format($totalGuruAktif))
+                ->description(__('Teaching staff'))
                 ->descriptionIcon('heroicon-o-briefcase')
                 ->color('info')
                 ->icon('heroicon-o-briefcase'),
 
-            Stat::make('Pendapatan SPP Bulan Ini', 'Rp ' . number_format($pendapatanSppBulanIni, 0, ',', '.'))
-                ->description('Bulan ' . Carbon::now()->translatedFormat('F Y'))
+            Stat::make(__('Monthly SPP Revenue'), 'Rp ' . number_format($pendapatanSppBulanIni, 0, ',', '.'))
+                ->description(__('Month') . ' ' . Carbon::now()->translatedFormat('F Y'))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('warning')
                 ->icon('heroicon-o-currency-dollar'),
 
-            Stat::make('Kehadiran Hari Ini', $kehadiranPercentage . '%')
-                ->description($hadirToday . ' dari ' . $totalToday . ' siswa')
+            Stat::make(__('Attendance Today'), $kehadiranPercentage . '%')
+                ->description($hadirToday . ' ' . __('of') . ' ' . $totalToday . ' ' . __('students'))
                 ->descriptionIcon('heroicon-o-clipboard-document-check')
                 ->color('primary')
                 ->icon('heroicon-o-clipboard-document-check'),

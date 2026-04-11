@@ -11,7 +11,12 @@ use Filament\Widgets\TableWidget as BaseWidget;
 // Displays overdue tuition fee bills in a table
 class LateSppWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Tunggakan SPP';
+    protected static ?string $heading = null;
+
+    public function getHeading(): string
+    {
+        return __('Overdue SPP Bills');
+    }
 
     protected static ?int $sort = 5;
 
@@ -30,25 +35,25 @@ class LateSppWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('student.full_name')
-                    ->label('Nama Siswa')
+                    ->label(__('Student Name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('student.classroom.name')
-                    ->label('Kelas'),
+                    ->label(__('Class')),
                 Tables\Columns\TextColumn::make('sppType.name')
-                    ->label('Jenis SPP'),
+                    ->label(__('SPP Type')),
                 Tables\Columns\TextColumn::make('period')
-                    ->label('Periode'),
+                    ->label(__('Period')),
                 Tables\Columns\TextColumn::make('final_amount')
-                    ->label('Jumlah')
+                    ->label(__('Amount'))
                     ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('due_date')
-                    ->label('Jatuh Tempo')
+                    ->label(__('Due Date'))
                     ->date('d M Y')
                     ->color('danger')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('Status'))
                     ->badge()
                     ->color(fn ($state) => in_array($state, [PaymentStatus::OVERDUE, PaymentStatus::UNPAID]) ? 'danger' : 'gray'),
             ])

@@ -10,7 +10,12 @@ use Illuminate\Support\Carbon;
 // Displays weekly student attendance statistics as a chart
 class AttendanceChart extends ChartWidget
 {
-    protected static ?string $heading = 'Kehadiran Minggu Ini';
+    protected static ?string $heading = null;
+
+    public function getHeading(): string
+    {
+        return __('Attendance This Week');
+    }
 
     protected static ?int $sort = 3;
 
@@ -41,28 +46,28 @@ class AttendanceChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Hadir',
+                    'label' => __('Present'),
                     'data' => $hadirData,
                     'borderColor' => '#10B981',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
                     'fill' => true,
                 ],
                 [
-                    'label' => 'Sakit',
+                    'label' => __('Sick'),
                     'data' => $sakitData,
                     'borderColor' => '#F59E0B',
                     'backgroundColor' => 'rgba(245, 158, 11, 0.1)',
                     'fill' => true,
                 ],
                 [
-                    'label' => 'Izin',
+                    'label' => __('Permitted'),
                     'data' => $izinData,
                     'borderColor' => '#3B82F6',
                     'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
                     'fill' => true,
                 ],
                 [
-                    'label' => 'Alfa',
+                    'label' => __('Absent'),
                     'data' => $alfaData,
                     'borderColor' => '#EF4444',
                     'backgroundColor' => 'rgba(239, 68, 68, 0.1)',
