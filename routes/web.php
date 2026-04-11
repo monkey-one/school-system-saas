@@ -15,11 +15,13 @@ use Illuminate\Support\Facades\Route;
 // Public landing page (no auth, no tenant required)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-// Generic /login redirect to the school panel login (e.g. for auth middleware).
-// NOTE: Do NOT add redirects for /super-admin/login or /teacher/login here —
-// Filament registers its own named routes for each panel's login page, and
-// overriding them breaks logout (which redirects to the named route).
-Route::get('/login', fn () => redirect('/school/login'))->name('login');
+// All roles share one login page at /edusaas-admin/login.
+// The super-admin and teacher panels have no login page of their own, so we
+// register named redirect routes that Filament's auth middleware and logout
+// response can resolve. The route names MUST match what Filament expects.
+Route::get('/login', fn () => redirect('/edusaas-admin/login'))->name('login');
+Route::get('/super-admin/login', fn () => redirect('/edusaas-admin/login'))->name('filament.super-admin.auth.login');
+Route::get('/teacher/login', fn () => redirect('/edusaas-admin/login'))->name('filament.teacher.auth.login');
 
 // Stores the chosen language in the session so the SetLocale middleware can
 // apply it on every subsequent request. Invalid values are silently ignored.

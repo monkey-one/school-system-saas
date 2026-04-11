@@ -11,7 +11,7 @@ use Filament\Pages\Auth\Login as BaseLogin;
 // Unified login page shared by all panels. After successful authentication,
 // the user is redirected to the correct panel based on their UserType.
 // We override authenticate() completely to skip the per-panel canAccessPanel()
-// check, because all roles sign in from /school/login and get redirected to
+// check, because all roles sign in from /edusaas-admin/login and get redirected to
 // their own panel afterwards.
 class Login extends BaseLogin
 {
@@ -48,7 +48,7 @@ class Login extends BaseLogin
         $targetUrl = match ($user->type) {
             UserType::SUPER_ADMIN => url('/super-admin'),
             UserType::TEACHER => url('/teacher'),
-            default => url('/school'),
+            default => url('/edusaas-admin'),
         };
 
         return new class($targetUrl) implements LoginResponse {

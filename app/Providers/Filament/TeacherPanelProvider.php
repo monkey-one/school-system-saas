@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\Login;
 use App\Http\Middleware\EnsureTenantIsSet;
 use App\Http\Middleware\ResolveTenant;
 use Filament\Http\Middleware\Authenticate;
@@ -32,8 +31,6 @@ class TeacherPanelProvider extends PanelProvider
         return $panel
             ->id('teacher')
             ->path('teacher')
-            ->login(Login::class)
-            ->passwordReset()
             ->colors([
                 'primary' => [
                     50 => '#E8F0FB',
