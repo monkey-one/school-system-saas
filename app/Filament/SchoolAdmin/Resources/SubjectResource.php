@@ -3,6 +3,8 @@
 namespace App\Filament\SchoolAdmin\Resources;
 
 use App\Enums\SubjectType;
+use App\Filament\Exports\SubjectExporter;
+use App\Filament\Imports\SubjectImporter;
 use App\Filament\SchoolAdmin\Resources\SubjectResource\Pages;
 use App\Models\Subject;
 use Filament\Forms;
@@ -97,7 +99,18 @@ class SubjectResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ExportBulkAction::make()
+                        ->exporter(SubjectExporter::class)
+                        ->label('Ekspor'),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\ImportAction::make()
+                    ->importer(SubjectImporter::class)
+                    ->label('Impor Excel'),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(SubjectExporter::class)
+                    ->label('Ekspor'),
             ])
             ->striped()
             ->defaultSort('created_at', 'desc')

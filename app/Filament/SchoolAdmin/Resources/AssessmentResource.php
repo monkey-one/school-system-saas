@@ -2,6 +2,8 @@
 
 namespace App\Filament\SchoolAdmin\Resources;
 
+use App\Filament\Exports\StudentGradeExporter;
+use App\Filament\Imports\StudentGradeImporter;
 use App\Filament\SchoolAdmin\Resources\AssessmentResource\Pages;
 use App\Models\Assessment;
 use Filament\Forms;
@@ -123,6 +125,14 @@ class AssessmentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(StudentGradeExporter::class)
+                    ->label('Ekspor Nilai'),
+                Tables\Actions\ImportAction::make()
+                    ->importer(StudentGradeImporter::class)
+                    ->label('Impor Nilai'),
             ])
             ->striped()
             ->defaultSort('date', 'desc')
