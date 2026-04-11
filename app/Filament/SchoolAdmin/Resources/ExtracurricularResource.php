@@ -33,7 +33,7 @@ class ExtracurricularResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Select::make('teacher_id')
                             ->label(__('Advisor'))
-                            ->relationship('teacher', 'name')
+                            ->relationship('teacher', 'full_name')
                             ->searchable()
                             ->preload(),
                         Forms\Components\TextInput::make('schedule')
@@ -55,7 +55,7 @@ class ExtracurricularResource extends Resource
                     ->label(__('Name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('teacher.name')
+                Tables\Columns\TextColumn::make('teacher.full_name')
                     ->label(__('Advisor'))
                     ->searchable()
                     ->sortable(),

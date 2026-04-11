@@ -30,7 +30,7 @@ class TeacherAttendanceResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('teacher_id')
                             ->label(__('Teacher'))
-                            ->relationship('teacher', 'name')
+                            ->relationship('teacher', 'full_name')
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -74,7 +74,7 @@ class TeacherAttendanceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('teacher.name')
+                Tables\Columns\TextColumn::make('teacher.full_name')
                     ->label(__('Teacher'))
                     ->searchable()
                     ->sortable(),
@@ -105,7 +105,7 @@ class TeacherAttendanceResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('teacher_id')
                     ->label(__('Teacher'))
-                    ->relationship('teacher', 'name'),
+                    ->relationship('teacher', 'full_name'),
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('Status'))
                     ->options(collect(AttendanceStatus::cases())->mapWithKeys(fn ($s) => [$s->value => $s->label()])),
