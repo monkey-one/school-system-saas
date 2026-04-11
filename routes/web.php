@@ -15,12 +15,11 @@ use Illuminate\Support\Facades\Route;
 // Public landing page (no auth, no tenant required)
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-// Unified login: redirect all panel login routes to the school panel login
-// so all user roles log in from one page. After authentication, users are
-// automatically redirected to their respective panel by the Login class.
+// Generic /login redirect to the school panel login (e.g. for auth middleware).
+// NOTE: Do NOT add redirects for /super-admin/login or /teacher/login here —
+// Filament registers its own named routes for each panel's login page, and
+// overriding them breaks logout (which redirects to the named route).
 Route::get('/login', fn () => redirect('/school/login'))->name('login');
-Route::get('/super-admin/login', fn () => redirect('/school/login'));
-Route::get('/teacher/login', fn () => redirect('/school/login'));
 
 // Stores the chosen language in the session so the SetLocale middleware can
 // apply it on every subsequent request. Invalid values are silently ignored.
