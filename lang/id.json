@@ -707,5 +707,15 @@
     "Priority support": "Dukungan prioritas",
     "Reports": "Laporan",
     "Spp": "SPP",
-    "Whatsapp": "WhatsApp"
+    "Whatsapp": "WhatsApp",
+    "Live Demo": "Demo Langsung",
+    "Try Demo Now": "Coba Demo Sekarang",
+    "Access our demo with 3 different user roles to explore the features of EduSaaS": "Akses demo kami dengan 3 peran pengguna berbeda untuk menjelajahi fitur EduSaaS",
+    "Recommended": "Rekomendasi",
+    "Manage all schools, users, subscriptions, and system settings.": "Kelola semua sekolah, pengguna, langganan, dan pengaturan sistem.",
+    "Full access to manage school data, students, teachers, finances, and more.": "Akses penuh untuk mengelola data sekolah, siswa, guru, keuangan, dan lainnya.",
+    "View schedules, manage attendance, and input student grades.": "Lihat jadwal, kelola absensi, dan input nilai siswa.",
+    "Login as Super Admin": "Masuk sebagai Super Admin",
+    "Login as School Admin": "Masuk sebagai Admin Sekolah",
+    "Login as Teacher": "Masuk sebagai Guru"
 }

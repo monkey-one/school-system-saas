@@ -2,6 +2,8 @@
 
 namespace App\Filament\SchoolAdmin\Resources;
 
+use App\Filament\Exports\TeachingScheduleExporter;
+use App\Filament\Imports\TeachingScheduleImporter;
 use App\Filament\SchoolAdmin\Resources\TeachingScheduleResource\Pages;
 use App\Models\TeachingSchedule;
 use Filament\Forms;
@@ -148,7 +150,18 @@ class TeachingScheduleResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ExportBulkAction::make()
+                        ->exporter(TeachingScheduleExporter::class)
+                        ->label('Ekspor'),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\ImportAction::make()
+                    ->importer(TeachingScheduleImporter::class)
+                    ->label('Impor Excel'),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(TeachingScheduleExporter::class)
+                    ->label('Ekspor'),
             ])
             ->striped()
             ->defaultSort('day_of_week', 'asc')

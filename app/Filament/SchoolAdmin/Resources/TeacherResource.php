@@ -5,6 +5,8 @@ namespace App\Filament\SchoolAdmin\Resources;
 use App\Enums\EmploymentStatus;
 use App\Enums\Gender;
 use App\Enums\Religion;
+use App\Filament\Exports\TeacherExporter;
+use App\Filament\Imports\TeacherImporter;
 use App\Filament\SchoolAdmin\Resources\TeacherResource\Pages;
 use App\Models\Teacher;
 use Filament\Forms;
@@ -190,7 +192,18 @@ class TeacherResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ExportBulkAction::make()
+                        ->exporter(TeacherExporter::class)
+                        ->label('Ekspor'),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\ImportAction::make()
+                    ->importer(TeacherImporter::class)
+                    ->label('Impor Excel'),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(TeacherExporter::class)
+                    ->label('Ekspor'),
             ])
             ->striped()
             ->defaultSort('created_at', 'desc')

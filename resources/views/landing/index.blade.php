@@ -457,6 +457,68 @@
         </div>
     </section>
 
+    {{-- ======== DEMO ACCESS ======== --}}
+    <section id="demo" class="py-24 bg-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="inline-block bg-green-100 text-green-700 font-semibold text-sm px-4 py-1.5 rounded-full mb-4">{{ __('Live Demo') }}</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-navy-600 mb-4">{{ __('Try Demo Now') }}</h2>
+                <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ __('Access our demo with 3 different user roles to explore the features of EduSaaS') }}</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                {{-- Super Admin --}}
+                <div class="rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h3 class="font-heading font-bold text-navy-600 text-lg mb-2">Super Admin</h3>
+                    <p class="text-gray-500 text-sm mb-4">{{ __('Manage all schools, users, subscriptions, and system settings.') }}</p>
+                    <div class="bg-gray-50 rounded-lg p-3 mb-4 text-xs space-y-1">
+                        <p><span class="font-medium text-gray-700">Email:</span> <code class="text-navy-600">superadmin@edusaas.id</code></p>
+                        <p><span class="font-medium text-gray-700">Password:</span> <code class="text-navy-600">password</code></p>
+                    </div>
+                    <a href="{{ url('/super-admin/login') }}" class="block w-full text-center py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-colors">
+                        {{ __('Login as Super Admin') }} →
+                    </a>
+                </div>
+
+                {{-- School Admin --}}
+                <div class="rounded-2xl border-2 border-navy-500 p-6 shadow-lg relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-navy-600 text-white text-xs font-bold px-3 py-1 rounded-full">{{ __('Recommended') }}</div>
+                    <div class="w-12 h-12 rounded-xl bg-navy-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <h3 class="font-heading font-bold text-navy-600 text-lg mb-2">School Admin</h3>
+                    <p class="text-gray-500 text-sm mb-4">{{ __('Full access to manage school data, students, teachers, finances, and more.') }}</p>
+                    <div class="bg-navy-50 rounded-lg p-3 mb-4 text-xs space-y-1">
+                        <p><span class="font-medium text-gray-700">Email:</span> <code class="text-navy-600">admin@smpn1demo.id</code></p>
+                        <p><span class="font-medium text-gray-700">Password:</span> <code class="text-navy-600">password</code></p>
+                    </div>
+                    <a href="{{ url('/school/login') }}" class="block w-full text-center py-2.5 rounded-xl bg-navy-600 hover:bg-navy-700 text-white font-semibold text-sm transition-colors">
+                        {{ __('Login as School Admin') }} →
+                    </a>
+                </div>
+
+                {{-- Teacher --}}
+                <div class="rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <h3 class="font-heading font-bold text-navy-600 text-lg mb-2">Teacher</h3>
+                    <p class="text-gray-500 text-sm mb-4">{{ __('View schedules, manage attendance, and input student grades.') }}</p>
+                    <div class="bg-gray-50 rounded-lg p-3 mb-4 text-xs space-y-1">
+                        <p><span class="font-medium text-gray-700">Email:</span> <code class="text-navy-600">hadi.santoso@smpn1demo.id</code></p>
+                        <p><span class="font-medium text-gray-700">Password:</span> <code class="text-navy-600">password</code></p>
+                    </div>
+                    <a href="{{ url('/teacher/login') }}" class="block w-full text-center py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors">
+                        {{ __('Login as Teacher') }} →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- ======== FAQ ======== --}}
     <section id="faq" class="py-24 bg-gray-50">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">

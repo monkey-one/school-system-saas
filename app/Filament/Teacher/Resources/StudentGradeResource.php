@@ -2,6 +2,8 @@
 
 namespace App\Filament\Teacher\Resources;
 
+use App\Filament\Exports\StudentGradeExporter;
+use App\Filament\Imports\StudentGradeImporter;
 use App\Filament\Teacher\Resources\StudentGradeResource\Pages;
 use App\Models\Assessment;
 use App\Models\StudentGrade;
@@ -125,7 +127,18 @@ class StudentGradeResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ExportBulkAction::make()
+                        ->exporter(StudentGradeExporter::class)
+                        ->label('Ekspor'),
                 ]),
+            ])
+            ->headerActions([
+                Tables\Actions\ImportAction::make()
+                    ->importer(StudentGradeImporter::class)
+                    ->label('Impor Nilai'),
+                Tables\Actions\ExportAction::make()
+                    ->exporter(StudentGradeExporter::class)
+                    ->label('Ekspor'),
             ])
             ->striped()
             ->defaultSort('created_at', 'desc')

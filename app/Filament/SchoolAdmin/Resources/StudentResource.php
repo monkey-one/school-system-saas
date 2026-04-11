@@ -5,6 +5,8 @@ namespace App\Filament\SchoolAdmin\Resources;
 use App\Enums\Gender;
 use App\Enums\Religion;
 use App\Enums\StudentStatus;
+use App\Filament\Exports\StudentExporter;
+use App\Filament\Imports\StudentImporter;
 use App\Filament\SchoolAdmin\Resources\StudentResource\Pages;
 use App\Filament\SchoolAdmin\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
@@ -248,13 +250,16 @@ class StudentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ExportBulkAction::make()
+                        ->exporter(StudentExporter::class)
                         ->label('Ekspor'),
                 ]),
             ])
             ->headerActions([
                 Tables\Actions\ImportAction::make()
+                    ->importer(StudentImporter::class)
                     ->label('Impor Excel'),
                 Tables\Actions\ExportAction::make()
+                    ->exporter(StudentExporter::class)
                     ->label('Ekspor'),
             ])
             ->striped()
