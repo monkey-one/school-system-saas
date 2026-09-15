@@ -2,6 +2,7 @@
 
 namespace App\Filament\SchoolAdmin\Pages;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Tenant;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -9,10 +10,10 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use App\Helpers\CurrencyHelper;
 
-// Settings page where school admins manage their public profile website content
-// including vision, mission, description, social links, and gallery images.
+// Settings page where school admins manage the school identity and the
+// content of the public website (hero, principal's greeting, history,
+// contact channels, social links). Website fields live in tenants.settings.
 class SchoolProfile extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -25,9 +26,12 @@ class SchoolProfile extends Page implements HasForms
 
     public ?array $data = [];
 
+    // Keys of tenants.settings edited on this page; other keys are preserved.
+    private const WEBSITE_SETTINGS = ['hero_title', 'hero_subtitle', 'hero_image', 'principal_greeting', 'principal_photo', 'principal_nip', 'history', 'whatsapp', 'office_hours'];
+
     public static function getNavigationGroup(): ?string
     {
-        return __('Settings');
+        return __('Website');
     }
 
     public static function getNavigationLabel(): string
@@ -51,6 +55,7 @@ class SchoolProfile extends Page implements HasForms
 
         $this->form->fill([
             'name' => $tenant->name,
+            'logo' => $tenant->logo,
             'description' => $tenant->description,
             'vision' => $tenant->vision,
             'mission' => $tenant->mission,
@@ -66,11 +71,19 @@ class SchoolProfile extends Page implements HasForms
             'website' => $tenant->website,
             'social_links' => $tenant->social_links ?? [],
             'currency' => $tenant->currency ?? 'IDR',
+            'settings' => collect($tenant->settings ?? [])->only(self::WEBSITE_SETTINGS)->all(),
         ]);
     }
 
     public function form(Form $form): Form
     {
+        $image = fn (string $name, string $label) => Forms\Components\FileUpload::make($name)
+            ->label($label)
+            ->image()
+            ->directory('website/profile')
+            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->maxSize(2048);
+
         return $form
             ->schema([
                 Forms\Components\Section::make(__('Basic Information'))
@@ -88,6 +101,9 @@ class SchoolProfile extends Page implements HasForms
                         Forms\Components\TextInput::make('npsn')
                             ->label(__('NPSN'))
                             ->maxLength(20),
+                        Forms\Components\TextInput::make('settings.principal_nip')
+                            ->label(__('Principal NIP'))
+                            ->maxLength(30),
                         Forms\Components\TextInput::make('accreditation')
                             ->label(__('Accreditation'))
                             ->placeholder('A / B / C')
@@ -106,8 +122,8 @@ class SchoolProfile extends Page implements HasForms
                         Forms\Components\TextInput::make('website')
                             ->label(__('Website'))
                             ->url()
-                            ->prefix('https://')
                             ->maxLength(255),
+                        $image('logo', __('School logo'))->directory('tenants/logos')->columnSpanFull(),
                     ]),
 
                 Forms\Components\Section::make(__('Vision & Mission'))
@@ -130,6 +146,31 @@ class SchoolProfile extends Page implements HasForms
                             ->maxLength(2000),
                     ]),
 
+                Forms\Components\Section::make(__('Website home page'))
+                    ->description(__('Content of the public school website'))
+                    ->icon('heroicon-o-home')
+                    ->columns(2)
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('settings.hero_title')
+                            ->label(__('Hero title'))
+                            ->maxLength(120),
+                        Forms\Components\TextInput::make('settings.hero_subtitle')
+                            ->label(__('Hero subtitle'))
+                            ->maxLength(250),
+                        $image('settings.hero_image', __('Hero background image'))->columnSpanFull(),
+                        Forms\Components\Textarea::make('settings.principal_greeting')
+                            ->label(__('Principal\'s greeting'))
+                            ->rows(5)
+                            ->maxLength(3000),
+                        $image('settings.principal_photo', __('Principal photo')),
+                        Forms\Components\Textarea::make('settings.history')
+                            ->label(__('School history'))
+                            ->rows(6)
+                            ->maxLength(5000)
+                            ->columnSpanFull(),
+                    ]),
+
                 Forms\Components\Section::make(__('Contact Information'))
                     ->description(__('How visitors can reach the school'))
                     ->icon('heroicon-o-phone')
@@ -143,6 +184,13 @@ class SchoolProfile extends Page implements HasForms
                             ->label(__('Email'))
                             ->email()
                             ->maxLength(255),
+                        Forms\Components\TextInput::make('settings.whatsapp')
+                            ->label(__('WhatsApp number'))
+                            ->tel()
+                            ->maxLength(20),
+                        Forms\Components\TextInput::make('settings.office_hours')
+                            ->label(__('Office hours'))
+                            ->maxLength(100),
                         Forms\Components\Textarea::make('address')
                             ->label(__('Address'))
                             ->rows(2)
@@ -159,24 +207,14 @@ class SchoolProfile extends Page implements HasForms
                     ->description(__('Links to school social media accounts'))
                     ->icon('heroicon-o-share')
                     ->columns(2)
-                    ->schema([
-                        Forms\Components\TextInput::make('social_links.facebook')
-                            ->label('Facebook')
+                    ->schema(collect(['facebook' => 'Facebook', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'])
+                        ->map(fn (string $label, string $key) => Forms\Components\TextInput::make("social_links.{$key}")
+                            ->label($label)
                             ->url()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('social_links.instagram')
-                            ->label('Instagram')
-                            ->url()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('social_links.youtube')
-                            ->label('YouTube')
-                            ->url()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('social_links.tiktok')
-                            ->label('TikTok')
-                            ->url()
-                            ->maxLength(255),
-                    ]),
+                            ->startsWith(['https://'])
+                            ->maxLength(255))
+                        ->values()
+                        ->all()),
             ])
             ->statePath('data');
     }
@@ -184,8 +222,10 @@ class SchoolProfile extends Page implements HasForms
     public function save(): void
     {
         $data = $this->form->getState();
-
         $tenant = Tenant::current();
+
+        $data['settings'] = array_merge($tenant->settings ?? [], collect($data['settings'] ?? [])->only(self::WEBSITE_SETTINGS)->all());
+
         $tenant->update($data);
 
         Notification::make()

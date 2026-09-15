@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Enums\AttendanceStatus;
 use App\Models\StudentAttendance;
 use App\Models\StudentParent;
+use App\Models\Tenant;
 use App\Services\WhatsAppService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,12 +30,25 @@ class NotifyParentAbsentStudent implements ShouldQueue
 
     public function handle(WhatsAppService $whatsApp): void
     {
-        $attendance = StudentAttendance::with(['student', 'attendanceSession'])
-            ->findOrFail($this->studentAttendanceId);
+        $attendance = StudentAttendance::withoutGlobalScopes()->find($this->studentAttendanceId);
 
-        if ($attendance->status !== AttendanceStatus::ALFA) {
+        if (! $attendance || $attendance->status !== AttendanceStatus::ALFA) {
             return;
         }
+
+        // Queue workers have no request tenant: run inside the attendance's
+        // school so its own notification template and logs are used.
+        Tenant::setCurrent(Tenant::find($attendance->tenant_id));
+
+        try {
+            $this->notify($attendance->load(['student.classroom', 'attendanceSession']), $whatsApp);
+        } finally {
+            Tenant::forgetCurrent();
+        }
+    }
+
+    private function notify(StudentAttendance $attendance, WhatsAppService $whatsApp): void
+    {
 
         $student = $attendance->student;
 

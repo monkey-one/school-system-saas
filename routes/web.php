@@ -8,9 +8,10 @@ use App\Http\Controllers\MiscController;
 use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
+use App\Http\Controllers\PPDBDocumentController;
 use App\Http\Controllers\RegistrationController;
-use App\Http\Controllers\SchoolProfileController;
 use App\Http\Controllers\StudentPortalController;
+use App\Http\Controllers\WebsiteController;
 use App\Http\Middleware\ResolveTenant;
 use Illuminate\Support\Facades\Route;
 
@@ -47,17 +48,24 @@ Route::get('/register/trial-success', [RegistrationController::class, 'trialSucc
 // Generic logout used by the student and parent portals.
 Route::post('/logout', [MiscController::class, 'logout'])->name('logout');
 
-// PPDB (student admission) pages. Public visitors can browse open waves,
-// submit a registration form, and check their application status.
-// Tenant context is required so records are scoped to the correct school.
+// PPDB (student admission). Public visitors browse waves, register with
+// documents, download their proof and check the result. Result pages use
+// signed URLs; uploaded documents are only served to school staff.
 Route::prefix('ppdb')->name('ppdb.')->middleware([ResolveTenant::class])->group(function () {
     Route::get('/', [PPDBController::class, 'index'])->name('index');
     Route::get('/register/{wave}', [PPDBController::class, 'register'])->name('register');
     Route::post('/register', [PPDBController::class, 'store'])->middleware('throttle:public-forms')->name('store');
+    Route::get('/success/{registration}', [PPDBController::class, 'success'])->middleware('signed')->name('success');
+    Route::get('/proof/{registration}', [PPDBController::class, 'proof'])->middleware('signed')->name('proof');
     Route::get('/status', [PPDBController::class, 'status'])->name('status');
     Route::post('/status', [PPDBController::class, 'checkStatus'])->middleware('throttle:public-forms')->name('check-status');
-    Route::get('/acceptance/{id}', [PPDBController::class, 'acceptanceLetter'])->middleware('signed')->name('acceptance-letter');
+    Route::get('/acceptance/{registration}', [PPDBController::class, 'acceptanceLetter'])->middleware('signed')->name('acceptance-letter');
 });
+
+Route::get('/ppdb/documents/{registration}/{document}', [PPDBDocumentController::class, 'show'])
+    ->middleware(['auth', 'tenant', 'tenant.required', 'user.type:school_admin,operator'])
+    ->where('document', '[a-z_]+')
+    ->name('ppdb.documents.show');
 
 // QR-based attendance. Students must be signed in: the scan link sends guests
 // to the login page and back, and attendance is recorded for that student.
@@ -66,15 +74,24 @@ Route::middleware(['auth', 'tenant', 'tenant.required', 'user.type:student', 'th
     Route::post('/attendance/confirm', [AttendanceController::class, 'confirm'])->name('attendance.confirm');
 });
 
-// Public school profile website. Displays the school's about page, teacher
-// directory, facilities, news, and contact information.
-Route::prefix('profile')->name('profile.')->middleware([ResolveTenant::class])->group(function () {
-    Route::get('/', [SchoolProfileController::class, 'index'])->name('index');
-});
+// Public school website (profile, news, agenda, achievements, gallery, staff
+// directory, contact), the alumni directory and the XML sitemap.
+Route::middleware([ResolveTenant::class])->group(function () {
+    Route::prefix('profile')->name('website.')->group(function () {
+        Route::get('/', [WebsiteController::class, 'home'])->name('home');
+        Route::get('/about', [WebsiteController::class, 'about'])->name('about');
+        Route::get('/news', [WebsiteController::class, 'news'])->name('news');
+        Route::get('/news/{slug}', [WebsiteController::class, 'newsShow'])->where('slug', '[A-Za-z0-9\-]+')->name('news.show');
+        Route::get('/agenda', [WebsiteController::class, 'agenda'])->name('agenda');
+        Route::get('/achievements', [WebsiteController::class, 'achievements'])->name('achievements');
+        Route::get('/gallery', [WebsiteController::class, 'gallery'])->name('gallery');
+        Route::get('/gallery/{slug}', [WebsiteController::class, 'album'])->where('slug', '[A-Za-z0-9\-]+')->name('gallery.show');
+        Route::get('/teachers', [WebsiteController::class, 'teachers'])->name('teachers');
+        Route::get('/contact', [WebsiteController::class, 'contact'])->name('contact');
+    });
 
-// Public alumni directory page
-Route::prefix('alumni')->name('alumni.')->middleware([ResolveTenant::class])->group(function () {
-    Route::get('/', [AlumniController::class, 'index'])->name('index');
+    Route::get('/sitemap.xml', [WebsiteController::class, 'sitemap'])->name('website.sitemap');
+    Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
 });
 
 // Payment gateway callbacks. These are POST endpoints called by Midtrans and
