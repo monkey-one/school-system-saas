@@ -3,6 +3,7 @@
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DisplayController;
+use App\Http\Controllers\ElearningFileController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LeaveRequestAttachmentController;
@@ -100,6 +101,12 @@ Route::middleware([ResolveTenant::class])->group(function () {
 // the school lobby (?tenant= selects the school on a shared domain).
 Route::get('/display', [DisplayController::class, 'show'])->middleware([ResolveTenant::class])->name('display');
 
+// E-learning files on the private disk (access rules in ElearningFileController).
+Route::middleware(['auth', 'tenant', 'tenant.required'])->group(function () {
+    Route::get('/elearning/assignments/{assignment}/attachment', [ElearningFileController::class, 'assignment'])->name('elearning.assignments.attachment');
+    Route::get('/elearning/submissions/{submission}/attachment', [ElearningFileController::class, 'submission'])->name('elearning.submissions.attachment');
+});
+
 // Payment gateway callbacks. These are POST endpoints called by Midtrans and
 // Xendit servers so they must be exempted from CSRF verification (see
 // bootstrap/app.php). Signature/token verification happens in the controller.
@@ -137,6 +144,14 @@ Route::prefix('student-portal')->name('student.')->middleware(['auth', 'tenant',
     Route::get('/leave-requests', [StudentPortalController::class, 'leaveRequests'])->name('leave-requests');
     Route::get('/savings', [StudentPortalController::class, 'savings'])->name('savings');
     Route::get('/discipline', [StudentPortalController::class, 'discipline'])->name('discipline');
+    Route::get('/assignments', [StudentPortalController::class, 'assignments'])->name('assignments');
+    Route::get('/assignments/{assignment}', [StudentPortalController::class, 'assignment'])->name('assignments.show');
+    Route::post('/assignments/{assignment}/submit', [StudentPortalController::class, 'submitAssignment'])->middleware('throttle:public-forms')->name('assignments.submit');
+    Route::get('/exams', [StudentPortalController::class, 'exams'])->name('exams');
+    Route::get('/exams/{exam}', [StudentPortalController::class, 'takeExam'])->name('exams.take');
+    Route::post('/exams/{exam}/save', [StudentPortalController::class, 'saveExam'])->middleware('throttle:60,1')->name('exams.save');
+    Route::post('/exams/{exam}/submit', [StudentPortalController::class, 'submitExam'])->name('exams.submit');
+    Route::get('/exams/{exam}/result', [StudentPortalController::class, 'examResult'])->name('exams.result');
     $sharedPortalRoutes(StudentPortalController::class);
 });
 
@@ -154,6 +169,9 @@ Route::prefix('parent-portal')->name('parent.')->middleware(['auth', 'tenant', '
         Route::get('/leave-requests', [ParentPortalController::class, 'leaveRequests'])->name('leave-requests');
         Route::get('/savings', [ParentPortalController::class, 'savings'])->name('savings');
         Route::get('/discipline', [ParentPortalController::class, 'discipline'])->name('discipline');
+        Route::get('/assignments', [ParentPortalController::class, 'assignments'])->name('assignments');
+        Route::get('/assignments/{assignment}', [ParentPortalController::class, 'assignment'])->name('assignments.show');
+        Route::get('/exams', [ParentPortalController::class, 'exams'])->name('exams');
     });
     $sharedPortalRoutes(ParentPortalController::class);
 });

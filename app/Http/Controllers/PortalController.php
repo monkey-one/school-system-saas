@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethod;
 use App\Models\Achievement;
+use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 use App\Models\CounselingNote;
+use App\Models\Exam;
+use App\Models\ExamAttempt;
 use App\Models\LeaveRequest;
 use App\Models\Message;
 use App\Models\Payment;
@@ -15,17 +19,20 @@ use App\Models\SppBill;
 use App\Models\Student;
 use App\Models\StudentViolation;
 use App\Models\Tenant;
+use App\Services\ExamService;
 use App\Services\LeaveRequestService;
 use App\Services\MidtransService;
 use App\Services\RaporService;
 use App\Services\SavingsService;
 use App\Services\StudentOverview;
+use App\Support\Demo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -422,6 +429,159 @@ abstract class PortalController extends Controller
             'achievements' => Achievement::published()->where('student_id', $student->id)->latest('achieved_at')->get(),
             'counseling' => CounselingNote::where('student_id', $student->id)->where('is_confidential', false)->latest('session_date')->get(),
         ]);
+    }
+
+    // ----- E-learning: assignments -----
+
+    protected function showAssignments(Student $student): View
+    {
+        $assignments = Assignment::published()
+            ->forClassroom($student->classroom_id)
+            ->with(['classroomSubject.subject', 'teacher', 'submissions' => fn ($q) => $q->where('student_id', $student->id)])
+            ->latest('due_at')
+            ->get();
+
+        return $this->page('assignments', $student, ['assignments' => $assignments]);
+    }
+
+    protected function showAssignment(Student $student, Assignment $assignment): View
+    {
+        $this->authorizeClassroomItem($student, $assignment->classroomSubject?->classroom_id, $assignment->is_published);
+
+        return $this->page('assignment', $student, [
+            'assignment' => $assignment->load('classroomSubject.subject', 'teacher'),
+            'submission' => AssignmentSubmission::where('assignment_id', $assignment->id)->where('student_id', $student->id)->first(),
+        ]);
+    }
+
+    // Students submit (or resubmit before grading) a text answer and/or a file.
+    public function submitAssignment(Request $request, Assignment $assignment): RedirectResponse
+    {
+        abort_unless($this->portal() === 'student', 403);
+        $student = $this->contextStudent();
+        $this->authorizeClassroomItem($student, $assignment->classroomSubject?->classroom_id, $assignment->is_published);
+
+        $existing = AssignmentSubmission::where('assignment_id', $assignment->id)->where('student_id', $student->id)->first();
+
+        if (! $assignment->acceptsSubmissions() || $existing?->score !== null) {
+            return back()->with('error', __('Submissions for this assignment are closed.'));
+        }
+
+        $data = $request->validate([
+            'content' => ['nullable', 'string', 'max:10000', 'required_without:attachment'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx,ppt,pptx,xls,xlsx,zip', 'max:10240'],
+        ]);
+
+        // The public demo accepts text answers only, so visitors cannot store files on the server.
+        if (Demo::enabled() && $request->hasFile('attachment')) {
+            return back()->withInput()->with('error', __('File uploads are disabled on the public demo. Please type your answer instead.'));
+        }
+
+        if ($existing?->attachment && $request->hasFile('attachment')) {
+            Storage::disk('local')->delete($existing->attachment);
+        }
+
+        AssignmentSubmission::updateOrCreate(
+            ['assignment_id' => $assignment->id, 'student_id' => $student->id],
+            [
+                'tenant_id' => $assignment->tenant_id,
+                'content' => $data['content'] ?? null,
+                'attachment' => $request->file('attachment')?->store('submissions', 'local') ?? $existing?->attachment,
+                'submitted_at' => now(),
+                'is_late' => $assignment->due_at->isPast(),
+            ],
+        );
+
+        return redirect()->route('student.assignments.show', $assignment)->with('status', __('Your work has been submitted.'));
+    }
+
+    // ----- E-learning: online exams -----
+
+    protected function showExams(Student $student): View
+    {
+        $exams = Exam::published()
+            ->forClassroom($student->classroom_id)
+            ->with(['classroomSubject.subject', 'attempts' => fn ($q) => $q->where('student_id', $student->id)])
+            ->withCount('questions')
+            ->orderByDesc('starts_at')
+            ->get();
+
+        return $this->page('exams', $student, ['exams' => $exams]);
+    }
+
+    public function takeExam(Exam $exam): View|RedirectResponse
+    {
+        abort_unless($this->portal() === 'student', 403);
+        $student = $this->contextStudent();
+        $this->authorizeClassroomItem($student, $exam->classroomSubject?->classroom_id, $exam->is_published);
+
+        $attempt = ExamAttempt::where('exam_id', $exam->id)->where('student_id', $student->id)->first();
+
+        if ($attempt?->isSubmitted()) {
+            return redirect()->route('student.exams.result', $exam);
+        }
+
+        if (! $attempt && ! $exam->isOpen()) {
+            return redirect()->route('student.exams')->with('error', __('This exam is not open.'));
+        }
+
+        $attempt ??= app(ExamService::class)->start($exam, $student);
+        $questions = $exam->questions()->get()->keyBy('id');
+        $ordered = collect($attempt->question_order ?: $questions->keys())->map(fn ($id) => $questions->get($id))->filter()->values();
+
+        return $this->page('exam-take', $student, [
+            'exam' => $exam->load('classroomSubject.subject'),
+            'attempt' => $attempt,
+            'questions' => $ordered,
+            'secondsLeft' => max(0, now()->diffInSeconds($attempt->deadline(), false)),
+        ]);
+    }
+
+    public function saveExam(Request $request, Exam $exam)
+    {
+        $attempt = $this->studentAttempt($exam);
+        app(ExamService::class)->saveProgress($attempt, (array) $request->input('answers', []));
+
+        return response()->json(['saved' => true]);
+    }
+
+    public function submitExam(Request $request, Exam $exam): RedirectResponse
+    {
+        $attempt = $this->studentAttempt($exam);
+
+        if (! $attempt->isSubmitted()) {
+            app(ExamService::class)->submit($attempt, (array) $request->input('answers', []));
+        }
+
+        return redirect()->route('student.exams.result', $exam)->with('status', __('Your exam has been submitted.'));
+    }
+
+    public function examResult(Exam $exam): View
+    {
+        $attempt = $this->studentAttempt($exam);
+        abort_unless($attempt->isSubmitted(), 404);
+
+        return $this->page('exam-result', $this->contextStudent(), [
+            'exam' => $exam->load('classroomSubject.subject'),
+            'attempt' => $attempt,
+            'total' => $exam->questions()->count(),
+        ]);
+    }
+
+    private function studentAttempt(Exam $exam): ExamAttempt
+    {
+        abort_unless($this->portal() === 'student', 403);
+        $student = $this->contextStudent();
+        $this->authorizeClassroomItem($student, $exam->classroomSubject?->classroom_id, $exam->is_published);
+
+        return ExamAttempt::where('exam_id', $exam->id)->where('student_id', $student->id)->firstOrFail();
+    }
+
+    // Assignments/exams belong to a class; only published items of the
+    // student's own class may be opened.
+    private function authorizeClassroomItem(Student $student, ?int $classroomId, bool $published): void
+    {
+        abort_unless($published && $classroomId !== null && (int) $classroomId === (int) $student->classroom_id, 404);
     }
 
     private function month(Request $request): Carbon
