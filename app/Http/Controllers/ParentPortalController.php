@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assignment;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -133,5 +134,26 @@ class ParentPortalController extends PortalController
         $this->authorizeStudent($student);
 
         return $this->showDiscipline($student);
+    }
+
+    public function assignments(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showAssignments($student);
+    }
+
+    public function assignment(Student $student, Assignment $assignment): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showAssignment($student, $assignment);
+    }
+
+    public function exams(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showExams($student);
     }
 }

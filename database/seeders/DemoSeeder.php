@@ -22,6 +22,8 @@ use App\Models\Assessment;
 use App\Models\AssessmentType;
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 use App\Models\AttendanceSession;
 use App\Models\Book;
 use App\Models\BookCategory;
@@ -30,6 +32,9 @@ use App\Models\Classroom;
 use App\Models\ClassroomSubject;
 use App\Models\CounselingNote;
 use App\Models\CurriculumSetting;
+use App\Models\Exam;
+use App\Models\ExamAttempt;
+use App\Models\ExamQuestion;
 use App\Models\Extracurricular;
 use App\Models\Facility;
 use App\Models\FacilityBooking;
@@ -60,6 +65,8 @@ use App\Models\TeachingSchedule;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\ViolationType;
+use App\Services\ExamService;
+use App\Services\GradebookSync;
 use App\Services\RaporService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
@@ -202,6 +209,8 @@ class DemoSeeder extends Seeder
         $this->seedStudentServices();
         $this->step('Attendance settings & WhatsApp log');
         $this->seedAdminTools();
+        $this->step('E-learning assignments & online exams');
+        $this->seedElearning();
 
         Tenant::forgetCurrent();
 
@@ -1408,6 +1417,139 @@ class DemoSeeder extends Seeder
     // history for class 7A and leave requests in every status.
     // Attendance settings for the GPS check-in and a sample WhatsApp delivery
     // log so the log and broadcast pages are not empty on the demo.
+    // E-learning for class 7A: assignments in several states (graded,
+    // submitted, open) and online exams (finished with scores, open now for
+    // the demo student, upcoming).
+    private function seedElearning(): void
+    {
+        $students = $this->students['7A'];
+        $demo = $students[0];
+        $math = $this->classroomSubjects['7A']['MTK'];
+        $mathTeacherUser = $this->teacherUsers[$math->teacher_id];
+
+        $assignments = [
+            ['MTK', 'Latihan Bilangan Bulat', '<p>Kerjakan soal nomor 1–20 pada buku paket halaman 34. Tuliskan langkah pengerjaan dengan jelas.</p>', -9, 'graded'],
+            ['MTK', 'Proyek Pecahan dalam Kehidupan Sehari-hari', '<p>Buat 5 contoh penggunaan pecahan di rumah (resep, ukuran, waktu), lengkap dengan perhitungannya.</p>', -2, 'submitted'],
+            ['MTK', 'Latihan Perbandingan dan Skala', '<p>Kerjakan lembar kerja perbandingan senilai dan berbalik nilai. Kumpulkan jawaban dalam bentuk teks atau foto.</p>', 4, 'open'],
+            ['IPA', 'Laporan Pengamatan Ciri Makhluk Hidup', '<p>Amati 3 makhluk hidup di sekitar rumah dan tuliskan ciri-cirinya dalam tabel.</p>', 6, 'open'],
+            ['BIN', 'Menulis Teks Deskripsi', '<p>Tulis teks deskripsi tentang tempat wisata di daerahmu minimal 3 paragraf.</p>', 2, 'open'],
+        ];
+
+        foreach ($assignments as [$code, $title, $instructions, $dueDays, $state]) {
+            $cs = $this->classroomSubjects['7A'][$code];
+            $assignment = Assignment::create([
+                'classroom_subject_id' => $cs->id,
+                'teacher_id' => $cs->teacher_id,
+                'title' => $title,
+                'instructions' => $instructions,
+                'due_at' => now()->addDays($dueDays)->setTime(23, 59),
+                'max_score' => 100,
+                'allow_late' => true,
+                'is_published' => true,
+            ]);
+
+            if ($state === 'open') {
+                continue;
+            }
+
+            $graded = $state === 'graded';
+
+            foreach ($students as $i => $student) {
+                // A few students have not handed in, so the teacher sees missing work.
+                if ($i % 7 === 6) {
+                    continue;
+                }
+
+                AssignmentSubmission::create([
+                    'assignment_id' => $assignment->id,
+                    'student_id' => $student->id,
+                    'content' => 'Jawaban sudah saya kerjakan di buku tulis. Ringkasan: ' . $title . '.',
+                    'submitted_at' => $assignment->due_at->copy()->subDays(1 + $i % 3),
+                    'is_late' => false,
+                    'score' => $graded ? 70 + ($i * 7) % 30 : null,
+                    'feedback' => $graded ? ($i % 2 ? 'Bagus, langkah pengerjaan runtut.' : 'Perhatikan tanda negatif pada soal 12–15.') : null,
+                    'graded_by' => $graded ? $mathTeacherUser : null,
+                    'graded_at' => $graded ? $assignment->due_at->copy()->addDay() : null,
+                ]);
+            }
+
+            if ($graded) {
+                app(GradebookSync::class)->syncAssignment($assignment, $mathTeacherUser);
+            }
+        }
+
+        $questions = [
+            ['Hasil dari -8 + 15 - (-4) adalah ...', ['3', '11', '19', '-11'], 'B'],
+            ['Pecahan 3/4 senilai dengan ...', ['6/8', '4/3', '9/16', '3/8'], 'A'],
+            ['Bentuk desimal dari 2/5 adalah ...', ['0,25', '0,4', '2,5', '0,04'], 'B'],
+            ['KPK dari 12 dan 18 adalah ...', ['6', '24', '36', '72'], 'C'],
+            ['FPB dari 24 dan 36 adalah ...', ['6', '8', '12', '18'], 'C'],
+            ['Suhu pagi -3°C lalu naik 8°C. Suhu siang menjadi ...', ['5°C', '-5°C', '11°C', '-11°C'], 'A'],
+            ['Hasil dari 1/2 + 1/3 adalah ...', ['2/5', '5/6', '1/6', '2/6'], 'B'],
+            ['25% dari 240 adalah ...', ['24', '48', '60', '96'], 'C'],
+            ['Perbandingan 15 : 25 dalam bentuk paling sederhana adalah ...', ['3 : 5', '5 : 3', '1 : 5', '3 : 4'], 'A'],
+            ['Jarak pada peta 4 cm dengan skala 1 : 500.000. Jarak sebenarnya ...', ['2 km', '20 km', '200 km', '5 km'], 'B'],
+        ];
+
+        $exams = [
+            ['Ulangan Harian Bilangan Bulat & Pecahan', now()->subDays(6)->setTime(8, 0), now()->subDays(6)->setTime(10, 0), true],
+            ['Latihan CBT Matematika (coba sekarang)', now()->subHour(), now()->addDays(14)->setTime(21, 0), false],
+            ['Penilaian Tengah Semester Matematika', now()->addDays(10)->setTime(8, 0), now()->addDays(10)->setTime(10, 0), false],
+        ];
+
+        foreach ($exams as [$title, $startsAt, $endsAt, $finished]) {
+            $exam = Exam::create([
+                'classroom_subject_id' => $math->id,
+                'teacher_id' => $math->teacher_id,
+                'title' => $title,
+                'instructions' => 'Pilih satu jawaban yang paling tepat. Jawaban tersimpan otomatis; tekan "Kumpulkan" setelah selesai.',
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
+                'duration_minutes' => 30,
+                'shuffle_questions' => true,
+                'show_result' => true,
+                'is_published' => true,
+            ]);
+
+            foreach ($questions as $n => [$question, $options, $correct]) {
+                ExamQuestion::create([
+                    'exam_id' => $exam->id,
+                    'question' => $question,
+                    'options' => $options,
+                    'correct_option' => $correct,
+                    'points' => 1,
+                    'sort_order' => $n + 1,
+                ]);
+            }
+
+            if (! $finished) {
+                continue;
+            }
+
+            foreach ($students as $i => $student) {
+                // Wrong answers vary per student so the scores differ.
+                $answers = collect($questions)->keys()->mapWithKeys(function (int $n) use ($exam, $questions, $i) {
+                    $letter = ($n + $i) % 4 === 0 ? 'D' : $questions[$n][2];
+
+                    return [$exam->questions[$n]->id => $letter];
+                })->all();
+
+                $attempt = ExamAttempt::create([
+                    'exam_id' => $exam->id,
+                    'student_id' => $student->id,
+                    'started_at' => $startsAt->copy()->addMinutes($i % 20),
+                    'answers' => $answers,
+                    'question_order' => array_keys($answers),
+                ]);
+
+                // The window has closed, so the service grades the saved answers.
+                app(ExamService::class)->submit($attempt, []);
+            }
+
+            app(GradebookSync::class)->syncExam($exam, $mathTeacherUser);
+        }
+    }
+
     private function seedAdminTools(): void
     {
         $this->tenant->update(['settings' => array_merge($this->tenant->settings ?? [], [

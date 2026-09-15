@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assignment;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -77,5 +78,20 @@ class StudentPortalController extends PortalController
     public function discipline(): View
     {
         return $this->showDiscipline($this->contextStudent());
+    }
+
+    public function assignments(): View
+    {
+        return $this->showAssignments($this->contextStudent());
+    }
+
+    public function assignment(Assignment $assignment): View
+    {
+        return $this->showAssignment($this->contextStudent(), $assignment);
+    }
+
+    public function exams(): View
+    {
+        return $this->showExams($this->contextStudent());
     }
 }
