@@ -27,15 +27,14 @@ return Application::configure(basePath: dirname(__DIR__))
                      \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
         );
 
-        // SetLocale applies the language chosen via /locale/{locale};
-        // SecurityHeaders adds browser hardening headers to every response.
+        // SetLocale applies the language chosen via /locale/{locale}.
         $middleware->web(append: [
             SetLocale::class,
-            SecurityHeaders::class,
         ]);
-        $middleware->api(append: [
-            SecurityHeaders::class,
-        ]);
+
+        // Global so Filament panels (which use their own middleware stack),
+        // API routes and the health check all get the hardening headers.
+        $middleware->append(SecurityHeaders::class);
         $middleware->throttleApi();
 
         // Short aliases used in route group definitions.
