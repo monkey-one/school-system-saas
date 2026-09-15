@@ -6,6 +6,7 @@ use App\Enums\AttendanceStatus;
 use App\Enums\StudentStatus;
 use App\Jobs\NotifyParentAbsentStudent;
 use App\Models\AttendanceSession;
+use App\Models\LeaveRequest;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use Filament\Forms;
@@ -28,11 +29,24 @@ class TakeAttendanceAction
             ->modalWidth('4xl')
             ->fillForm(function (AttendanceSession $record): array {
                 $existing = $record->studentAttendances()->get(['student_id', 'status'])->keyBy('student_id');
+                $students = self::students($record);
+
+                // Approved leave requests covering the session date pre-fill sick/permission.
+                $leaves = LeaveRequest::where('status', 'approved')
+                    ->whereIn('student_id', $students->pluck('id'))
+                    ->whereDate('start_date', '<=', $record->date)
+                    ->whereDate('end_date', '>=', $record->date)
+                    ->pluck('type', 'student_id');
 
                 return [
-                    'statuses' => self::students($record)
+                    'statuses' => $students
                         ->mapWithKeys(fn (Student $student) => [
-                            $student->id => ($existing->get($student->id)?->status ?? AttendanceStatus::HADIR)->value,
+                            $student->id => $existing->get($student->id)?->status->value
+                                ?? match ($leaves->get($student->id)) {
+                                    'sakit' => AttendanceStatus::SAKIT->value,
+                                    'izin' => AttendanceStatus::IZIN->value,
+                                    default => AttendanceStatus::HADIR->value,
+                                },
                         ])
                         ->all(),
                 ];

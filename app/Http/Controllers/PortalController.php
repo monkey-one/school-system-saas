@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethod;
+use App\Models\Achievement;
+use App\Models\CounselingNote;
+use App\Models\LeaveRequest;
 use App\Models\Message;
 use App\Models\Payment;
 use App\Models\PaymentBillAllocation;
 use App\Models\ReportCard;
+use App\Models\SavingsTransaction;
 use App\Models\SppBill;
 use App\Models\Student;
+use App\Models\StudentViolation;
 use App\Models\Tenant;
+use App\Services\LeaveRequestService;
 use App\Services\MidtransService;
 use App\Services\RaporService;
+use App\Services\SavingsService;
 use App\Services\StudentOverview;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -341,6 +348,80 @@ abstract class PortalController extends Controller
         }
 
         return back()->with('status', __('Password updated.'));
+    }
+
+    protected function showLeaveRequests(Student $student): View
+    {
+        return $this->page('leave-requests', $student, [
+            'requests' => LeaveRequest::where('student_id', $student->id)->with('reviewer')->latest()->get(),
+        ]);
+    }
+
+    // Parents and students submit sick/permission requests; the homeroom
+    // teacher is notified and approval updates attendance automatically.
+    public function storeLeaveRequest(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'student_id' => ['required', 'integer'],
+            'type' => ['required', Rule::in(LeaveRequest::TYPES)],
+            'start_date' => ['required', 'date', 'after_or_equal:' . today()->subDays(7)->toDateString()],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date', 'before_or_equal:' . today()->addDays(30)->toDateString()],
+            'reason' => ['required', 'string', 'max:1000'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+        ]);
+
+        $student = Student::find($data['student_id']);
+        $this->authorizeStudent($student);
+
+        $leave = LeaveRequest::create([
+            'student_id' => $student->id,
+            'requested_by' => auth()->id(),
+            'type' => $data['type'],
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'reason' => $data['reason'],
+            'attachment' => $request->file('attachment')?->store('leave-requests', 'local'),
+            'status' => 'pending',
+        ]);
+
+        app(LeaveRequestService::class)->notifyHomeroomTeacher($leave);
+
+        return redirect()
+            ->route($this->portal() . '.leave-requests', $this->portal() === 'parent' ? ['student' => $student->id] : [])
+            ->with('status', __('Leave request submitted. The homeroom teacher will review it.'));
+    }
+
+    protected function showSavings(Student $student): View
+    {
+        $thisMonth = fn () => SavingsTransaction::where('student_id', $student->id)->where('transacted_at', '>=', now()->startOfMonth());
+
+        return $this->page('savings', $student, [
+            'balance' => app(SavingsService::class)->balance($student),
+            'monthIn' => (float) $thisMonth()->where('type', 'deposit')->sum('amount'),
+            'monthOut' => (float) $thisMonth()->where('type', '!=', 'deposit')->sum('amount'),
+            'transactions' => SavingsTransaction::where('student_id', $student->id)->latest('id')->paginate(20),
+        ]);
+    }
+
+    // Discipline points, achievements and counseling notes the school chose
+    // to share (hidden violations and confidential notes are excluded).
+    protected function showDiscipline(Student $student): View
+    {
+        $since = $this->overview->activeSemester()?->academicYear?->starts_at ?? now()->startOfYear();
+
+        $violations = StudentViolation::where('student_id', $student->id)
+            ->where('visible_to_parent', true)
+            ->whereDate('occurred_at', '>=', $since)
+            ->with('violationType')
+            ->latest('occurred_at')
+            ->get();
+
+        return $this->page('discipline', $student, [
+            'violations' => $violations,
+            'totalPoints' => (int) $violations->sum('points'),
+            'achievements' => Achievement::published()->where('student_id', $student->id)->latest('achieved_at')->get(),
+            'counseling' => CounselingNote::where('student_id', $student->id)->where('is_confidential', false)->latest('session_date')->get(),
+        ]);
     }
 
     private function month(Request $request): Carbon

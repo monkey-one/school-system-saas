@@ -36,14 +36,15 @@ class NotifyParentAbsentStudent implements ShouldQueue
             return;
         }
 
-        // Queue workers have no request tenant: run inside the attendance's
-        // school so its own notification template and logs are used.
+        // Run inside the attendance's school so its own notification template
+        // and logs are used, then restore the previous tenant.
+        $previous = Tenant::current();
         Tenant::setCurrent(Tenant::find($attendance->tenant_id));
 
         try {
             $this->notify($attendance->load(['student.classroom', 'attendanceSession']), $whatsApp);
         } finally {
-            Tenant::forgetCurrent();
+            Tenant::setCurrent($previous);
         }
     }
 

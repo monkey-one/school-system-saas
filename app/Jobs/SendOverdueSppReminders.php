@@ -3,24 +3,26 @@
 namespace App\Jobs;
 
 use App\Enums\PaymentStatus;
+use App\Helpers\CurrencyHelper;
 use App\Models\SppBill;
 use App\Models\StudentParent;
+use App\Models\Tenant;
 use App\Services\WhatsAppService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-// Finds all overdue SPP bills for a specific tenant, updates their status to
-// OVERDUE, and sends a WhatsApp reminder to each student's parent via the
-// spp_reminder notification template.
+// Marks a school's past-due bills as OVERDUE and sends ONE WhatsApp reminder
+// per student (spp_reminder template) listing every overdue period and the
+// total amount, instead of one message per bill.
 class SendOverdueSppReminders implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     public int $tries = 3;
+
     public int $backoff = 60;
 
     public function __construct(
@@ -29,41 +31,59 @@ class SendOverdueSppReminders implements ShouldQueue
 
     public function handle(WhatsAppService $whatsApp): void
     {
-        $bills = SppBill::where('tenant_id', $this->tenantId)
-            ->whereIn('status', [PaymentStatus::UNPAID, PaymentStatus::OVERDUE])
-            ->where('due_date', '<', now())
-            ->with(['student', 'sppType'])
+        $tenant = Tenant::find($this->tenantId);
+
+        if (! $tenant) {
+            return;
+        }
+
+        // Dispatched per school from the scheduler: use this school's scope,
+        // currency and template, then restore the previous tenant.
+        $previous = Tenant::current();
+        Tenant::setCurrent($tenant);
+
+        try {
+            $this->remind($whatsApp);
+        } finally {
+            Tenant::setCurrent($previous);
+        }
+    }
+
+    private function remind(WhatsAppService $whatsApp): void
+    {
+        $bills = SppBill::query()
+            ->whereIn('status', [PaymentStatus::UNPAID, PaymentStatus::PARTIAL, PaymentStatus::OVERDUE])
+            ->whereDate('due_date', '<', today())
+            ->with('student')
+            ->orderBy('due_date')
             ->get();
+
+        SppBill::whereKey($bills->where('status', PaymentStatus::UNPAID)->pluck('id'))->update(['status' => PaymentStatus::OVERDUE]);
 
         $sent = 0;
 
-        foreach ($bills as $bill) {
-            // Update status to overdue if still unpaid
-            if ($bill->status === PaymentStatus::UNPAID) {
-                $bill->update(['status' => PaymentStatus::OVERDUE]);
-            }
-
-            $parent = StudentParent::where('student_id', $bill->student_id)
+        foreach ($bills->groupBy('student_id') as $studentId => $studentBills) {
+            $parent = StudentParent::where('student_id', $studentId)
                 ->where('is_whatsapp_active', true)
+                ->whereNotNull('phone')
+                ->orderByDesc('is_emergency_contact')
                 ->first();
 
-            if (! $parent || empty($parent->phone)) {
+            if (! $parent || ! $studentBills->first()->student) {
                 continue;
             }
 
-            // Variable names must match the double-brace placeholders in the
-            // spp_reminder notification template: {{student_name}}, {{period}},
-            // {{amount}}, {{due_date}}.
+            // Placeholders of the spp_reminder template.
             $whatsApp->sendTemplate($parent->phone, 'spp_reminder', [
-                'student_name' => $bill->student->full_name,
-                'period' => $bill->period,
-                'amount' => number_format($bill->final_amount, 0, ',', '.'),
-                'due_date' => $bill->due_date->format('d/m/Y'),
-            ], 'spp_bill', $bill->id);
+                'student_name' => $studentBills->first()->student->full_name,
+                'period' => $studentBills->pluck('period')->implode(', '),
+                'amount' => CurrencyHelper::format($studentBills->sum('final_amount')),
+                'due_date' => $studentBills->first()->due_date->format('d/m/Y'),
+            ], 'spp_bill', $studentBills->first()->id);
 
             $sent++;
         }
 
-        Log::info("SendOverdueSppReminders: Tenant #{$this->tenantId} — sent {$sent} reminders for {$bills->count()} overdue bills");
+        Log::info("SendOverdueSppReminders: Tenant #{$this->tenantId} — {$sent} reminders for {$bills->count()} overdue bills");
     }
 }

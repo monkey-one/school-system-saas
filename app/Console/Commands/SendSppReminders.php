@@ -15,9 +15,10 @@ class SendSppReminders extends Command
 
     public function handle(): int
     {
-        $tenants = Tenant::where('status', TenantStatus::ACTIVE)->get();
+        // Trial schools use the product fully, so they get reminders too.
+        $tenants = Tenant::whereIn('status', [TenantStatus::ACTIVE, TenantStatus::TRIAL])->get();
 
-        $this->info("Dispatching SPP reminders for {$tenants->count()} active tenants...");
+        $this->info("Dispatching SPP reminders for {$tenants->count()} schools...");
 
         foreach ($tenants as $tenant) {
             SendOverdueSppReminders::dispatch($tenant->id);

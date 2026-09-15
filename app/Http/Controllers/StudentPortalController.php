@@ -63,4 +63,19 @@ class StudentPortalController extends PortalController
     {
         return $this->showActivities($this->contextStudent());
     }
+
+    public function leaveRequests(): View
+    {
+        return $this->showLeaveRequests($this->contextStudent());
+    }
+
+    public function savings(): View
+    {
+        return $this->showSavings($this->contextStudent());
+    }
+
+    public function discipline(): View
+    {
+        return $this->showDiscipline($this->contextStudent());
+    }
 }

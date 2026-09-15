@@ -28,6 +28,7 @@ use App\Models\BookCategory;
 use App\Models\BookLoan;
 use App\Models\Classroom;
 use App\Models\ClassroomSubject;
+use App\Models\CounselingNote;
 use App\Models\CurriculumSetting;
 use App\Models\Extracurricular;
 use App\Models\Facility;
@@ -35,6 +36,7 @@ use App\Models\FacilityBooking;
 use App\Models\GalleryAlbum;
 use App\Models\GalleryItem;
 use App\Models\GradeLevel;
+use App\Models\LeaveRequest;
 use App\Models\Message;
 use App\Models\NotificationTemplate;
 use App\Models\Payment;
@@ -50,12 +52,14 @@ use App\Models\SppDiscount;
 use App\Models\SppType;
 use App\Models\Student;
 use App\Models\StudentExtracurricular;
+use App\Models\StudentViolation;
 use App\Models\Subject;
 use App\Models\Subscription;
 use App\Models\Teacher;
 use App\Models\TeachingSchedule;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\ViolationType;
 use App\Services\RaporService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
@@ -194,6 +198,8 @@ class DemoSeeder extends Seeder
         $this->seedNotificationTemplates();
         $this->step('School website content');
         $this->seedWebsite();
+        $this->step('Leave requests, savings, discipline & counseling');
+        $this->seedStudentServices();
 
         Tenant::forgetCurrent();
 
@@ -1394,6 +1400,134 @@ class DemoSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    // School rules & discipline points, counseling notes, savings/cashless
+    // history for class 7A and leave requests in every status.
+    private function seedStudentServices(): void
+    {
+        $types = collect([
+            ['Terlambat masuk sekolah', 'light', 5],
+            ['Atribut seragam tidak lengkap', 'light', 5],
+            ['Tidak mengerjakan tugas', 'light', 5],
+            ['Menggunakan ponsel saat pelajaran tanpa izin', 'medium', 10],
+            ['Membolos jam pelajaran', 'medium', 15],
+            ['Merusak fasilitas sekolah', 'heavy', 25],
+            ['Berkelahi', 'heavy', 40],
+            ['Merokok di lingkungan sekolah', 'heavy', 50],
+        ])->map(fn (array $t) => ViolationType::create([
+            'name' => $t[0],
+            'severity' => $t[1],
+            'points' => $t[2],
+            'description' => 'Tata tertib sekolah pasal ' . ($t[2] / 5),
+        ]))->values();
+
+        $demo = $this->students['7A'][0];
+        $counselorId = User::where('email', 'citra.ayuningtyas@smpn1demo.id')->value('id') ?? $this->admin->id;
+        $homeroomUserId = $this->teacherUsers[$this->teachers['MTK']->id];
+
+        $violations = [
+            [$demo, 0, 12, 'Terlambat 20 menit karena hujan deras.', 'Teguran lisan', true],
+            [$this->students['7A'][3], 3, 20, 'Bermain gim saat pelajaran IPA.', 'Ponsel dititipkan ke wali kelas', true],
+            [$this->students['7A'][3], 4, 9, 'Tidak mengikuti jam pelajaran ke-3.', 'Pemanggilan orang tua', true],
+            [$this->students['7B'][2], 1, 5, 'Tidak memakai dasi saat upacara.', 'Teguran lisan', true],
+            [$this->students['8A'][4], 6, 30, 'Perkelahian di kantin.', 'Mediasi BK dan surat pernyataan', false],
+            [$this->students['8C'][1], 2, 7, 'Tugas Bahasa Inggris tidak dikumpulkan dua kali.', 'Tugas pengganti', true],
+            [$this->students['9A'][6], 0, 3, 'Terlambat 15 menit.', 'Teguran lisan', true],
+        ];
+
+        foreach ($violations as [$student, $typeIndex, $daysAgo, $description, $action, $visible]) {
+            StudentViolation::create([
+                'student_id' => $student->id,
+                'violation_type_id' => $types[$typeIndex]->id,
+                'occurred_at' => now()->subDays($daysAgo),
+                'points' => $types[$typeIndex]->points,
+                'description' => $description,
+                'action_taken' => $action,
+                'reported_by' => $homeroomUserId,
+                'visible_to_parent' => $visible,
+            ]);
+        }
+
+        $notes = [
+            [$demo, 'academic', 10, 'Konsultasi strategi belajar matematika menjelang PTS. Siswa termotivasi dan membuat jadwal belajar mandiri.', 'Pantau nilai tugas 2 minggu ke depan.', false],
+            [$demo, 'personal', 25, 'Siswa menyampaikan kekhawatiran pribadi terkait adaptasi di kelas baru.', 'Sesi lanjutan bulan depan.', true],
+            [$this->students['7A'][3], 'discipline', 8, 'Pembinaan terkait penggunaan ponsel dan kehadiran di kelas.', 'Kontrak belajar bersama orang tua.', false],
+            [$this->students['9A'][2], 'career', 15, 'Diskusi pilihan SMA/SMK sesuai minat bidang teknologi.', 'Kirim informasi SMK unggulan ke orang tua.', false],
+        ];
+
+        foreach ($notes as [$student, $category, $daysAgo, $summary, $followUp, $confidential]) {
+            CounselingNote::create([
+                'student_id' => $student->id,
+                'counselor_id' => $counselorId,
+                'session_date' => now()->subDays($daysAgo),
+                'category' => $category,
+                'summary' => $summary,
+                'follow_up' => $followUp,
+                'is_confidential' => $confidential,
+            ]);
+        }
+
+        // Savings: weekly deposits and canteen purchases over the last month,
+        // back-dated in chronological order.
+        $savings = app(\App\Services\SavingsService::class);
+        foreach ($this->students['7A'] as $i => $student) {
+            $movements = [
+                [28, 'deposit', 50000 + $i * 5000, 'Setoran tabungan', null],
+                [21, 'purchase', 12000, 'Makan siang', 'Kantin Sekolah'],
+                [14, 'deposit', 25000, 'Setoran tabungan', null],
+                [10, 'purchase', 8500, 'Alat tulis', 'Koperasi Siswa'],
+                [5, 'purchase', 15000, 'Makan siang & minuman', 'Kantin Sekolah'],
+                [2, 'withdrawal', 20000, 'Penarikan untuk study tour', null],
+            ];
+
+            foreach ($movements as [$daysAgo, $type, $amount, $description, $merchant]) {
+                if ($type !== 'deposit' && $savings->balance($student) < $amount) {
+                    continue;
+                }
+
+                $savings->record($student, $type, $amount, $description, $merchant, $this->admin->id)
+                    ->forceFill(['transacted_at' => now()->subDays($daysAgo)->setTime(9 + $i % 5, 15)])
+                    ->saveQuietly();
+            }
+        }
+
+        // Leave requests: an approved sick leave (updates attendance), a
+        // pending request for tomorrow and a rejected one.
+        $leaveService = app(\App\Services\LeaveRequestService::class);
+        $homeroomUser = User::find($homeroomUserId);
+
+        $approvedDay = collect(range(1, 10))->map(fn ($d) => now()->subDays($d))->first(fn ($date) => $date->isWeekday());
+        $approved = LeaveRequest::create([
+            'student_id' => $demo->id,
+            'requested_by' => $this->parentUser->id,
+            'type' => 'sakit',
+            'start_date' => $approvedDay,
+            'end_date' => $approvedDay,
+            'reason' => 'Demam dan flu, istirahat sesuai saran dokter.',
+            'status' => 'pending',
+        ]);
+        $leaveService->approve($approved, $homeroomUser, 'Semoga lekas sembuh.');
+
+        LeaveRequest::create([
+            'student_id' => $this->students['7A'][1]->id,
+            'requested_by' => $this->parentUser->id,
+            'type' => 'izin',
+            'start_date' => now()->addDay(),
+            'end_date' => now()->addDay(),
+            'reason' => 'Menghadiri acara pernikahan keluarga di luar kota.',
+            'status' => 'pending',
+        ]);
+
+        $rejected = LeaveRequest::create([
+            'student_id' => $this->students['7A'][2]->id,
+            'type' => 'izin',
+            'start_date' => now()->subDays(6),
+            'end_date' => now()->subDays(6),
+            'reason' => 'Ada keperluan keluarga.',
+            'status' => 'pending',
+        ]);
+        $leaveService->reject($rejected, $homeroomUser, 'Bertepatan dengan ulangan harian, mohon diganti jadwalnya.');
     }
 
     private function seedNotificationTemplates(): void

@@ -113,4 +113,25 @@ class ParentPortalController extends PortalController
 
         return $this->showActivities($student);
     }
+
+    public function leaveRequests(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showLeaveRequests($student);
+    }
+
+    public function savings(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showSavings($student);
+    }
+
+    public function discipline(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showDiscipline($student);
+    }
 }

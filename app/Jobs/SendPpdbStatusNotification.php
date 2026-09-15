@@ -31,6 +31,7 @@ class SendPpdbStatusNotification implements ShouldQueue
             return;
         }
 
+        $previous = Tenant::current();
         Tenant::setCurrent(Tenant::find($registration->tenant_id));
 
         try {
@@ -41,7 +42,7 @@ class SendPpdbStatusNotification implements ShouldQueue
                 'status' => $registration->status->label(),
             ], 'ppdb_registration', $registration->id);
         } finally {
-            Tenant::forgetCurrent();
+            Tenant::setCurrent($previous);
         }
     }
 }
