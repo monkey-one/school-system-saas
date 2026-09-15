@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\DisplayController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LeaveRequestAttachmentController;
@@ -94,6 +95,10 @@ Route::middleware([ResolveTenant::class])->group(function () {
     Route::get('/sitemap.xml', [WebsiteController::class, 'sitemap'])->name('website.sitemap');
     Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
 });
+
+// Lobby TV display: public, aggregated school information for a screen in
+// the school lobby (?tenant= selects the school on a shared domain).
+Route::get('/display', [DisplayController::class, 'show'])->middleware([ResolveTenant::class])->name('display');
 
 // Payment gateway callbacks. These are POST endpoints called by Midtrans and
 // Xendit servers so they must be exempted from CSRF verification (see

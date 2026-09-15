@@ -53,6 +53,7 @@ class TeacherAttendanceResource extends Resource
                             ->options([
                                 'manual' => __('Manual'),
                                 'qr' => 'QR Code',
+                                'gps' => 'GPS',
                                 'fingerprint' => __('Fingerprint'),
                                 'face' => __('Face Recognition'),
                             ]),

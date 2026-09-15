@@ -200,6 +200,8 @@ class DemoSeeder extends Seeder
         $this->seedWebsite();
         $this->step('Leave requests, savings, discipline & counseling');
         $this->seedStudentServices();
+        $this->step('Attendance settings & WhatsApp log');
+        $this->seedAdminTools();
 
         Tenant::forgetCurrent();
 
@@ -1404,6 +1406,48 @@ class DemoSeeder extends Seeder
 
     // School rules & discipline points, counseling notes, savings/cashless
     // history for class 7A and leave requests in every status.
+    // Attendance settings for the GPS check-in and a sample WhatsApp delivery
+    // log so the log and broadcast pages are not empty on the demo.
+    private function seedAdminTools(): void
+    {
+        $this->tenant->update(['settings' => array_merge($this->tenant->settings ?? [], [
+            'school_lat' => -6.1805,
+            'school_lng' => 106.8283,
+            'checkin_radius_m' => 200,
+            'teacher_checkin_time' => '07:00',
+            'spp_due_day' => 10,
+        ])]);
+
+        $rows = [];
+        $now = now();
+        $samples = [
+            ['spp_reminder', 'sent', 'Yth. Orang Tua/Wali {name}, tagihan SPP bulan ini jatuh tempo tanggal 10. Terima kasih.'],
+            ['absen_alfa', 'sent', 'Yth. Orang Tua/Wali {name}, putra/putri Anda tercatat tidak hadir hari ini.'],
+            ['broadcast', 'sent', 'Mengundang Bapak/Ibu pada rapat komite hari Sabtu pukul 09.00 WIB di Aula Serbaguna.'],
+            ['payment', 'sent', 'Terima kasih, pembayaran SPP telah kami terima.'],
+            ['broadcast', 'failed', 'Mengundang Bapak/Ibu pada rapat komite hari Sabtu pukul 09.00 WIB di Aula Serbaguna.'],
+        ];
+
+        foreach ($this->students['7A'] as $i => $student) {
+            [$type, $status, $message] = $samples[$i % count($samples)];
+            $rows[] = [
+                'tenant_id' => $this->tenant->id,
+                'to_number' => sprintf('62813%08d', 40000000 + $i),
+                'template' => $type === 'broadcast' ? null : $type,
+                'message' => str_replace('{name}', $student->full_name, $message),
+                'status' => $status,
+                'sent_at' => $now->copy()->subHours($i * 5),
+                'error_message' => $status === 'failed' ? 'Device disconnected' : null,
+                'reference_type' => $type,
+                'reference_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        DB::table('whatsapp_logs')->insert($rows);
+    }
+
     private function seedStudentServices(): void
     {
         $types = collect([
