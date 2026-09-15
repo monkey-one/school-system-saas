@@ -97,7 +97,7 @@
 
     <footer class="bg-white border-t border-gray-200 py-6">
         <div class="max-w-3xl mx-auto px-4 text-center text-sm text-gray-400">
-            &copy; {{ date('Y') }} EduSaaS. {{ __('All rights reserved.') }}
+            &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('All rights reserved.') }} @include('partials.author-credit')
         </div>
     </footer>
 

@@ -1,172 +1,105 @@
-# EduSaaS — Sistem Manajemen Sekolah SaaS
+# EduSaaS — Sistem Manajemen Sekolah (Multi-Sekolah / SaaS)
 
-> Multi-tenant SaaS School Management System dibangun dengan Laravel 11 + Filament PHP 3.x
+> Laravel 11 · Filament 3 · Livewire 3 · MySQL — by **numintek (PT Danum Inovasi Teknologi)**
 
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-red)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.3+-blue)](https://php.net)
-[![Filament](https://img.shields.io/badge/Filament-3.x-orange)](https://filamentphp.com)
-[![License](https://img.shields.io/badge/License-Regular-green)](LICENSE)
+EduSaaS adalah sistem manajemen sekolah lengkap yang dapat dipakai untuk **satu sekolah**, atau dijalankan sebagai **SaaS untuk banyak sekolah**. Setiap sekolah memiliki data terisolasi, website profil, halaman PPDB, portal siswa, dan portal orang tua. Antarmuka tersedia dalam Bahasa Indonesia dan English.
 
----
-
-## 🎯 Apa itu EduSaaS?
-
-EduSaaS adalah sistem manajemen sekolah SaaS multi-tenant yang lengkap dan siap produksi. Setiap sekolah mendapatkan subdomain sendiri dan data terisolasi.
-
-**Cocok untuk:**
-- Entrepreneur yang ingin membangun bisnis SaaS sekolah
-- Sekolah yang membutuhkan sistem manajemen lengkap
-- Developer yang ingin starter SaaS Laravel premium
+**Live demo:** https://numintek.com/edusaas/
 
 ---
 
 ## ✨ Fitur Utama
 
-- 🏫 **Multi-Tenant** — Setiap sekolah = subdomain + data terisolasi
-- 📋 **PPDB Online** — Pendaftaran siswa baru online
-- 📊 **Absensi QR Code** — Siswa scan QR via browser HP
-- 💰 **SPP & Pembayaran Online** — Midtrans (QRIS, GoPay, VA) + Xendit
-- 📱 **Notifikasi WhatsApp** — Alert otomatis ke orang tua via Fonnte API
-- 📝 **Rapor Digital** — Generate & kirim rapor via WhatsApp (Kurikulum Merdeka)
-- 🌐 **Portal Siswa & Orang Tua** — Portal self-service web
-- 🔌 **REST API** — Mobile app ready dengan Sanctum auth
-- 📚 **Perpustakaan & Inventaris** — Peminjaman buku + manajemen aset
-- 📈 **Dashboard SaaS** — Kelola semua tenant dari satu tempat
+| Area | Fitur |
+|---|---|
+| SaaS | Multi-tenant (subdomain/`?tenant=`), paket & langganan, registrasi trial, impersonate sekolah, analitik platform |
+| Akademik | Tahun ajaran, semester, kelas, mapel, jadwal, penilaian berbobot, rapor PDF, kenaikan kelas, kelulusan → alumni |
+| Import/Export | Siswa, guru, mapel, jadwal mengajar, nilai (Excel/CSV) |
+| Presensi | QR code per jam pelajaran, presensi GPS guru, izin/sakit online (otomatis mengisi presensi), notifikasi WA ketidakhadiran |
+| E-Learning | Tugas online (teks/file, nilai & umpan balik), ujian online pilihan ganda (timer, autosave, penilaian otomatis), sinkron ke buku nilai |
+| Keuangan | Tagihan SPP otomatis + potongan, pembayaran tunai/online (Midtrans, Xendit), kwitansi PDF, pengingat WA, laporan keuangan, tabungan siswa/cashless |
+| Kesiswaan | Poin pelanggaran, catatan BK, prestasi, ekstrakurikuler, perpustakaan, aset, peminjaman fasilitas |
+| PPDB | Gelombang & kuota, formulir + unggah dokumen, cek status, verifikasi, daftarkan sebagai siswa sekali klik |
+| Website | Beranda, profil, berita, agenda, prestasi, galeri, guru, kontak, sitemap, layar TV lobi |
+| Portal | Portal siswa & portal orang tua (multi-anak) |
+| Komunikasi | Pengumuman, pesan internal, broadcast & log WhatsApp (Fonnte), template notifikasi |
+| API | REST API (Sanctum) + Swagger |
 
 ---
 
-## 🛠 Tech Stack
-
-| Komponen | Teknologi |
-|----------|-----------|
-| Backend | Laravel 11, PHP 8.3+ |
-| Admin Panel | Filament PHP 3.x |
-| Frontend | Livewire 3, Alpine.js, Tailwind CSS |
-| Database | MySQL 8.0 |
-| Queue | Redis + Laravel Horizon |
-| Pembayaran | Midtrans + Xendit |
-| WhatsApp | Fonnte API |
-| Multi-Tenancy | spatie/laravel-multitenancy |
-| Roles | spatie/laravel-permission |
-| QR Code | endroid/qr-code |
-| Excel | maatwebsite/excel |
-| PDF | barryvdh/laravel-dompdf |
-
----
-
-## 📋 Persyaratan
-
-- PHP 8.3+
-- MySQL 8.0+
-- Redis
-- Composer 2.x
-- Node.js 20+
-- Web server: Nginx atau Apache
-
----
-
-## 🚀 Instalasi Cepat
+## 🚀 Instalasi Singkat
 
 ```bash
-# 1. Clone repository
-git clone git@github.com:monkey-one/school-system-saas.git
-cd school-system-saas
-
-# 2. Install dependencies
-composer install
-npm install && npm run build
-
-# 3. Konfigurasi
+composer install --no-dev --optimize-autoloader
 cp .env.example .env
 php artisan key:generate
+# atur APP_URL dan DB_* di .env
 
-# 4. Setup database
-php artisan migrate --seed
+php artisan migrate --force
+php artisan db:seed --class=RolesAndPermissionsSeeder --force
+php artisan db:seed --class=DemoSeeder --force   # opsional: data contoh
 
-# 5. Data demo (opsional)
-php artisan db:seed --class=DemoSeeder
+php artisan storage:link
+php artisan optimize
 
-# 6. Jalankan queue worker
-php artisan horizon
-
-# 7. Jalankan server
-php artisan serve
+php artisan queue:work    # wajib berjalan (gunakan Supervisor di server)
 ```
 
-**Demo Akses:**
-- Landing: `http://localhost:8000`
-- Super Admin: `http://localhost:8000/super-admin` — `superadmin@edusaas.id` / `password`
-- Admin Sekolah: `http://localhost:8000/school` — `admin@smpn1demo.id` / `password`
-- Guru: `http://localhost:8000/teacher` — `guru@smpn1demo.id` / `password`
+Tambahkan cron berikut:
 
-Lihat `docs/INSTALLATION.md` untuk panduan lengkap.
+```cron
+* * * * * cd /path/to/edusaas && php artisan schedule:run >> /dev/null 2>&1
+```
 
----
-
-## 📁 Struktur Modul
-
-| Modul | Deskripsi |
-|-------|-----------|
-| Foundation | Multi-tenancy, auth, 3 Filament panels, roles |
-| Akademik | Tahun ajaran, semester, kelas, mapel, kurikulum |
-| Kesiswaan | PPDB online, profil siswa, alumni |
-| Kepegawaian | Profil guru, jadwal mengajar |
-| Absensi | QR Code attendance, GPS check-in guru |
-| Penilaian | Gradebook, rapor digital Kurikulum Merdeka |
-| Keuangan | SPP, pembayaran online, laporan |
-| Komunikasi | Pengumuman, WhatsApp blast, pesan |
-| Perpustakaan | Katalog buku, peminjaman, denda |
-| Inventaris | Aset, fasilitas, booking |
-| Super Admin | Manajemen tenant, langganan, analytics |
-| Landing Page | Halaman marketing |
-| Portal | Portal siswa & orang tua |
-| REST API | API dengan Sanctum auth |
+Panduan lengkap (Nginx, subdomain, sub-folder, Supervisor, keamanan, backup, update) ada di **[docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)**.
 
 ---
 
-## 📞 Dukungan
+## 🔑 Akun Demo (setelah `DemoSeeder`)
 
-- Dokumentasi: folder `docs/`
-- Dukungan: via Codester atau email
+Semua peran masuk dari **`/edusaas-admin/login`**, lalu diarahkan otomatis ke panel atau portal masing-masing. Password semua akun: `password`.
+
+| Peran | Email |
+|---|---|
+| Super Admin | superadmin@edusaas.id |
+| Admin Sekolah | admin@smpn1demo.id |
+| Operator | operator@smpn1demo.id |
+| Guru | guru@smpn1demo.id |
+| Siswa | siswa@smpn1demo.id |
+| Orang Tua | ortu@smpn1demo.id |
+
+> Di server produksi, jangan jalankan `DemoSeeder`. Atau ganti semua password segera setelah instalasi.
 
 ---
+
+## 📚 Dokumentasi
+
+| Dokumen | Isi |
+|---|---|
+| [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | Panduan pengguna: super admin, admin/operator, guru, siswa, orang tua |
+| [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | Arsitektur, database, instalasi, deploy, keamanan, pemecahan masalah |
+| [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | Rincian skema database |
+| [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md) | Kustomisasi tampilan & fitur |
+
+---
+
+## 🛠 Kebutuhan
+
+- PHP 8.2+ (ekstensi: bcmath, ctype, curl, dom, fileinfo, gd, intl, mbstring, openssl, pdo_mysql, xml, zip)
+- MySQL 8.0+ / MariaDB 10.6+
+- Composer 2
+- Nginx atau Apache, cron, Supervisor
+
+---
+
+## 🤝 Dukungan & Kustomisasi
+
+Instalasi, hosting, pelatihan, fitur khusus, dan SaaS white-label:
+
+**numintek — PT Danum Inovasi Teknologi**
+- https://numintek.com
+- WhatsApp +62 852-2009-1770
 
 ## 📄 Lisensi
 
-Regular License — untuk 1 end product (SaaS Anda).
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Digunakan sesuai lisensi yang dibeli di Codester. Dilarang mendistribusikan ulang source code.

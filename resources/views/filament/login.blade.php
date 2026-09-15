@@ -26,9 +26,12 @@
         />
     </x-filament-panels::form>
 
+    @include('filament.demo-credentials')
+
     <div class="mt-6 text-center">
         <p class="text-xs text-gray-400">
-            &copy; {{ date('Y') }} EduSaaS — {{ __('School Management System') }}
+            &copy; {{ date('Y') }} {{ config('app.name') }} — {{ __('School Management System') }}
+            @include('partials.author-credit')
         </p>
     </div>
 </x-filament-panels::page.simple>

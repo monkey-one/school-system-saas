@@ -147,6 +147,7 @@
         @include('partials.author-credit')
     </div>
 </footer>
+@include('partials.demo-cta')
 @stack('scripts')
 </body>
 </html>

@@ -360,7 +360,7 @@
     {{-- Footer --}}
     <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
         <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-400">
-            &copy; {{ date('Y') }} EduSaaS. {{ __('All rights reserved.') }}
+            &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('All rights reserved.') }} @include('partials.author-credit')
         </div>
     </footer>
 

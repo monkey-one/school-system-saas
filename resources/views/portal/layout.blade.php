@@ -179,9 +179,11 @@
 
         <footer class="border-t border-gray-200 bg-white px-4 py-4 text-center text-xs text-gray-500 sm:px-6">
             &copy; {{ date('Y') }} {{ $tenant?->name }} · {{ config('app.name') }}
+            @include('partials.author-credit')
         </footer>
     </div>
 </div>
+@include('partials.demo-cta')
 @stack('scripts')
 </body>
 </html>
