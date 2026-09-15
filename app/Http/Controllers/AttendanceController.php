@@ -4,94 +4,109 @@ namespace App\Http\Controllers;
 
 use App\Enums\AttendanceStatus;
 use App\Models\AttendanceSession;
+use App\Models\Student;
 use App\Models\StudentAttendance;
-use App\Models\Tenant;
 use App\Services\QRCodeService;
 use Illuminate\Http\Request;
 
-// Handles the public-facing QR attendance flow. Teachers generate a QR code
-// that encodes a signed JWT. Students scan the code on their phone, which
-// hits the scan endpoint to verify the token, then confirm their attendance.
+// QR attendance for students. A teacher displays a QR code that encodes a
+// signed, short-lived JWT; the student scans it with their phone, signs in
+// (if needed) and confirms. Attendance is always recorded for the SIGNED-IN
+// student only, and only when the session belongs to that student's class.
 class AttendanceController extends Controller
 {
     public function __construct(
         protected QRCodeService $qrCodeService,
     ) {}
 
-    // Display the scan page after validating the JWT token from the QR code.
-    // Shows the session info so the student can confirm their identity.
+    // Show the session details and whether the student is already recorded.
     public function scan(Request $request)
     {
-        $request->validate([
-            'token' => 'required|string',
-        ]);
+        $request->validate(['token' => 'required|string|max:2048']);
 
-        $payload = $this->qrCodeService->validateToken($request->token);
-
-        if (! $payload) {
-            return view('attendance.scan', ['error' => 'QR Code tidak valid atau sudah kedaluwarsa.']);
-        }
-
-        $session = AttendanceSession::with('classroomSubject.subject', 'teacher')
-            ->find($payload['session_id']);
-
-        if (! $session || $session->status !== 'open') {
-            return view('attendance.scan', ['error' => 'Sesi absensi tidak ditemukan atau sudah ditutup.']);
-        }
+        $student = $request->user()->student;
+        [$session, $error] = $this->resolveSession($request->string('token'), $student);
 
         return view('attendance.scan', [
             'session' => $session,
-            'token' => $request->token,
+            'student' => $student,
+            'token' => $request->string('token'),
+            'attendance' => $session && $student
+                ? StudentAttendance::where('attendance_session_id', $session->id)->where('student_id', $student->id)->first()
+                : null,
+            'justRecorded' => false,
+            'error' => $error,
+        ]);
+    }
+
+    // Record attendance once; a repeated confirmation keeps the first record.
+    public function confirm(Request $request)
+    {
+        $request->validate(['token' => 'required|string|max:2048']);
+
+        $student = $request->user()->student;
+        [$session, $error] = $this->resolveSession($request->string('token'), $student);
+
+        if ($error) {
+            return view('attendance.scan', compact('session', 'student', 'error') + [
+                'token' => $request->string('token'),
+                'attendance' => null,
+                'justRecorded' => false,
+            ]);
+        }
+
+        $sessionStart = $session->date->copy()->setTimeFromTimeString($session->start_time ?? '00:00:00');
+        $isLate = now()->greaterThan($sessionStart->addMinutes(15));
+
+        $attendance = StudentAttendance::firstOrCreate(
+            [
+                'attendance_session_id' => $session->id,
+                'student_id' => $student->id,
+            ],
+            [
+                'tenant_id' => $session->tenant_id,
+                'status' => $isLate ? AttendanceStatus::TERLAMBAT : AttendanceStatus::HADIR,
+                'check_in_time' => now(),
+                'method' => 'qr_code',
+            ],
+        );
+
+        return view('attendance.scan', [
+            'session' => $session,
+            'student' => $student,
+            'token' => $request->string('token'),
+            'attendance' => $attendance,
+            'justRecorded' => $attendance->wasRecentlyCreated,
             'error' => null,
         ]);
     }
 
-    // Record the student's attendance after a second validation of the token.
-    // Checks for duplicates and marks late arrivals (more than 15 minutes
-    // after the scheduled start time).
-    public function confirm(Request $request)
+    // Validates the QR token and returns [session, errorMessage]. The session
+    // lookup runs under the student's tenant scope, so QR codes of other
+    // schools are never found.
+    private function resolveSession(string $token, ?Student $student): array
     {
-        $request->validate([
-            'token' => 'required|string',
-            'student_id' => 'required|exists:students,id',
-        ]);
-
-        $payload = $this->qrCodeService->validateToken($request->token);
-
-        if (! $payload) {
-            return back()->with('error', 'QR Code tidak valid atau sudah kedaluwarsa.');
+        if (! $student) {
+            return [null, __('Only student accounts can record attendance.')];
         }
 
-        $session = AttendanceSession::find($payload['session_id']);
+        $payload = $this->qrCodeService->validateToken($token);
+
+        if (! $payload || empty($payload['session_id'])) {
+            return [null, __('The QR code is invalid or has expired. Please scan again.')];
+        }
+
+        $session = AttendanceSession::with('classroomSubject.subject', 'classroomSubject.classroom', 'teacher')
+            ->find($payload['session_id']);
 
         if (! $session || $session->status !== 'open') {
-            return back()->with('error', 'Sesi absensi tidak ditemukan atau sudah ditutup.');
+            return [null, __('The attendance session was not found or is already closed.')];
         }
 
-        $existing = StudentAttendance::where('attendance_session_id', $session->id)
-            ->where('student_id', $request->student_id)
-            ->first();
-
-        if ($existing) {
-            return back()->with('error', 'Anda sudah melakukan absensi untuk sesi ini.');
+        if ((int) $session->classroomSubject?->classroom_id !== (int) $student->classroom_id) {
+            return [$session, __('This attendance session is not for your class.')];
         }
 
-        $now = now();
-        $sessionStart = $session->date->copy()->setTimeFromTimeString($session->start_time);
-        $isLate = $now->diffInMinutes($sessionStart, false) < -15;
-
-        StudentAttendance::create([
-            'tenant_id' => $session->tenant_id,
-            'attendance_session_id' => $session->id,
-            'student_id' => $request->student_id,
-            'status' => $isLate ? AttendanceStatus::TERLAMBAT : AttendanceStatus::HADIR,
-            'check_in_time' => $now,
-            'method' => 'qr_code',
-        ]);
-
-        return view('attendance.success', [
-            'session' => $session,
-            'isLate' => $isLate,
-        ]);
+        return [$session, null];
     }
 }

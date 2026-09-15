@@ -11,16 +11,25 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\Password;
 
+// Public self-service sign-up for schools: creates the tenant, its first
+// subscription (trial or paid) and the school admin account. Honors the
+// "allow registration" and "trial days" settings from System Settings.
 class RegistrationController extends Controller
 {
     public function create(Request $request)
     {
+        $this->ensureRegistrationOpen();
+
         $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
         $selectedPlan = $request->query('plan');
 
@@ -29,6 +38,8 @@ class RegistrationController extends Controller
 
     public function store(Request $request)
     {
+        $this->ensureRegistrationOpen();
+
         $validated = $request->validate([
             'school_name' => 'required|string|max:255',
             'school_type' => ['required', new Enum(SchoolType::class)],
@@ -40,19 +51,20 @@ class RegistrationController extends Controller
             'principal_name' => 'nullable|string|max:255',
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|max:255|unique:users,email',
-            'admin_password' => 'required|string|min:8|confirmed',
-            'plan_id' => 'required|exists:plans,id',
+            'admin_password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'plan_id' => ['required', Rule::exists('plans', 'id')->where('is_active', true)],
             'billing_cycle' => 'required|in:monthly,annual',
             'registration_type' => 'required|in:trial,paid',
         ]);
 
         $plan = Plan::findOrFail($validated['plan_id']);
+        $trialDays = max(0, (int) Cache::get('system.trial_days', 14));
 
-        return DB::transaction(function () use ($validated, $plan, $request) {
-            $slug = Str::slug($validated['school_name']);
+        return DB::transaction(function () use ($validated, $plan, $trialDays) {
+            $slug = Str::slug($validated['school_name']) ?: 'school';
             $originalSlug = $slug;
             $counter = 1;
-            while (Tenant::where('slug', $slug)->exists()) {
+            while (Tenant::withTrashed()->where('slug', $slug)->exists()) {
                 $slug = $originalSlug . '-' . $counter++;
             }
 
@@ -69,7 +81,8 @@ class RegistrationController extends Controller
                 'school_type' => $validated['school_type'],
                 'principal_name' => $validated['principal_name'],
                 'status' => $isTrial ? TenantStatus::TRIAL : TenantStatus::SUSPENDED,
-                'trial_ends_at' => $isTrial ? now()->addDays(14) : null,
+                'trial_ends_at' => $isTrial ? now()->addDays($trialDays) : null,
+                'currency' => Cache::get('system.default_currency', 'IDR'),
                 'settings' => ['color_primary' => '#1e40af'],
             ]);
 
@@ -77,16 +90,11 @@ class RegistrationController extends Controller
                 ? (int) $plan->price_annual
                 : (int) $plan->price_monthly;
 
-            $startsAt = $isTrial ? now() : null;
-            $endsAt = $isTrial
-                ? now()->addDays(14)
-                : null;
-
             $subscription = Subscription::create([
                 'tenant_id' => $tenant->id,
                 'plan_id' => $plan->id,
-                'starts_at' => $startsAt,
-                'ends_at' => $endsAt,
+                'starts_at' => $isTrial ? now() : null,
+                'ends_at' => $isTrial ? now()->addDays($trialDays) : null,
                 'status' => $isTrial ? 'active' : 'pending',
                 'payment_method' => $isTrial ? 'trial' : null,
                 'billing_cycle' => $validated['billing_cycle'],
@@ -106,15 +114,8 @@ class RegistrationController extends Controller
                 'email_verified_at' => now(),
             ]);
 
-            if ($user->hasRole === null || ! method_exists($user, 'assignRole')) {
-                // HasRoles trait may not be loaded, skip
-            } else {
-                try {
-                    $user->assignRole('school_admin');
-                } catch (\Throwable) {
-                    // Role may not exist yet
-                }
-            }
+            // The role table may be empty on a fresh install without seeding.
+            rescue(fn () => $user->assignRole('school_admin'), report: false);
 
             if ($isTrial) {
                 return redirect()->route('register.trial-success', [
@@ -122,9 +123,9 @@ class RegistrationController extends Controller
                 ]);
             }
 
-            return redirect()->route('register.payment', [
+            return redirect()->to(URL::temporarySignedRoute('register.payment', now()->addDay(), [
                 'subscription' => $subscription->id,
-            ]);
+            ]));
         });
     }
 
@@ -147,7 +148,7 @@ class RegistrationController extends Controller
         $midtrans = app(MidtransService::class);
 
         if (! $subscription->payment_token) {
-            $orderId = 'SUB-' . $subscription->id . '-' . time();
+            $orderId = 'SUB-' . $subscription->id . '-' . Str::upper(Str::random(8));
             $token = $midtrans->createSnapToken(
                 $orderId,
                 $amount,
@@ -191,17 +192,20 @@ class RegistrationController extends Controller
 
     public function success(Request $request)
     {
-        $tenantSlug = $request->query('tenant');
-        $tenant = Tenant::where('slug', $tenantSlug)->firstOrFail();
+        $tenant = Tenant::where('slug', (string) $request->query('tenant'))->firstOrFail();
 
         return view('registration.success', compact('tenant'));
     }
 
     public function trialSuccess(Request $request)
     {
-        $tenantSlug = $request->query('tenant');
-        $tenant = Tenant::where('slug', $tenantSlug)->firstOrFail();
+        $tenant = Tenant::where('slug', (string) $request->query('tenant'))->firstOrFail();
 
         return view('registration.trial-success', compact('tenant'));
+    }
+
+    private function ensureRegistrationOpen(): void
+    {
+        abort_unless((bool) Cache::get('system.allow_registration', true), 403, __('New school registration is currently closed.'));
     }
 }

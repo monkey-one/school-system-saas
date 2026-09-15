@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Gender;
 use App\Enums\PPDBStatus;
 use App\Models\PPDBRegistration;
 use App\Models\PPDBWave;
@@ -9,6 +10,7 @@ use App\Models\Tenant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 // Handles all public PPDB (student admission) pages: browsing open waves,
 // submitting a registration form, checking application status, and
@@ -53,11 +55,17 @@ class PPDBController extends Controller
     // race conditions under concurrent requests.
     public function store(Request $request)
     {
+        $tenant = $this->tenant();
+
         $validated = $request->validate([
-            'ppdb_wave_id' => 'required|exists:ppdb_waves,id',
+            // The wave must be an active wave of THIS school.
+            'ppdb_wave_id' => ['required', Rule::exists('ppdb_waves', 'id')
+                ->where('tenant_id', $tenant->id)
+                ->where('is_active', true)
+                ->whereNull('deleted_at')],
             'full_name' => 'required|string|max:255',
             'birth_date' => 'required|date|before:today',
-            'gender' => 'required|in:male,female',
+            'gender' => ['required', Rule::enum(Gender::class)],
             'parent_name' => 'required|string|max:255',
             'parent_phone' => 'required|string|max:20',
             'parent_email' => 'nullable|email|max:255',
@@ -65,17 +73,20 @@ class PPDBController extends Controller
             'address' => 'required|string|max:1000',
         ]);
 
-        $tenant = $this->tenant();
+        $wave = PPDBWave::findOrFail($validated['ppdb_wave_id']);
+        abort_unless($wave->opens_at?->isPast() && $wave->closes_at?->isFuture(), 422, __('Registration for this wave is not open.'));
 
         // Wrap in a transaction with a lock to avoid duplicate registration numbers
-        // when two applicants submit at the same time.
+        // when two applicants submit at the same time. The number contains the
+        // school ID because the column is unique across all schools.
         $registration = DB::transaction(function () use ($validated, $tenant) {
-            $count = PPDBRegistration::where('tenant_id', $tenant->id)
+            $count = PPDBRegistration::withTrashed()
+                ->where('tenant_id', $tenant->id)
                 ->whereYear('created_at', now()->year)
                 ->lockForUpdate()
                 ->count();
 
-            $registrationNumber = sprintf('PPDB-%d-%05d', now()->year, $count + 1);
+            $registrationNumber = sprintf('PPDB-%d-%d-%05d', now()->year, $tenant->id, $count + 1);
 
             return PPDBRegistration::create([
                 'tenant_id' => $tenant->id,

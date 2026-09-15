@@ -28,6 +28,9 @@ class PPDBTest extends TestCase
             'status' => TenantStatus::ACTIVE,
         ]);
 
+        // Public PPDB pages resolve the school from the default slug.
+        config(['app.default_tenant_slug' => 'test-school']);
+
         Tenant::setCurrent($this->tenant);
 
         $academicYear = AcademicYear::create([

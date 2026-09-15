@@ -44,6 +44,13 @@ class PaymentWebhookController extends Controller
             return response()->json(['message' => 'Payment not found'], 404);
         }
 
+        // The signed gross amount must match what we charged; otherwise a
+        // cheaper transaction could be replayed against an expensive order.
+        if ((int) round((float) ($notification['gross_amount'] ?? 0)) !== (int) round((float) $payment->amount)) {
+            Log::warning('Midtrans webhook: amount mismatch', ['order_id' => $orderId]);
+            return response()->json(['message' => 'Amount mismatch'], 422);
+        }
+
         DB::transaction(function () use ($payment, $transactionStatus, $transactionId, $notification) {
             $payment->update([
                 'gateway_transaction_id' => $transactionId,

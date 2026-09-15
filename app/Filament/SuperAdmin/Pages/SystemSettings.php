@@ -2,6 +2,8 @@
 
 namespace App\Filament\SuperAdmin\Pages;
 
+use App\Helpers\CurrencyHelper;
+use App\Support\Demo;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -9,8 +11,10 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Cache;
-use App\Helpers\CurrencyHelper;
 
+// Platform-wide settings stored in the cache store under "system.*" keys.
+// Name, language and timezone are applied on every web request by
+// AppServiceProvider::applySystemSettings().
 class SystemSettings extends Page implements HasForms
 {
     use InteractsWithForms;
@@ -41,12 +45,11 @@ class SystemSettings extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([
-            'app_name' => config('app.name', 'EduSaaS'),
-            'default_locale' => config('app.locale', 'id'),
-            'timezone' => config('app.timezone', 'Asia/Jakarta'),
+            'app_name' => Cache::get('system.app_name', config('app.name', 'EduSaaS')),
+            'default_locale' => Cache::get('system.default_locale', config('app.locale', 'id')),
+            'timezone' => Cache::get('system.timezone', config('app.timezone', 'Asia/Jakarta')),
             'trial_days' => Cache::get('system.trial_days', 14),
             'max_students_free' => Cache::get('system.max_students_free', 50),
-            'maintenance_mode' => app()->isDownForMaintenance(),
             'allow_registration' => Cache::get('system.allow_registration', true),
             'default_currency' => Cache::get('system.default_currency', 'IDR'),
         ]);
@@ -64,7 +67,7 @@ class SystemSettings extends Page implements HasForms
                         Forms\Components\TextInput::make('app_name')
                             ->label(__('Application Name'))
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(100),
                         Forms\Components\Select::make('default_locale')
                             ->label(__('Default Language'))
                             ->options([
@@ -78,13 +81,18 @@ class SystemSettings extends Page implements HasForms
                                 'Asia/Jakarta' => 'WIB (Asia/Jakarta)',
                                 'Asia/Makassar' => 'WITA (Asia/Makassar)',
                                 'Asia/Jayapura' => 'WIT (Asia/Jayapura)',
+                                'Asia/Kuala_Lumpur' => 'Asia/Kuala_Lumpur',
+                                'Asia/Singapore' => 'Asia/Singapore',
+                                'UTC' => 'UTC',
                             ])
-                            ->required(),                        Forms\Components\Select::make('default_currency')
+                            ->required(),
+                        Forms\Components\Select::make('default_currency')
                             ->label(__('Default Currency'))
                             ->options(CurrencyHelper::options())
                             ->required()
                             ->searchable()
-                            ->helperText(__('Default currency for all schools. Schools can override this in their settings.')),                    ]),
+                            ->helperText(__('Default currency for all schools. Schools can override this in their settings.')),
+                    ]),
                 Forms\Components\Section::make(__('Registration & Trial'))
                     ->icon('heroicon-o-user-plus')
                     ->collapsible()
@@ -109,11 +117,20 @@ class SystemSettings extends Page implements HasForms
 
     public function save(): void
     {
+        if (Demo::enabled()) {
+            Demo::deny(__('System settings are read-only on the public demo.'));
+
+            return;
+        }
+
         $data = $this->form->getState();
 
-        Cache::forever('system.trial_days', $data['trial_days'] ?? 14);
-        Cache::forever('system.max_students_free', $data['max_students_free'] ?? 50);
-        Cache::forever('system.allow_registration', $data['allow_registration'] ?? true);
+        Cache::forever('system.app_name', $data['app_name']);
+        Cache::forever('system.default_locale', $data['default_locale']);
+        Cache::forever('system.timezone', $data['timezone']);
+        Cache::forever('system.trial_days', (int) ($data['trial_days'] ?? 14));
+        Cache::forever('system.max_students_free', (int) ($data['max_students_free'] ?? 50));
+        Cache::forever('system.allow_registration', (bool) ($data['allow_registration'] ?? true));
         Cache::forever('system.default_currency', $data['default_currency'] ?? 'IDR');
 
         Notification::make()

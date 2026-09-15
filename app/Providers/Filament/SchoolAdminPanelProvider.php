@@ -109,9 +109,13 @@ class SchoolAdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 SetLocale::class,
-                ResolveTenant::class,
-                EnsureTenantIsSet::class,
             ])
+            // Persistent so Livewire AJAX requests (table search, pagination,
+            // actions) are scoped to the same school as the initial page.
+            ->middleware([
+                ResolveTenant::class . ':panel',
+                EnsureTenantIsSet::class . ':panel',
+            ], isPersistent: true)
             ->authMiddleware([
                 Authenticate::class,
             ])

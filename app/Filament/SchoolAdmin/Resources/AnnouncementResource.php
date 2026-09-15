@@ -66,6 +66,7 @@ class AnnouncementResource extends Resource
                             ->label('Lampiran')
                             ->multiple()
                             ->directory('announcements/attachments')
+                            ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
                             ->maxSize(10240)
                             ->maxFiles(5),
                     ]),

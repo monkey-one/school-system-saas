@@ -53,9 +53,16 @@ class XenditService
         ]);
     }
 
+    // An empty configured token would match an empty header, so an
+    // unconfigured installation must reject every callback.
     public function verifyWebhookToken(string $token): bool
     {
-        $webhookToken = config('services.xendit.webhook_token', '');
+        $webhookToken = (string) config('services.xendit.webhook_token', '');
+
+        if ($webhookToken === '' || $token === '') {
+            return false;
+        }
+
         return hash_equals($webhookToken, $token);
     }
 }
