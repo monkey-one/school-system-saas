@@ -89,7 +89,7 @@ class ElearningTest extends TestCase
             'starts_at' => now()->subHour(), 'ends_at' => now()->addHours(2), 'duration_minutes' => 30, 'shuffle_questions' => false, 'show_result' => true, 'is_published' => true,
         ]);
 
-        foreach ([['1/2 + 1/2 = ...', ['1', '2', '0'], 'A'], ['2 x 3 = ...', ['5', '6', '9'], 'B']] as $n => [$q, $options, $correct]) {
+        foreach ([['1/2 + 1/2 = ...', ['A' => '1', 'B' => '2', 'C' => '0'], 'A'], ['2 x 3 = ...', ['A' => '5', 'B' => '6', 'C' => '9'], 'B']] as $n => [$q, $options, $correct]) {
             ExamQuestion::create(['exam_id' => $this->exam->id, 'question' => $q, 'options' => $options, 'correct_option' => $correct, 'points' => 1, 'sort_order' => $n]);
         }
 

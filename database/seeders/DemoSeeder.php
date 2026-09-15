@@ -1515,7 +1515,7 @@ class DemoSeeder extends Seeder
                 ExamQuestion::create([
                     'exam_id' => $exam->id,
                     'question' => $question,
-                    'options' => $options,
+                    'options' => array_combine(array_slice(ExamQuestion::LETTERS, 0, count($options)), $options),
                     'correct_option' => $correct,
                     'points' => 1,
                     'sort_order' => $n + 1,
