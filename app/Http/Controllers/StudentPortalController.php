@@ -2,207 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PaymentMethod;
-use App\Models\Announcement;
-use App\Models\Payment;
-use App\Models\Semester;
-use App\Models\SppBill;
-use App\Models\StudentAttendance;
-use App\Models\StudentGrade;
-use App\Models\TeachingSchedule;
-use App\Models\Tenant;
-use App\Services\MidtransService;
-use App\Services\RaporService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
-// Serves the student-facing portal: dashboard overview, attendance history,
-// grades, report card PDF download, SPP bills with online payment, and
-// school announcements. Every action ensures the authenticated user has an
-// associated Student record before proceeding.
-class StudentPortalController extends Controller
+// Student portal: the signed-in student sees their own schedule, attendance,
+// grades, report cards, bills, library loans, announcements and messages.
+class StudentPortalController extends PortalController
 {
-    // Aggregates key data for the student dashboard: schedule, recent grades,
-    // attendance breakdown, unpaid SPP bills, and pinned announcements.
-    public function dashboard()
+    protected function portal(): string
     {
-        $user = Auth::user();
-        $student = $user->student;
-        $tenant = Tenant::current();
-
-        abort_unless($student, 403, 'Anda bukan siswa.');
-
-        $activeSemester = Semester::where('tenant_id', $tenant->id)
-            ->where('is_active', true)
-            ->first();
-
-        $schedule = TeachingSchedule::where('tenant_id', $tenant->id)
-            ->whereHas('classroomSubject', fn ($q) => $q->where('classroom_id', $student->classroom_id))
-            ->where('semester_id', $activeSemester?->id)
-            ->where('is_active', true)
-            ->with('classroomSubject.subject', 'teacher')
-            ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->get();
-
-        $recentGrades = StudentGrade::where('student_id', $student->id)
-            ->with('assessment.classroomSubject.subject')
-            ->latest()
-            ->take(5)
-            ->get();
-
-        $attendanceSummary = StudentAttendance::where('student_id', $student->id)
-            ->selectRaw('status, COUNT(*) as total')
-            ->groupBy('status')
-            ->pluck('total', 'status');
-
-        $unpaidBills = SppBill::where('student_id', $student->id)
-            ->whereNotIn('status', ['paid', 'waived'])
-            ->orderBy('due_date')
-            ->take(3)
-            ->get();
-
-        $announcements = Announcement::where('tenant_id', $tenant->id)
-            ->where('published_at', '<=', now())
-            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>=', now()))
-            ->orderByDesc('is_pinned')
-            ->orderByDesc('published_at')
-            ->take(5)
-            ->get();
-
-        return view('student-portal.dashboard', compact(
-            'student', 'schedule', 'recentGrades', 'attendanceSummary',
-            'unpaidBills', 'announcements', 'activeSemester'
-        ));
+        return 'student';
     }
 
-    // Paginated attendance records for the logged-in student.
-    public function attendance()
+    protected function contextStudent(): Student
     {
-        $student = Auth::user()->student;
-        abort_unless($student, 403);
+        $student = auth()->user()->student;
 
-        $attendances = StudentAttendance::where('student_id', $student->id)
-            ->with('attendanceSession.classroomSubject.subject')
-            ->orderByDesc('check_in_time')
-            ->paginate(25);
+        abort_unless($student, 403, __('This account is not linked to a student record.'));
 
-        return view('student-portal.attendance', compact('attendances', 'student'));
+        return $student;
     }
 
-    // All grades grouped by subject, with semester filter options.
-    public function grades()
+    protected function authorizeStudent(?Student $student): void
     {
-        $student = Auth::user()->student;
-        abort_unless($student, 403);
-
-        $tenant = Tenant::current();
-
-        $semesters = Semester::where('tenant_id', $tenant->id)
-            ->orderByDesc('starts_at')
-            ->get();
-
-        $grades = StudentGrade::where('student_id', $student->id)
-            ->with('assessment.classroomSubject.subject', 'assessment.assessmentType')
-            ->get()
-            ->groupBy(fn ($g) => $g->assessment->classroomSubject->subject->name ?? 'Unknown');
-
-        return view('student-portal.grades', compact('grades', 'semesters', 'student'));
+        abort_unless($student && $student->id === $this->contextStudent()->id, 403);
     }
 
-    // Generate and download the report card PDF for the given semester.
-    public function rapor(Semester $semester)
+    public function dashboard(): View
     {
-        $student = Auth::user()->student;
-        abort_unless($student, 403);
-
-        $raporService = app(RaporService::class);
-        $reportCard = $raporService->generateForStudent($student, $semester->id);
-
-        $tenant = Tenant::current();
-
-        $pdf = Pdf::loadView('student-portal.rapor-pdf', compact('reportCard', 'student', 'semester', 'tenant'));
-
-        return $pdf->download('rapor-' . $student->nis . '-' . $semester->name . '.pdf');
+        return $this->showDashboard($this->contextStudent());
     }
 
-    // Paginated list of SPP bills for the student.
-    public function spp()
+    public function schedule(): View
     {
-        $student = Auth::user()->student;
-        abort_unless($student, 403);
-
-        $bills = SppBill::where('student_id', $student->id)
-            ->with('sppType')
-            ->orderByDesc('due_date')
-            ->paginate(25);
-
-        return view('student-portal.spp', compact('bills', 'student'));
+        return $this->showSchedule($this->contextStudent());
     }
 
-    // Create a Midtrans Snap payment session for an unpaid bill and redirect
-    // the student to the payment page. A Payment record is created immediately
-    // with a 'pending' gateway status; the webhook will finalize it.
-    public function pay(SppBill $bill)
+    public function attendance(Request $request): View
     {
-        $student = Auth::user()->student;
-        abort_unless($student && $bill->student_id === $student->id, 403);
-        abort_if(in_array($bill->status->value, ['paid', 'waived']), 400);
-
-        $midtransService = app(MidtransService::class);
-
-        // Build a unique order ID for the payment gateway. Using uniqid()
-        // instead of time() avoids collisions on sub-second requests.
-        $orderId = 'SPP-' . $bill->id . '-' . uniqid();
-        $snapToken = $midtransService->createSnapToken(
-            $orderId,
-            (int) $bill->final_amount,
-            [
-                'name' => $student->full_name,
-                'email' => $student->email ?? Auth::user()->email,
-                'phone' => $student->phone ?? '',
-            ],
-            [
-                [
-                    'id' => 'SPP-' . $bill->id,
-                    'price' => (int) $bill->final_amount,
-                    'quantity' => 1,
-                    'name' => $bill->sppType->name ?? 'SPP ' . $bill->period,
-                ],
-            ]
-        );
-
-        if (! $snapToken) {
-            return back()->with('error', 'Gagal membuat transaksi pembayaran. Silakan coba lagi.');
-        }
-
-        Payment::create([
-            'tenant_id' => Tenant::current()->id,
-            'student_id' => $student->id,
-            'reference_number' => $orderId,
-            'amount' => $bill->final_amount,
-            'payment_date' => now(),
-            'method' => PaymentMethod::MIDTRANS,
-            'gateway_transaction_id' => null,
-            'gateway_status' => 'pending',
-        ]);
-
-        return view('student-portal.payment', compact('snapToken', 'bill'));
+        return $this->showAttendance($request, $this->contextStudent());
     }
 
-    // Published announcements with pinned items at the top.
-    public function announcements()
+    public function grades(Request $request): View
     {
-        $tenant = Tenant::current();
+        return $this->showGrades($request, $this->contextStudent());
+    }
 
-        $announcements = Announcement::where('tenant_id', $tenant->id)
-            ->where('published_at', '<=', now())
-            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>=', now()))
-            ->orderByDesc('is_pinned')
-            ->orderByDesc('published_at')
-            ->paginate(25);
+    public function reportCards(): View
+    {
+        return $this->showReportCards($this->contextStudent());
+    }
 
-        return view('student-portal.announcements', compact('announcements'));
+    public function bills(): View
+    {
+        return $this->showBills($this->contextStudent());
+    }
+
+    public function activities(): View
+    {
+        return $this->showActivities($this->contextStudent());
     }
 }

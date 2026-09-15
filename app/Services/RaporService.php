@@ -9,8 +9,12 @@ use App\Models\StudentAttendance;
 use App\Models\StudentGrade;
 use App\Models\ClassroomSubject;
 use App\Models\CurriculumSetting;
+use App\Models\Semester;
+use App\Models\StudentExtracurricular;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 // Generates student report cards by aggregating grades, computing weighted
 // averages based on curriculum settings, and producing a ReportCard record
@@ -83,18 +87,22 @@ class RaporService
         }
 
         $grouped = $grades->groupBy(fn ($g) => $g->assessment->assessmentType->code);
-        $totalWeight = array_sum($weights);
-        $finalScore = 0;
+        $weightedSum = 0;
+        $usedWeight = 0;
 
+        // Only assessment types that already have grades count, so a
+        // mid-semester report (e.g. before PAS) is not dragged down by
+        // the weight of assessments that have not taken place yet.
         foreach ($weights as $code => $weight) {
             $codeGrades = $grouped->get($code);
             if ($codeGrades && $codeGrades->count() > 0) {
                 $avg = $codeGrades->avg(fn ($g) => $g->is_remedial && $g->remedial_score ? $g->remedial_score : $g->score);
-                $finalScore += ($avg * $weight / $totalWeight);
+                $weightedSum += $avg * $weight;
+                $usedWeight += $weight;
             }
         }
 
-        return $finalScore;
+        return $usedWeight > 0 ? $weightedSum / $usedWeight : 0;
     }
 
     protected function getPredicate(float $score): string
@@ -147,38 +155,106 @@ class RaporService
         ];
     }
 
-    public function generatePdf(ReportCard $reportCard): string
+    // Everything resources/views/pdf/rapor.blade.php expects.
+    public function pdfData(ReportCard $reportCard): array
     {
-        $reportCard->load([
-            'student.classroom.grade',
+        $reportCard->loadMissing([
             'student.tenant',
+            'student.classroom',
             'semester.academicYear',
             'reportCardSubjects.subject',
             'classroom.homeroomTeacher',
         ]);
 
-        $pdf = Pdf::loadView('pdf.rapor', [
-            'reportCard' => $reportCard,
-            'student' => $reportCard->student,
-            'tenant' => $reportCard->student->tenant,
-            'semester' => $reportCard->semester,
-        ])->setPaper('a4', 'portrait');
+        $student = $reportCard->student;
+        $semester = $reportCard->semester;
+        $classroom = $reportCard->classroom ?? $student->classroom;
 
+        $grades = $reportCard->reportCardSubjects
+            ->sortBy(fn (ReportCardSubject $row) => $row->subject?->name)
+            ->values()
+            ->map(fn (ReportCardSubject $row) => [
+                'subject_name' => $row->subject?->name,
+                'score' => number_format((float) $row->final_score, 0),
+                'predicate' => $row->predicate,
+                'description' => $row->description,
+            ])
+            ->all();
+
+        $extracurriculars = StudentExtracurricular::with('extracurricular')
+            ->where('student_id', $student->id)
+            ->when($semester?->academic_year_id, fn ($q, $yearId) => $q->where('academic_year_id', $yearId))
+            ->get()
+            ->map(fn (StudentExtracurricular $row) => [
+                'name' => $row->extracurricular?->name,
+                'predicate' => $row->score,
+            ])
+            ->all();
+
+        return [
+            'school' => $student->tenant,
+            'student' => $student,
+            'classroom' => $classroom,
+            'semester' => $semester?->name,
+            'academicYear' => $semester?->academicYear,
+            'grades' => $grades,
+            'attendance' => $this->semesterAttendance($student, $semester),
+            'extracurriculars' => $extracurriculars,
+            'homeroomComment' => $reportCard->homeroom_comment,
+            'principalComment' => $reportCard->principal_comment,
+            'homeroomTeacher' => $classroom?->homeroomTeacher,
+            'principalNip' => $student->tenant->settings['principal_nip'] ?? null,
+            'reportDate' => ($reportCard->published_at ?? now())->translatedFormat('d F Y'),
+        ];
+    }
+
+    public function pdf(ReportCard $reportCard): \Barryvdh\DomPDF\PDF
+    {
+        return Pdf::loadView('pdf.rapor', $this->pdfData($reportCard))->setPaper('a4', 'portrait');
+    }
+
+    public function download(ReportCard $reportCard)
+    {
+        $reportCard->loadMissing('student', 'semester');
+        $name = Str::slug('rapor-' . $reportCard->student->nis . '-' . $reportCard->student->full_name . '-' . $reportCard->semester?->name);
+
+        return $this->pdf($reportCard)->download($name . '.pdf');
+    }
+
+    public function generatePdf(ReportCard $reportCard): string
+    {
         $path = 'rapor/' . $reportCard->student->nis . '_' . $reportCard->semester_id . '.pdf';
-        $fullPath = storage_path('app/public/' . $path);
 
-        if (! is_dir(dirname($fullPath))) {
-            mkdir(dirname($fullPath), 0755, true);
-        }
-
-        $pdf->save($fullPath);
+        Storage::disk('local')->put($path, $this->pdf($reportCard)->output());
 
         return $path;
     }
 
+    // Days per attendance status within the semester. A day counts once per
+    // status even when the student attended several sessions that day.
+    protected function semesterAttendance(Student $student, ?Semester $semester): array
+    {
+        $rows = StudentAttendance::query()
+            ->join('attendance_sessions', 'attendance_sessions.id', '=', 'student_attendances.attendance_session_id')
+            ->where('student_attendances.student_id', $student->id)
+            ->when($semester, fn ($q) => $q->whereBetween('attendance_sessions.date', [$semester->starts_at, $semester->ends_at]))
+            ->selectRaw('student_attendances.status, COUNT(DISTINCT attendance_sessions.date) as days')
+            ->groupBy('student_attendances.status')
+            ->pluck('days', 'status');
+
+        return [
+            'hadir' => (int) ($rows['hadir'] ?? 0) + (int) ($rows['terlambat'] ?? 0),
+            'sakit' => (int) ($rows['sakit'] ?? 0),
+            'izin' => (int) ($rows['izin'] ?? 0),
+            'alfa' => (int) ($rows['alfa'] ?? 0),
+        ];
+    }
+
     public function batchGenerate(int $classroomId, int $semesterId): int
     {
-        $students = Student::where('classroom_id', $classroomId)->get();
+        $students = Student::where('classroom_id', $classroomId)
+            ->where('status', \App\Enums\StudentStatus::ACTIVE)
+            ->get();
         $count = 0;
 
         foreach ($students as $student) {
