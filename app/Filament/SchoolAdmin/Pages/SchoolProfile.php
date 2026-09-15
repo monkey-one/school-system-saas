@@ -27,7 +27,8 @@ class SchoolProfile extends Page implements HasForms
     public ?array $data = [];
 
     // Keys of tenants.settings edited on this page; other keys are preserved.
-    private const WEBSITE_SETTINGS = ['hero_title', 'hero_subtitle', 'hero_image', 'principal_greeting', 'principal_photo', 'principal_nip', 'history', 'whatsapp', 'office_hours'];
+    private const WEBSITE_SETTINGS = ['hero_title', 'hero_subtitle', 'hero_image', 'principal_greeting', 'principal_photo', 'principal_nip', 'history', 'whatsapp', 'office_hours',
+        'school_lat', 'school_lng', 'checkin_radius_m', 'teacher_checkin_time', 'late_threshold_minutes'];
 
     public static function getNavigationGroup(): ?string
     {
@@ -201,6 +202,40 @@ class SchoolProfile extends Page implements HasForms
                         Forms\Components\TextInput::make('province')
                             ->label(__('Province'))
                             ->maxLength(100),
+                    ]),
+
+                Forms\Components\Section::make(__('Teacher attendance'))
+                    ->description(__('GPS check-in: teachers must be within the radius of the school coordinates. Leave the coordinates empty to disable the location check.'))
+                    ->icon('heroicon-o-map-pin')
+                    ->columns(3)
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\TextInput::make('settings.school_lat')
+                            ->label(__('Latitude'))
+                            ->numeric()
+                            ->minValue(-90)
+                            ->maxValue(90),
+                        Forms\Components\TextInput::make('settings.school_lng')
+                            ->label(__('Longitude'))
+                            ->numeric()
+                            ->minValue(-180)
+                            ->maxValue(180),
+                        Forms\Components\TextInput::make('settings.checkin_radius_m')
+                            ->label(__('Check-in radius (m)'))
+                            ->integer()
+                            ->minValue(20)
+                            ->maxValue(5000)
+                            ->default(200),
+                        Forms\Components\TimePicker::make('settings.teacher_checkin_time')
+                            ->label(__('Start time'))
+                            ->seconds(false)
+                            ->default('07:00'),
+                        Forms\Components\TextInput::make('settings.late_threshold_minutes')
+                            ->label(__('Late tolerance (minutes)'))
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(180)
+                            ->default(15),
                     ]),
 
                 Forms\Components\Section::make(__('Social Media'))
