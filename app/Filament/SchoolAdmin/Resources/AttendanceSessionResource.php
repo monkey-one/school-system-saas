@@ -2,6 +2,8 @@
 
 namespace App\Filament\SchoolAdmin\Resources;
 
+use App\Filament\Actions\ShowAttendanceQrAction;
+use App\Filament\Actions\TakeAttendanceAction;
 use App\Filament\SchoolAdmin\Resources\AttendanceSessionResource\Pages;
 use App\Models\AttendanceSession;
 use Filament\Forms;
@@ -9,7 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 // Manages student attendance sessions and records
 class AttendanceSessionResource extends Resource
@@ -128,20 +129,15 @@ class AttendanceSessionResource extends Resource
                     ->relationship('teacher', 'full_name'),
             ])
             ->actions([
-                Tables\Actions\Action::make('generateQr')
-                    ->label(__('Generate QR'))
-                    ->icon('heroicon-o-qr-code')
-                    ->color('info')
-                    ->action(function (AttendanceSession $record) {
-                        $record->update([
-                            'qr_token' => Str::random(32),
-                            'qr_generated_at' => now(),
-                            'qr_expires_at' => now()->addMinutes(30),
-                        ]);
-                    })
+                ShowAttendanceQrAction::make(),
+                TakeAttendanceAction::make(),
+                Tables\Actions\Action::make('closeSession')
+                    ->label(__('Close Session'))
+                    ->icon('heroicon-o-lock-closed')
+                    ->color('warning')
                     ->requiresConfirmation()
-                    ->modalHeading(__('Generate QR Code'))
-                    ->modalDescription(__('A new QR Code will be generated and valid for 30 minutes.')),
+                    ->visible(fn (AttendanceSession $record) => $record->status === 'open')
+                    ->action(fn (AttendanceSession $record) => $record->update(['status' => 'closed'])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

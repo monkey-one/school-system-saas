@@ -86,26 +86,44 @@ Route::middleware('throttle:webhooks')->group(function () {
     Route::post('/webhooks/xendit', [PaymentWebhookController::class, 'xendit'])->name('webhooks.xendit');
 });
 
-// Student portal: authenticated students view their schedule, grades,
-// attendance, SPP bills, pay tuition, and read school announcements.
-Route::prefix('student-portal')->name('student.')->middleware(['auth', 'tenant', 'tenant.required', 'user.type:student'])->group(function () {
+// Routes both portals share (see PortalController). Registered inside each
+// portal group so names become student.* and parent.*.
+$sharedPortalRoutes = function (string $controller) {
+    Route::get('/report-cards/{reportCard}/pdf', [$controller, 'reportCardPdf'])->name('report-cards.pdf');
+    Route::post('/bills/{bill}/pay', [$controller, 'pay'])->middleware('throttle:public-forms')->name('bills.pay');
+    Route::get('/payments/{payment}/receipt', [$controller, 'receipt'])->name('payments.receipt');
+    Route::get('/announcements', [$controller, 'announcements'])->name('announcements');
+    Route::get('/messages', [$controller, 'messages'])->name('messages');
+    Route::post('/messages', [$controller, 'sendMessage'])->middleware('throttle:public-forms')->name('messages.send');
+    Route::get('/messages/{thread}', [$controller, 'thread'])->where('thread', '[A-Za-z0-9\-]+')->name('messages.thread');
+    Route::post('/messages/{thread}/reply', [$controller, 'reply'])->where('thread', '[A-Za-z0-9\-]+')->middleware('throttle:public-forms')->name('messages.reply');
+    Route::get('/profile', [$controller, 'profile'])->name('profile');
+    Route::put('/profile/password', [$controller, 'updatePassword'])->middleware('throttle:public-forms')->name('profile.password');
+};
+
+// Student portal: the signed-in student's own academic, finance and school data.
+Route::prefix('student-portal')->name('student.')->middleware(['auth', 'tenant', 'tenant.required', 'user.type:student'])->group(function () use ($sharedPortalRoutes) {
     Route::get('/', [StudentPortalController::class, 'dashboard'])->name('dashboard');
+    Route::get('/schedule', [StudentPortalController::class, 'schedule'])->name('schedule');
     Route::get('/attendance', [StudentPortalController::class, 'attendance'])->name('attendance');
     Route::get('/grades', [StudentPortalController::class, 'grades'])->name('grades');
-    Route::get('/rapor/{semester}', [StudentPortalController::class, 'rapor'])->name('rapor');
-    Route::get('/spp', [StudentPortalController::class, 'spp'])->name('spp');
-    Route::post('/spp/{bill}/pay', [StudentPortalController::class, 'pay'])->name('pay');
-    Route::get('/announcements', [StudentPortalController::class, 'announcements'])->name('announcements');
+    Route::get('/report-cards', [StudentPortalController::class, 'reportCards'])->name('report-cards');
+    Route::get('/bills', [StudentPortalController::class, 'bills'])->name('bills');
+    Route::get('/activities', [StudentPortalController::class, 'activities'])->name('activities');
+    $sharedPortalRoutes(StudentPortalController::class);
 });
 
-// Parent portal: authenticated parents view their children's data including
-// attendance, grades, SPP bills, and can send/receive messages.
-Route::prefix('parent-portal')->name('parent.')->middleware(['auth', 'tenant', 'tenant.required', 'user.type:parent'])->group(function () {
+// Parent portal: every child linked to the parent's email, one page set per child.
+Route::prefix('parent-portal')->name('parent.')->middleware(['auth', 'tenant', 'tenant.required', 'user.type:parent'])->group(function () use ($sharedPortalRoutes) {
     Route::get('/', [ParentPortalController::class, 'dashboard'])->name('dashboard');
-    Route::get('/attendance/{student}', [ParentPortalController::class, 'attendance'])->name('attendance');
-    Route::get('/grades/{student}', [ParentPortalController::class, 'grades'])->name('grades');
-    Route::get('/rapor/{student}/{semester}', [ParentPortalController::class, 'rapor'])->name('rapor');
-    Route::get('/spp/{student}', [ParentPortalController::class, 'spp'])->name('spp');
-    Route::post('/spp/{bill}/pay', [ParentPortalController::class, 'pay'])->name('pay');
-    Route::get('/messages', [ParentPortalController::class, 'messages'])->name('messages');
+    Route::prefix('children/{student}')->group(function () {
+        Route::get('/', [ParentPortalController::class, 'child'])->name('child');
+        Route::get('/schedule', [ParentPortalController::class, 'schedule'])->name('schedule');
+        Route::get('/attendance', [ParentPortalController::class, 'attendance'])->name('attendance');
+        Route::get('/grades', [ParentPortalController::class, 'grades'])->name('grades');
+        Route::get('/report-cards', [ParentPortalController::class, 'reportCards'])->name('report-cards');
+        Route::get('/bills', [ParentPortalController::class, 'bills'])->name('bills');
+        Route::get('/activities', [ParentPortalController::class, 'activities'])->name('activities');
+    });
+    $sharedPortalRoutes(ParentPortalController::class);
 });

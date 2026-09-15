@@ -87,6 +87,12 @@ class MidtransService
         return hash_equals($expectedSignature, $signatureKey);
     }
 
+    // True when both keys are set, i.e. online payment can be offered.
+    public function isConfigured(): bool
+    {
+        return $this->serverKey !== '' && $this->clientKey !== '';
+    }
+
     public function getClientKey(): string
     {
         return $this->clientKey;

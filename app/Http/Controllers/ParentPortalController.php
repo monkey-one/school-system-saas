@@ -2,178 +2,115 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PaymentMethod;
-use App\Models\Announcement;
-use App\Models\Message;
-use App\Models\Payment;
-use App\Models\Semester;
-use App\Models\SppBill;
 use App\Models\Student;
-use App\Models\StudentAttendance;
-use App\Models\StudentGrade;
-use App\Models\StudentParent;
-use App\Models\Tenant;
-use App\Services\MidtransService;
-use App\Services\RaporService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
+use Illuminate\View\View;
 
-// Serves the parent-facing portal. A parent can have multiple children, so
-// many actions receive a Student model parameter. The authorizeParent()
-// method verifies that the authenticated user is indeed a registered parent
-// of the given student within the current tenant.
-class ParentPortalController extends Controller
+// Parent portal: a parent is linked to their children through the email on
+// the student's parent/guardian record (student_parents.email). One account
+// can follow several children; the last opened child becomes the context for
+// announcements, messages and the profile page.
+class ParentPortalController extends PortalController
 {
-    // Dashboard: lists all children linked to the parent's email.
-    public function dashboard()
-    {
-        $user = Auth::user();
-        $tenant = Tenant::current();
+    private ?Collection $childrenCache = null;
 
-        $children = Student::where('tenant_id', $tenant->id)
-            ->whereHas('parents', fn ($q) => $q->where('email', $user->email))
+    protected function portal(): string
+    {
+        return 'parent';
+    }
+
+    protected function children(): Collection
+    {
+        return $this->childrenCache ??= Student::query()
+            ->whereHas('parents', fn ($query) => $query->where('email', auth()->user()->email))
             ->with('classroom')
+            ->orderBy('full_name')
             ->get();
-
-        abort_if($children->isEmpty(), 403, 'Tidak ada data anak terdaftar.');
-
-        return view('parent-portal.dashboard', compact('children', 'tenant'));
     }
 
-    // Attendance records for a specific child.
-    public function attendance(Student $student)
+    protected function contextStudent(): Student
     {
-        $this->authorizeParent($student);
+        $children = $this->children();
 
-        $attendances = StudentAttendance::where('student_id', $student->id)
-            ->with('attendanceSession.classroomSubject.subject')
-            ->orderByDesc('check_in_time')
-            ->paginate(25);
+        abort_if($children->isEmpty(), 403, __('No children are linked to this account yet. Please contact the school.'));
 
-        return view('parent-portal.attendance', compact('attendances', 'student'));
+        return $children->firstWhere('id', (int) session('parent_child_id')) ?? $children->first();
     }
 
-    // Grades for a specific child, grouped by subject.
-    public function grades(Student $student)
+    protected function authorizeStudent(?Student $student): void
     {
-        $this->authorizeParent($student);
+        abort_unless($student && $this->children()->contains('id', $student->id), 403);
 
-        $grades = StudentGrade::where('student_id', $student->id)
-            ->with('assessment.classroomSubject.subject', 'assessment.assessmentType')
-            ->get()
-            ->groupBy(fn ($g) => $g->assessment->classroomSubject->subject->name ?? 'Unknown');
-
-        return view('parent-portal.grades', compact('grades', 'student'));
+        session(['parent_child_id' => $student->id]);
     }
 
-    // Download report card PDF for a child's semester.
-    public function rapor(Student $student, Semester $semester)
+    // Overview cards for every child.
+    public function dashboard(): View
     {
-        $this->authorizeParent($student);
+        $cards = $this->children()->map(function (Student $child) {
+            $bills = $this->overview->bills($child);
 
-        $raporService = app(RaporService::class);
-        $reportCard = $raporService->generateForStudent($student, $semester->id);
+            return [
+                'student' => $child,
+                'attendance' => $this->overview->attendanceSummary($child, now()),
+                'bills' => $this->overview->billSummary($bills),
+                'reportCards' => $this->overview->publishedReportCards($child)->count(),
+            ];
+        });
 
-        $tenant = Tenant::current();
-
-        $pdf = Pdf::loadView('student-portal.rapor-pdf', compact('reportCard', 'student', 'semester', 'tenant'));
-
-        return $pdf->download('rapor-' . $student->nis . '-' . $semester->name . '.pdf');
-    }
-
-    // SPP bills for a specific child.
-    public function spp(Student $student)
-    {
-        $this->authorizeParent($student);
-
-        $bills = SppBill::where('student_id', $student->id)
-            ->with('sppType')
-            ->orderByDesc('due_date')
-            ->paginate(25);
-
-        return view('parent-portal.spp', compact('bills', 'student'));
-    }
-
-    // Create a Midtrans payment session for an unpaid bill.
-    public function pay(SppBill $bill)
-    {
-        $student = $bill->student;
-        $this->authorizeParent($student);
-        abort_if(in_array($bill->status->value, ['paid', 'waived']), 400);
-
-        $midtransService = app(MidtransService::class);
-
-        // Build a unique order ID for the payment gateway. Using uniqid()
-        // instead of time() avoids collisions on sub-second requests.
-        $orderId = 'SPP-' . $bill->id . '-' . uniqid();
-        $snapToken = $midtransService->createSnapToken(
-            $orderId,
-            (int) $bill->final_amount,
-            [
-                'name' => $student->full_name,
-                'email' => $student->email ?? Auth::user()->email,
-                'phone' => $student->phone ?? '',
-            ],
-            [
-                [
-                    'id' => 'SPP-' . $bill->id,
-                    'price' => (int) $bill->final_amount,
-                    'quantity' => 1,
-                    'name' => $bill->sppType->name ?? 'SPP ' . $bill->period,
-                ],
-            ]
-        );
-
-        if (! $snapToken) {
-            return back()->with('error', 'Gagal membuat transaksi pembayaran.');
-        }
-
-        Payment::create([
-            'tenant_id' => Tenant::current()->id,
-            'student_id' => $student->id,
-            'reference_number' => $orderId,
-            'amount' => $bill->final_amount,
-            'payment_date' => now(),
-            'method' => PaymentMethod::MIDTRANS,
-            'gateway_transaction_id' => null,
-            'gateway_status' => 'pending',
+        return $this->page('parent-home', $this->contextStudent(), [
+            'cards' => $cards,
+            'announcements' => $this->overview->announcements('parents', $this->contextStudent(), 4),
         ]);
-
-        return view('parent-portal.payment', compact('snapToken', 'bill'));
     }
 
-    // Show sent and received messages for the current user.
-    public function messages()
+    public function child(Student $student): View
     {
-        $user = Auth::user();
-        $tenant = Tenant::current();
+        $this->authorizeStudent($student);
 
-        // Fetch messages the user sent or was a recipient of. The recipients
-        // column stores a JSON array of user IDs.
-        $messages = Message::where('tenant_id', $tenant->id)
-            ->where(function ($q) use ($user) {
-                $q->where('sender_id', $user->id)
-                  ->orWhereRaw("JSON_CONTAINS(recipients, ?)", [json_encode($user->id)]);
-            })
-            ->with('sender')
-            ->orderByDesc('created_at')
-            ->paginate(25);
-
-        return view('parent-portal.messages', compact('messages'));
+        return $this->showDashboard($student);
     }
 
-    // Ensures the logged-in user is a registered parent of the given student
-    // and that both belong to the current tenant.
-    protected function authorizeParent(Student $student): void
+    public function schedule(Student $student): View
     {
-        $user = Auth::user();
-        $tenant = Tenant::current();
+        $this->authorizeStudent($student);
 
-        $isParent = StudentParent::where('student_id', $student->id)
-            ->where('email', $user->email)
-            ->exists();
+        return $this->showSchedule($student);
+    }
 
-        abort_unless($isParent && $student->tenant_id === $tenant->id, 403);
+    public function attendance(Request $request, Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showAttendance($request, $student);
+    }
+
+    public function grades(Request $request, Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showGrades($request, $student);
+    }
+
+    public function reportCards(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showReportCards($student);
+    }
+
+    public function bills(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showBills($student);
+    }
+
+    public function activities(Student $student): View
+    {
+        $this->authorizeStudent($student);
+
+        return $this->showActivities($student);
     }
 }

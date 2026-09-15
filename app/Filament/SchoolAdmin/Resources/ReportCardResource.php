@@ -3,13 +3,21 @@
 namespace App\Filament\SchoolAdmin\Resources;
 
 use App\Filament\SchoolAdmin\Resources\ReportCardResource\Pages;
+use App\Models\Classroom;
 use App\Models\ReportCard;
+use App\Models\Semester;
+use App\Services\RaporService;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
+// Digital report cards (rapor). Admins generate them per class from the
+// gradebook, add comments, publish them (visible in the student and parent
+// portals) and download the PDF.
 class ReportCardResource extends Resource
 {
     protected static ?string $model = ReportCard::class;
@@ -123,15 +131,47 @@ class ReportCardResource extends Resource
                         'published' => __('Published'),
                     ]),
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('generate')
+                    ->label(__('Generate Report Cards'))
+                    ->icon('heroicon-o-sparkles')
+                    ->color('primary')
+                    ->form([
+                        Forms\Components\Select::make('classroom_id')
+                            ->label(__('Classroom'))
+                            ->options(fn () => Classroom::orderBy('name')->pluck('name', 'id'))
+                            ->searchable()
+                            ->required(),
+                        Forms\Components\Select::make('semester_id')
+                            ->label(__('Semester'))
+                            ->options(fn () => Semester::with('academicYear')->get()->mapWithKeys(fn (Semester $s) => [$s->id => "{$s->name} {$s->academicYear?->name}"]))
+                            ->default(fn () => Semester::where('is_active', true)->value('id'))
+                            ->required(),
+                    ])
+                    ->modalDescription(__('Final scores, predicates and attendance are calculated from the gradebook. Existing comments are kept.'))
+                    ->action(function (array $data): void {
+                        $count = app(RaporService::class)->batchGenerate((int) $data['classroom_id'], (int) $data['semester_id']);
+
+                        Notification::make()
+                            ->success()
+                            ->title(__(':count report cards generated', ['count' => $count]))
+                            ->send();
+                    }),
+            ])
             ->actions([
+                Tables\Actions\Action::make('download')
+                    ->label(__('PDF'))
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->action(fn (ReportCard $record) => app(RaporService::class)->download($record)),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('publish')
                     ->label(__('Publish'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->status === 'draft')
-                    ->action(fn ($record) => $record->update([
+                    ->visible(fn (ReportCard $record) => $record->status === 'draft')
+                    ->action(fn (ReportCard $record) => $record->update([
                         'status' => 'published',
                         'published_at' => now(),
                     ])),
@@ -139,6 +179,16 @@ class ReportCardResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('publishSelected')
+                        ->label(__('Publish'))
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion()
+                        ->action(fn (Collection $records) => $records->each->update([
+                            'status' => 'published',
+                            'published_at' => now(),
+                        ])),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
@@ -153,7 +203,7 @@ class ReportCardResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Academic');
+        return __('Grading');
     }
 
     public static function getNavigationLabel(): string

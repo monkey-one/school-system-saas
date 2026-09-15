@@ -2,6 +2,8 @@
 
 namespace App\Filament\Teacher\Resources;
 
+use App\Filament\Actions\ShowAttendanceQrAction;
+use App\Filament\Actions\TakeAttendanceAction;
 use App\Filament\Teacher\Resources\MyAttendanceSessionResource\Pages;
 use App\Models\AttendanceSession;
 use App\Models\ClassroomSubject;
@@ -12,7 +14,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 
 // Allows teachers to manage their own attendance sessions
 class MyAttendanceSessionResource extends Resource
@@ -131,25 +132,8 @@ class MyAttendanceSessionResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('generateQr')
-                    ->label(__('Generate QR'))
-                    ->icon('heroicon-o-qr-code')
-                    ->color('info')
-                    ->action(function (AttendanceSession $record) {
-                        $token = Str::random(32);
-                        $record->update([
-                            'qr_token' => $token,
-                            'qr_generated_at' => now(),
-                            'qr_expires_at' => now()->addMinutes(30),
-                        ]);
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading(__('Generate QR Code'))
-                    ->modalDescription(__('A new QR Code will be generated and valid for 30 minutes.'))
-                    ->after(function (AttendanceSession $record, Tables\Actions\Action $action) {
-                        $action->successNotificationTitle(__('QR Code generated successfully'))
-                            ->sendSuccessNotification();
-                    }),
+                ShowAttendanceQrAction::make(),
+                TakeAttendanceAction::make(),
                 Tables\Actions\Action::make('closeSession')
                     ->label(__('Close Session'))
                     ->icon('heroicon-o-lock-closed')
