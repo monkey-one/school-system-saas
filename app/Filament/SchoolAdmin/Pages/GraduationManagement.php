@@ -13,6 +13,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 // Allows school admins to graduate students in bulk. Selecting a classroom
@@ -109,32 +110,45 @@ class GraduationManagement extends Page implements HasForms
             return;
         }
 
-        $tenantId = Tenant::current()?->id;
-        $year = $this->graduation_year ?? (int) date('Y');
-        $count = 0;
+        $this->validate([
+            'graduation_year' => ['required', 'integer', 'min:2000', 'max:' . ((int) date('Y') + 1)],
+            'selected_students' => ['array'],
+            'selected_students.*' => ['integer'],
+        ]);
 
-        foreach ($this->selected_students as $studentId) {
-            $student = Student::find($studentId);
-            if (! $student || $student->status !== StudentStatus::ACTIVE) {
-                continue;
+        $tenantId = Tenant::current()?->id;
+        $year = (int) $this->graduation_year;
+
+        // All-or-nothing, and safe to run twice: a student who already has an
+        // alumni profile is not duplicated.
+        $count = DB::transaction(function () use ($tenantId, $year) {
+            $count = 0;
+
+            $students = Student::whereIn('id', $this->selected_students)
+                ->where('status', StudentStatus::ACTIVE)
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($students as $student) {
+                $student->update([
+                    'status' => StudentStatus::ALUMNI,
+                    'graduation_year' => $year,
+                ]);
+
+                AlumniProfile::firstOrCreate(
+                    ['student_id' => $student->id],
+                    [
+                        'tenant_id' => $tenantId,
+                        'alumni_number' => 'ALM-' . $year . '-' . str_pad((string) $student->id, 5, '0', STR_PAD_LEFT),
+                        'graduated_at' => now(),
+                    ],
+                );
+
+                $count++;
             }
 
-            $student->update([
-                'status' => StudentStatus::ALUMNI,
-                'graduation_year' => $year,
-            ]);
-
-            $alumniNumber = 'ALM-' . $year . '-' . str_pad($studentId, 5, '0', STR_PAD_LEFT);
-
-            AlumniProfile::create([
-                'tenant_id' => $tenantId,
-                'student_id' => $student->id,
-                'alumni_number' => $alumniNumber,
-                'graduated_at' => now(),
-            ]);
-
-            $count++;
-        }
+            return $count;
+        });
 
         $this->students = collect();
         $this->selected_students = [];
