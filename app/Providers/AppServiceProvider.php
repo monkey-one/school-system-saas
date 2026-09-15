@@ -151,6 +151,12 @@ class AppServiceProvider extends ServiceProvider
             fn () => view('filament.footer'),
         );
 
+        // Public demo only: call-to-action linking to the developer.
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::BODY_END,
+            fn () => view('partials.demo-cta'),
+        );
+
         // Language switcher in the top bar of all panels.
         FilamentView::registerRenderHook(
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,

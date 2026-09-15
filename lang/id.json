@@ -1480,5 +1480,20 @@
     "Your work has been submitted.": "Tugas Anda sudah dikumpulkan.",
     "answered": "terjawab",
     "late": "terlambat",
-    "min": "menit"
+    "min": "menit",
+    "Daily administration: students, PPDB, attendance and billing.": "Administrasi harian: siswa, PPDB, presensi, dan tagihan.",
+    "Demo accounts": "Akun demo",
+    "Every role signs in from the same login page. Demo data is reset automatically every few hours.": "Semua peran masuk dari halaman login yang sama. Data demo direset otomatis setiap beberapa jam.",
+    "Follow children: attendance, grades, bills, leave requests and messages.": "Pantau anak: kehadiran, nilai, tagihan, pengajuan izin, dan pesan.",
+    "Live demo by :brand": "Live demo oleh :brand",
+    "Manage all schools, subscriptions and system settings.": "Kelola semua sekolah, langganan, dan pengaturan sistem.",
+    "Operator": "Operator",
+    "Schedule, grades, report cards, assignments, online exams and bills.": "Jadwal, nilai, rapor, tugas, ujian online, dan tagihan.",
+    "Schedules, attendance, grades, assignments and online exams.": "Jadwal, presensi, nilai, tugas, dan ujian online.",
+    "School website": "Website sekolah",
+    "Source code, installation, customization and hosting by :name.": "Source code, instalasi, kustomisasi, dan hosting oleh :name.",
+    "Visit :brand": "Kunjungi :brand",
+    "Want this system for your school or business?": "Ingin sistem ini untuk sekolah atau bisnis Anda?",
+    "Want this system for your school?": "Ingin sistem ini untuk sekolah Anda?",
+    "password": "password"
 }
