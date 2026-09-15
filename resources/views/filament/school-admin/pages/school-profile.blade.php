@@ -1,34 +1,30 @@
 <x-filament-panels::page>
-    {{-- Share URLs Section --}}
-    <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 mb-6" x-data="{
-        copied: null,
-        copyUrl(type, url) {
-            navigator.clipboard.writeText(url);
-            this.copied = type;
-            setTimeout(() => this.copied = null, 2000);
-        }
-    }">
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-            <x-heroicon-o-link class="w-4 h-4" />
+    @php
+        $slug = App\Models\Tenant::current()?->slug;
+        $links = [
+            ['website', __('Website'), route('website.home', ['tenant' => $slug])],
+            ['ppdb', __('PPDB Online'), route('ppdb.index', ['tenant' => $slug])],
+            ['alumni', __('Alumni'), route('alumni.index', ['tenant' => $slug])],
+            ['sitemap', 'Sitemap', route('website.sitemap', ['tenant' => $slug])],
+        ];
+    @endphp
+
+    <div class="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800" x-data="{ copied: null }">
+        <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <x-heroicon-o-link class="h-4 w-4" />
             {{ __('Share Public URLs') }}
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="flex items-center gap-2">
-                <input type="text" readonly value="{{ route('profile.index', ['tenant' => App\Models\Tenant::current()?->slug]) }}" class="flex-1 text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-400" />
-                <button @click="copyUrl('profile', '{{ route('profile.index', ['tenant' => App\Models\Tenant::current()?->slug]) }}')" class="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg transition" :class="copied === 'profile' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 hover:bg-primary-200'">
-                    <template x-if="copied === 'profile'"><x-heroicon-o-check class="w-3.5 h-3.5" /></template>
-                    <template x-if="copied !== 'profile'"><x-heroicon-o-clipboard-document class="w-3.5 h-3.5" /></template>
-                    <span x-text="copied === 'profile' ? '{{ __('Copied!') }}' : '{{ __('Copy Profile URL') }}'"></span>
-                </button>
-            </div>
-            <div class="flex items-center gap-2">
-                <input type="text" readonly value="{{ route('alumni.index', ['tenant' => App\Models\Tenant::current()?->slug]) }}" class="flex-1 text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-600 dark:text-gray-400" />
-                <button @click="copyUrl('alumni', '{{ route('alumni.index', ['tenant' => App\Models\Tenant::current()?->slug]) }}')" class="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium rounded-lg transition" :class="copied === 'alumni' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 hover:bg-primary-200'">
-                    <template x-if="copied === 'alumni'"><x-heroicon-o-check class="w-3.5 h-3.5" /></template>
-                    <template x-if="copied !== 'alumni'"><x-heroicon-o-clipboard-document class="w-3.5 h-3.5" /></template>
-                    <span x-text="copied === 'alumni' ? '{{ __('Copied!') }}' : '{{ __('Copy Alumni URL') }}'"></span>
-                </button>
-            </div>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            @foreach ($links as [$key, $label, $url])
+                <div class="flex items-center gap-2">
+                    <span class="w-24 shrink-0 text-xs font-medium text-gray-500">{{ $label }}</span>
+                    <input type="text" readonly value="{{ $url }}" class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-600 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-400" />
+                    <button type="button" x-on:click="navigator.clipboard.writeText(@js($url)); copied = @js($key); setTimeout(() => copied = null, 2000)"
+                            class="rounded-lg bg-primary-100 px-3 py-2 text-xs font-medium text-primary-700 hover:bg-primary-200 dark:bg-primary-900 dark:text-primary-300">
+                        <span x-text="copied === @js($key) ? @js(__('Copied!')) : @js(__('Copy'))"></span>
+                    </button>
+                </div>
+            @endforeach
         </div>
     </div>
 
@@ -40,8 +36,8 @@
                 {{ __('Save Changes') }}
             </x-filament::button>
 
-            <a href="{{ route('profile.index', ['tenant' => App\Models\Tenant::current()?->slug]) }}" target="_blank" class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-500 transition">
-                <x-heroicon-o-arrow-top-right-on-square class="w-4 h-4" />
+            <a href="{{ route('website.home', ['tenant' => $slug]) }}" target="_blank" class="inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition hover:text-primary-500">
+                <x-heroicon-o-arrow-top-right-on-square class="h-4 w-4" />
                 {{ __('View Public Profile') }}
             </a>
         </div>

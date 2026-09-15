@@ -95,6 +95,9 @@ class SchoolAdminPanelProvider extends PanelProvider
                     ->label(__('Inventory'))
                     ->icon('heroicon-o-archive-box'),
                 NavigationGroup::make()
+                    ->label(__('Website'))
+                    ->icon('heroicon-o-globe-alt'),
+                NavigationGroup::make()
                     ->label(__('Settings'))
                     ->icon('heroicon-o-cog-6-tooth'),
             ])

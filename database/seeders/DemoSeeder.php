@@ -15,6 +15,7 @@ use App\Enums\SubjectType;
 use App\Enums\TenantStatus;
 use App\Enums\UserType;
 use App\Models\AcademicYear;
+use App\Models\Achievement;
 use App\Models\AlumniProfile;
 use App\Models\Announcement;
 use App\Models\Assessment;
@@ -31,14 +32,18 @@ use App\Models\CurriculumSetting;
 use App\Models\Extracurricular;
 use App\Models\Facility;
 use App\Models\FacilityBooking;
+use App\Models\GalleryAlbum;
+use App\Models\GalleryItem;
 use App\Models\GradeLevel;
 use App\Models\Message;
 use App\Models\NotificationTemplate;
 use App\Models\Payment;
 use App\Models\PaymentBillAllocation;
 use App\Models\Plan;
+use App\Models\Post;
 use App\Models\PPDBRegistration;
 use App\Models\PPDBWave;
+use App\Models\SchoolEvent;
 use App\Models\Semester;
 use App\Models\SppBill;
 use App\Models\SppDiscount;
@@ -56,6 +61,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 // Seeds a complete demo school ("SMP Negeri 1 Demo") plus a few other schools
@@ -186,6 +192,8 @@ class DemoSeeder extends Seeder
         $this->seedAlumni();
         $this->seedMessages();
         $this->seedNotificationTemplates();
+        $this->step('School website content');
+        $this->seedWebsite();
 
         Tenant::forgetCurrent();
 
@@ -903,7 +911,13 @@ class DemoSeeder extends Seeder
             'is_active' => false,
         ]);
 
-        $requirements = ['Fotokopi ijazah / SKL SD', 'Akta kelahiran', 'Kartu Keluarga', 'Pas foto 3x4 (2 lembar)', 'Rapor kelas 4–6'];
+        $requirements = [
+            'Ijazah / SKL SD' => 'Fotokopi dilegalisir',
+            'Akta kelahiran' => 'Scan asli',
+            'Kartu Keluarga' => 'Scan asli',
+            'Pas foto 3x4' => 'Latar merah, 2 lembar',
+            'Rapor kelas 4–6' => 'Fotokopi halaman nilai',
+        ];
 
         $wave = PPDBWave::create([
             'academic_year_id' => $nextYear->id,
@@ -1236,6 +1250,150 @@ class DemoSeeder extends Seeder
         $message->created_at = $at;
         $message->updated_at = $at;
         $message->save();
+    }
+
+    // Website content: home page settings, news, agenda, achievements and
+    // gallery. Cover images are generated SVG illustrations so the demo looks
+    // complete without shipping photos.
+    private function seedWebsite(): void
+    {
+        $this->tenant->update(['settings' => array_merge($this->tenant->settings ?? [], [
+            'hero_title' => 'Sekolah Unggul, Berkarakter, dan Berprestasi',
+            'hero_subtitle' => 'SMP Negeri 1 Demo membina generasi cerdas, kreatif, dan berakhlak mulia melalui pembelajaran modern dan kegiatan pengembangan diri yang beragam.',
+            'principal_greeting' => "Assalamu'alaikum warahmatullahi wabarakatuh, salam sejahtera bagi kita semua.\n\nSelamat datang di website resmi SMP Negeri 1 Demo. Website ini kami hadirkan sebagai jendela informasi bagi siswa, orang tua, alumni, dan masyarakat. Melalui layanan digital seperti portal siswa, portal orang tua, dan PPDB online, kami berkomitmen menghadirkan layanan pendidikan yang transparan, cepat, dan mudah diakses.\n\nMari bersama-sama mewujudkan sekolah yang unggul dan berkarakter.",
+            'history' => "SMP Negeri 1 Demo berdiri pada tahun 1965 dengan hanya 3 ruang kelas dan 90 siswa. Seiring perkembangan kota, sekolah terus tumbuh hingga kini memiliki 27 rombongan belajar, laboratorium IPA dan komputer, perpustakaan digital, serta lapangan olahraga.\n\nSekolah meraih akreditasi A sejak 2008 dan dikenal aktif dalam olimpiade sains, literasi, serta kegiatan seni dan olahraga di tingkat provinsi maupun nasional.",
+            'whatsapp' => '081234567890',
+            'office_hours' => 'Senin–Jumat, 07.00–15.00 WIB',
+        ])]);
+
+        $palette = [['#1E3A5F', '#2D5F8A'], ['#0F766E', '#14B8A6'], ['#7C2D12', '#EA580C'], ['#4C1D95', '#7C3AED'], ['#9D174D', '#DB2777'], ['#14532D', '#16A34A']];
+        $cover = function (string $directory, string $title, int $i) use ($palette): string {
+            [$from, $to] = $palette[$i % count($palette)];
+            $lines = array_slice(explode("\n", wordwrap($title, 26, "\n", true)), 0, 3);
+            $text = collect($lines)->map(fn ($line, $n) => '<text x="60" y="' . (270 + $n * 58) . '" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#ffffff">' . e($line) . '</text>')->implode('');
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' . $from . '"/><stop offset="1" stop-color="' . $to . '"/></linearGradient></defs><rect width="1200" height="675" fill="url(#g)"/><circle cx="1040" cy="120" r="220" fill="#ffffff" opacity="0.08"/><circle cx="1100" cy="600" r="160" fill="#F59E0B" opacity="0.25"/><text x="60" y="150" font-family="Arial, sans-serif" font-size="30" fill="#FBBF24" font-weight="700">SMP NEGERI 1 DEMO</text>' . $text . '</svg>';
+            $path = $directory . '/' . Str::slug($title) . '-' . $i . '.svg';
+            Storage::disk('public')->put($path, $svg);
+
+            return $path;
+        };
+
+        $posts = [
+            ['Tim Olimpiade Sains Raih Medali Emas Tingkat Provinsi', 'news', true, 3, 'Tiga siswa kelas 9 berhasil membawa pulang medali emas dan perak pada Olimpiade Sains Nasional tingkat provinsi.'],
+            ['Pembukaan Pendaftaran Peserta Didik Baru Tahun Ajaran ' . ($this->startYear + 1) . '/' . ($this->startYear + 2), 'announcement', true, 20, 'PPDB online telah dibuka. Calon peserta didik dapat mendaftar, mengunggah berkas, dan memantau status secara daring.'],
+            ['Gerakan Literasi Sekolah: 15 Menit Membaca Setiap Pagi', 'article', false, 9, 'Program literasi pagi meningkatkan minat baca siswa dan menghasilkan lebih dari 300 resensi buku dalam satu semester.'],
+            ['Kunjungan Edukatif ke Museum Nasional Indonesia', 'news', false, 14, 'Siswa kelas 7 belajar sejarah secara langsung melalui kunjungan edukatif yang dipandu pemandu museum.'],
+            ['Tips Belajar Efektif Menghadapi Penilaian Tengah Semester', 'article', false, 6, 'Guru BK membagikan strategi belajar, manajemen waktu, dan menjaga kesehatan menjelang penilaian.'],
+            ['Tim Robotik Lolos ke Final Kompetisi Nasional', 'news', true, 25, 'Tim robotik sekolah melaju ke babak final setelah menampilkan robot pemilah sampah otomatis.'],
+            ['Peringatan Hari Kemerdekaan dengan Lomba Tradisional', 'news', false, 35, 'Rangkaian lomba tradisional mempererat kebersamaan warga sekolah dalam memperingati HUT RI.'],
+            ['Program Adiwiyata: Sekolah Hijau dan Bebas Sampah Plastik', 'article', false, 45, 'Bank sampah, kebun sekolah, dan larangan plastik sekali pakai menjadi bagian dari program Adiwiyata.'],
+        ];
+
+        foreach ($posts as $i => [$title, $category, $featured, $daysAgo, $excerpt]) {
+            Post::create([
+                'author_id' => $this->admin->id,
+                'category' => $category,
+                'title' => $title,
+                'excerpt' => $excerpt,
+                'content' => '<p>' . e($excerpt) . '</p><p>Kegiatan ini merupakan bagian dari komitmen SMP Negeri 1 Demo dalam mengembangkan potensi akademik dan karakter peserta didik. Kepala sekolah menyampaikan apresiasi kepada seluruh guru, orang tua, dan siswa yang telah berpartisipasi.</p><h3>Rencana tindak lanjut</h3><ul><li>Pembinaan berkelanjutan melalui kegiatan ekstrakurikuler</li><li>Kolaborasi dengan komite sekolah dan orang tua</li><li>Publikasi hasil kegiatan melalui website dan media sosial sekolah</li></ul><p>Informasi lebih lanjut dapat diperoleh melalui tata usaha sekolah.</p>',
+                'cover_image' => $cover('website/posts', $title, $i),
+                'is_published' => true,
+                'is_featured' => $featured,
+                'published_at' => now()->subDays($daysAgo),
+                'views' => 40 + $i * 37,
+            ]);
+        }
+
+        $events = [
+            ['Penilaian Tengah Semester', 'exam', 12, 5, 'Ruang kelas masing-masing'],
+            ['Rapat Komite dan Orang Tua Siswa', 'meeting', 3, 0, 'Aula Serbaguna'],
+            ['Class Meeting & Pentas Seni', 'academic', 30, 2, 'Lapangan & Aula'],
+            ['Final Kompetisi Robotik Nasional', 'competition', 18, 1, 'Jakarta International Expo'],
+            ['Libur Hari Besar Nasional', 'holiday', 22, 0, null],
+            ['Seminar Literasi Digital untuk Orang Tua', 'meeting', 10, 0, 'Aula Serbaguna'],
+            ['Upacara Hari Kemerdekaan', 'academic', -30, 0, 'Lapangan upacara'],
+            ['Masa Pengenalan Lingkungan Sekolah', 'academic', -60, 2, 'SMP Negeri 1 Demo'],
+        ];
+
+        foreach ($events as [$title, $category, $inDays, $duration, $location]) {
+            $start = now()->addDays($inDays)->setTime(8, 0);
+            SchoolEvent::create([
+                'title' => $title,
+                'category' => $category,
+                'location' => $location,
+                'description' => "{$title} untuk seluruh warga sekolah. Informasi detail akan disampaikan melalui wali kelas.",
+                'starts_at' => $start,
+                'ends_at' => $start->copy()->addDays($duration)->setTime($duration ? 15 : 11, 0),
+                'is_published' => true,
+            ]);
+        }
+
+        $achievements = [
+            ['Olimpiade Sains Nasional (OSN) Matematika', 'Medali Emas', 'province', 'academic', 20, 'Dinas Pendidikan Provinsi DKI Jakarta'],
+            ['Kompetisi Robotik Pelajar Indonesia', 'Finalis', 'national', 'technology', 25, 'Kemendikbudristek'],
+            ['Festival Tunas Bahasa Ibu', 'Juara 1', 'city', 'arts', 40, 'Suku Dinas Pendidikan Jakarta Pusat'],
+            ['Kejuaraan Basket Pelajar', 'Juara 2', 'city', 'sports', 55, 'KONI Kota'],
+            ['Lomba Karya Tulis Ilmiah Remaja', 'Juara 3', 'national', 'academic', 70, 'BRIN'],
+            ['Musabaqah Tilawatil Quran Pelajar', 'Juara 1', 'district', 'religion', 80, 'Kementerian Agama'],
+            ['Sekolah Adiwiyata', 'Penghargaan', 'province', 'other', 120, 'Dinas Lingkungan Hidup'],
+            ['Olimpiade Informatika', 'Medali Perak', 'international', 'technology', 150, 'Asia Pacific Informatics Olympiad'],
+        ];
+
+        foreach ($achievements as $i => [$title, $rank, $level, $category, $daysAgo, $organizer]) {
+            $student = $this->students[['9A', '9B', '8A', '8C', '9C', '7B', '7A', '9A'][$i]][$i % 5];
+            $isSchool = $category === 'other';
+
+            Achievement::create([
+                'student_id' => $isSchool ? null : $student->id,
+                'title' => $title,
+                'participant' => $isSchool ? $this->tenant->name : $student->full_name,
+                'rank' => $rank,
+                'level' => $level,
+                'category' => $category,
+                'organizer' => $organizer,
+                'achieved_at' => now()->subDays($daysAgo),
+                'description' => "{$rank} pada {$title}.",
+                'image' => $cover('website/achievements', $rank . ' ' . $title, $i + 2),
+                'is_published' => true,
+            ]);
+        }
+
+        $albums = [
+            ['Masa Pengenalan Lingkungan Sekolah', 60, ['Upacara pembukaan', 'Perkenalan ekstrakurikuler', 'Games kebersamaan']],
+            ['Peringatan Hari Kemerdekaan', 30, ['Upacara bendera', 'Lomba balap karung', 'Tarik tambang antar kelas']],
+            ['Praktikum IPA Kelas 8', 15, ['Pengamatan mikroskop', 'Percobaan fotosintesis']],
+            ['Profil Sekolah (Video)', 5, []],
+        ];
+
+        foreach ($albums as $i => [$title, $daysAgo, $photos]) {
+            $album = GalleryAlbum::create([
+                'title' => $title,
+                'description' => "Dokumentasi kegiatan {$title}.",
+                'cover_image' => $cover('website/gallery', $title, $i + 1),
+                'event_date' => now()->subDays($daysAgo),
+                'is_published' => true,
+            ]);
+
+            foreach ($photos as $n => $caption) {
+                GalleryItem::create([
+                    'gallery_album_id' => $album->id,
+                    'type' => 'photo',
+                    'image' => $cover('website/gallery', $caption, $i + $n + 3),
+                    'caption' => $caption,
+                    'sort_order' => $n,
+                ]);
+            }
+
+            if ($photos === []) {
+                GalleryItem::create([
+                    'gallery_album_id' => $album->id,
+                    'type' => 'video',
+                    'video_url' => 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+                    'caption' => 'Video profil sekolah',
+                    'sort_order' => 0,
+                ]);
+            }
+        }
     }
 
     private function seedNotificationTemplates(): void

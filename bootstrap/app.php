@@ -17,14 +17,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Trust Cloudflare proxy headers so Laravel correctly detects HTTPS,
-        // real client IP, and forwarded host/port behind the CDN.
+        // Trust proxy headers so Laravel correctly detects HTTPS, the real
+        // client IP and forwarded host/port behind a CDN or reverse proxy.
+        // X-Forwarded-Prefix lets the web server serve the app under a
+        // sub-path (e.g. /edusaas) while routing still sees "/" — URLs and
+        // signed-URL validation then both include the prefix.
         $middleware->trustProxies(
             at: '*',
             headers: \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
                      \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
                      \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
-                     \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
+                     \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
+                     \Illuminate\Http\Request::HEADER_X_FORWARDED_PREFIX
         );
 
         // SetLocale applies the language chosen via /locale/{locale}.
