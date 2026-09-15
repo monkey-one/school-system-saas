@@ -37,13 +37,15 @@ class GenerateMonthlyBills implements ShouldQueue
             return;
         }
 
-        // Queue workers have no request tenant: scope every query to this school.
+        // Dispatched per school from the scheduler: scope every query to this
+        // school and restore whatever tenant was active before.
+        $previous = Tenant::current();
         Tenant::setCurrent($tenant);
 
         try {
             $this->generate($tenant);
         } finally {
-            Tenant::forgetCurrent();
+            Tenant::setCurrent($previous);
         }
     }
 

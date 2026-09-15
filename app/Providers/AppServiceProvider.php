@@ -61,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
         setlocale(LC_TIME, 'id_ID.UTF-8');
 
         $this->applySystemSettings();
+        \App\Support\QueueTenancy::register();
         $this->configureRateLimiting();
         $this->registerDemoGuards();
         $this->registerPanelHooks();

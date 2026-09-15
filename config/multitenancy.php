@@ -50,11 +50,13 @@ return [
     'tenant_model' => Tenant::class,
 
     /*
-     * If there is a current tenant when dispatching a job, the id of the current tenant
-     * will be automatically set on the job. When the job is executed, the set
-     * tenant on the job will be made current.
+     * EduSaaS uses its own App\Models\Tenant (single database, tenant_id
+     * column). Queued jobs receive the current school through
+     * App\Support\QueueTenancy, so the package's own queue awareness must stay
+     * off — otherwise every job fails with "current tenant could not be
+     * determined".
      */
-    'queues_are_tenant_aware_by_default' => true,
+    'queues_are_tenant_aware_by_default' => false,
 
     /*
      * The connection name to reach the tenant database.

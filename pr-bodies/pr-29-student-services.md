@@ -31,6 +31,16 @@ Melengkapi operasional harian sekolah (setara modul "Smart Cashless", "Portal Or
 | `SendOverdueSppReminders` | Satu WhatsApp per tagihan (spam), format mata uang hardcode, bisa memakai template sekolah lain | Satu pesan per siswa berisi semua periode & total, `CurrencyHelper`, berjalan dalam tenant, termasuk status `partial` |
 | Command penjadwal | Sekolah status **trial** tidak diproses; periode tidak divalidasi | Mencakup `trial`, validasi format `YYYY-MM` |
 
+## Bug Kritis: Semua Job Antrean Gagal (Import/Export, Notifikasi)
+
+`config/multitenancy.php` mengaktifkan `queues_are_tenant_aware_by_default`, padahal aplikasi memakai model `App\Models\Tenant` sendiri, bukan milik paket spatie. Akibatnya **setiap job di worker antrean gagal** dengan `CurrentTenantCouldNotBeDeterminedInTenantAwareJob` — termasuk **import/export Excel siswa, guru, jadwal, mapel, dan nilai** (catatan calon client) serta notifikasi database Filament. Selain itu, job yang berjalan tanpa konteks sekolah berisiko mengekspor data semua sekolah atau menimpa data siswa sekolah lain saat import (pencarian `nis` tanpa scope).
+
+Perbaikan:
+- `App\Support\QueueTenancy`: ID sekolah aktif disimpan di payload setiap job dan dipulihkan saat worker memprosesnya; tenant sebelumnya dikembalikan setelah job selesai (aman untuk `QUEUE_CONNECTION=sync`).
+- Fitur antrean paket spatie dinonaktifkan.
+- Job yang mengatur tenant sendiri kini mengembalikan tenant sebelumnya (tidak menghapusnya).
+- `QueueTenancyTest` sebagai regresi.
+
 ## Data Demo
 8 tata tertib, 7 catatan pelanggaran, 4 catatan konseling (rahasia & dibagikan), riwayat tabungan/kantin kelas 7A, dan pengajuan izin (disetujui — absensi otomatis tercatat, menunggu, ditolak).
 

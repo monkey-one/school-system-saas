@@ -37,14 +37,15 @@ class SendOverdueSppReminders implements ShouldQueue
             return;
         }
 
-        // Queue workers have no request tenant: use this school's scope,
-        // currency and notification template.
+        // Dispatched per school from the scheduler: use this school's scope,
+        // currency and template, then restore the previous tenant.
+        $previous = Tenant::current();
         Tenant::setCurrent($tenant);
 
         try {
             $this->remind($whatsApp);
         } finally {
-            Tenant::forgetCurrent();
+            Tenant::setCurrent($previous);
         }
     }
 
