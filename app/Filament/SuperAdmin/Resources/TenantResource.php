@@ -153,8 +153,7 @@ class TenantResource extends Resource
                     ->label(__('Enter Panel'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('info')
-                    ->url(fn (Tenant $record): string => route('filament.school-admin.pages.dashboard', ['tenant' => $record->slug]))
-                    ->openUrlInNewTab(),
+                    ->url(fn (Tenant $record): string => route('impersonate.start', $record)),
                 Tables\Actions\Action::make('suspend')
                     ->label(__('Suspend'))
                     ->icon('heroicon-o-no-symbol')

@@ -50,7 +50,7 @@ class ApiAuthTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['token']);
+            ->assertJsonStructure(['data' => ['token', 'user']]);
     }
 
     public function test_login_with_invalid_credentials(): void
@@ -60,7 +60,17 @@ class ApiAuthTest extends TestCase
             'password' => 'wrong-password',
         ]);
 
-        $response->assertStatus(401);
+        $response->assertStatus(422);
+    }
+
+    public function test_login_is_rate_limited(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson('/api/v1/login', ['email' => 'teacher@test.id', 'password' => 'wrong']);
+        }
+
+        $this->postJson('/api/v1/login', ['email' => 'teacher@test.id', 'password' => 'wrong'])
+            ->assertStatus(429);
     }
 
     public function test_authenticated_user_can_access_api(): void

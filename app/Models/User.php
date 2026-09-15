@@ -61,7 +61,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
         return match ($panel->getId()) {
             'super-admin' => $this->type === UserType::SUPER_ADMIN,
-            'school-admin' => in_array($this->type, [UserType::SCHOOL_ADMIN, UserType::OPERATOR]),
+            // Super admins enter a school panel only while impersonating it.
+            'school-admin' => in_array($this->type, [UserType::SCHOOL_ADMIN, UserType::OPERATOR])
+                || ($this->type === UserType::SUPER_ADMIN && session()->has('impersonate_tenant_id')),
             'teacher' => $this->type === UserType::TEACHER,
             default => false,
         };

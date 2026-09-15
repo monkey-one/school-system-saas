@@ -69,8 +69,14 @@ class MidtransService
         return $result['token'] ?? null;
     }
 
+    // Without a configured server key the expected signature would be
+    // computable by anyone, so unconfigured installations reject everything.
     public function verifySignature(array $notification): bool
     {
+        if ($this->serverKey === '' || empty($notification['signature_key'])) {
+            return false;
+        }
+
         $orderId = $notification['order_id'] ?? '';
         $statusCode = $notification['status_code'] ?? '';
         $grossAmount = $notification['gross_amount'] ?? '';
