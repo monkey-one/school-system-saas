@@ -4,6 +4,7 @@ use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LeaveRequestAttachmentController;
 use App\Http\Controllers\MiscController;
 use App\Http\Controllers\ParentPortalController;
 use App\Http\Controllers\PaymentWebhookController;
@@ -114,6 +115,7 @@ $sharedPortalRoutes = function (string $controller) {
     Route::post('/messages', [$controller, 'sendMessage'])->middleware('throttle:public-forms')->name('messages.send');
     Route::get('/messages/{thread}', [$controller, 'thread'])->where('thread', '[A-Za-z0-9\-]+')->name('messages.thread');
     Route::post('/messages/{thread}/reply', [$controller, 'reply'])->where('thread', '[A-Za-z0-9\-]+')->middleware('throttle:public-forms')->name('messages.reply');
+    Route::post('/leave-requests', [$controller, 'storeLeaveRequest'])->middleware('throttle:public-forms')->name('leave-requests.store');
     Route::get('/profile', [$controller, 'profile'])->name('profile');
     Route::put('/profile/password', [$controller, 'updatePassword'])->middleware('throttle:public-forms')->name('profile.password');
 };
@@ -127,6 +129,9 @@ Route::prefix('student-portal')->name('student.')->middleware(['auth', 'tenant',
     Route::get('/report-cards', [StudentPortalController::class, 'reportCards'])->name('report-cards');
     Route::get('/bills', [StudentPortalController::class, 'bills'])->name('bills');
     Route::get('/activities', [StudentPortalController::class, 'activities'])->name('activities');
+    Route::get('/leave-requests', [StudentPortalController::class, 'leaveRequests'])->name('leave-requests');
+    Route::get('/savings', [StudentPortalController::class, 'savings'])->name('savings');
+    Route::get('/discipline', [StudentPortalController::class, 'discipline'])->name('discipline');
     $sharedPortalRoutes(StudentPortalController::class);
 });
 
@@ -141,6 +146,15 @@ Route::prefix('parent-portal')->name('parent.')->middleware(['auth', 'tenant', '
         Route::get('/report-cards', [ParentPortalController::class, 'reportCards'])->name('report-cards');
         Route::get('/bills', [ParentPortalController::class, 'bills'])->name('bills');
         Route::get('/activities', [ParentPortalController::class, 'activities'])->name('activities');
+        Route::get('/leave-requests', [ParentPortalController::class, 'leaveRequests'])->name('leave-requests');
+        Route::get('/savings', [ParentPortalController::class, 'savings'])->name('savings');
+        Route::get('/discipline', [ParentPortalController::class, 'discipline'])->name('discipline');
     });
     $sharedPortalRoutes(ParentPortalController::class);
 });
+
+// Leave request attachments live on the private disk; the controller allows
+// school staff, the student's homeroom teacher and the requester only.
+Route::get('/leave-requests/{leaveRequest}/attachment', [LeaveRequestAttachmentController::class, 'show'])
+    ->middleware(['auth', 'tenant', 'tenant.required'])
+    ->name('leave-requests.attachment');

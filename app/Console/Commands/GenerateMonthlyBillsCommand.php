@@ -17,9 +17,15 @@ class GenerateMonthlyBillsCommand extends Command
     {
         $period = $this->option('period') ?: now()->format('Y-m');
 
-        $tenants = Tenant::where('status', TenantStatus::ACTIVE)->get();
+        if (! preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $period)) {
+            $this->error('The period must use the YYYY-MM format.');
 
-        $this->info("Generating monthly bills for period {$period} across {$tenants->count()} active tenants...");
+            return self::FAILURE;
+        }
+
+        $tenants = Tenant::whereIn('status', [TenantStatus::ACTIVE, TenantStatus::TRIAL])->get();
+
+        $this->info("Generating monthly bills for period {$period} across {$tenants->count()} schools...");
 
         foreach ($tenants as $tenant) {
             GenerateMonthlyBills::dispatch($tenant->id, $period);
