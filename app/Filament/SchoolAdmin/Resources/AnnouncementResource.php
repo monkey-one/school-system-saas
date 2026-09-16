@@ -65,7 +65,9 @@ class AnnouncementResource extends Resource
                         Forms\Components\FileUpload::make('attachments')
                             ->label('Lampiran')
                             ->multiple()
+                            ->disk('local')
                             ->directory('announcements/attachments')
+                            ->visibility('private')
                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
                             ->maxSize(10240)
                             ->maxFiles(5),

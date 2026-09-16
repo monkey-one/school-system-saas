@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PPDBController;
 use App\Http\Controllers\PPDBDocumentController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\StudentDocumentController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Middleware\ResolveTenant;
@@ -105,6 +106,7 @@ Route::get('/display', [DisplayController::class, 'show'])->middleware([ResolveT
 Route::middleware(['auth', 'tenant', 'tenant.required'])->group(function () {
     Route::get('/elearning/assignments/{assignment}/attachment', [ElearningFileController::class, 'assignment'])->name('elearning.assignments.attachment');
     Route::get('/elearning/submissions/{submission}/attachment', [ElearningFileController::class, 'submission'])->name('elearning.submissions.attachment');
+    Route::get('/students/documents/{document}/download', [StudentDocumentController::class, 'show'])->name('students.documents.attachment');
 });
 
 // Payment gateway callbacks. These are POST endpoints called by Midtrans and

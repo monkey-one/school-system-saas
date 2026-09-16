@@ -45,7 +45,9 @@ class DocumentsRelationManager extends RelationManager
                     ->required(),
                 Forms\Components\FileUpload::make('file_path')
                     ->label(__('File'))
+                    ->disk('local')
                     ->directory('students/documents')
+                    ->visibility('private')
                     ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                     ->required()
                     ->maxSize(5120),
@@ -93,6 +95,11 @@ class DocumentsRelationManager extends RelationManager
                     ->label(__('Add Document')),
             ])
             ->actions([
+                Tables\Actions\Action::make('download')
+                    ->label(__('Download'))
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn ($record) => route('students.documents.attachment', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
