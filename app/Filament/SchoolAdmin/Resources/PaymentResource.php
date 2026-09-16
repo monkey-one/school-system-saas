@@ -63,7 +63,9 @@ class PaymentResource extends Resource
                             ->maxLength(50),
                         Forms\Components\FileUpload::make('receipt_path')
                             ->label('Bukti Pembayaran')
+                            ->disk('local')
                             ->directory('payments/receipts')
+                            ->visibility('private')
                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(5120),
                         Forms\Components\Textarea::make('notes')
