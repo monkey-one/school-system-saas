@@ -86,10 +86,17 @@ class AppServiceProvider extends ServiceProvider
 
         config(['livewire.asset_url' => rtrim($appUrl, '/') . '/livewire/livewire.min.js']);
 
+        // Laravel removes the request base path from relative route URLs, so
+        // the route itself only needs the prefix when that base path already
+        // carries it (behind a proxy sending X-Forwarded-Prefix, or a real
+        // sub-directory). Otherwise the prefix would end up twice.
+        $base = rtrim((string) $this->app['request']->getBaseUrl(), '/');
+        $routeUri = ($base === $prefix ? $prefix : '') . '/livewire/update';
+
         // Livewire already registered its own /livewire/update route, which
         // still matches the incoming request after the web server strips the
-        // prefix. This extra route only exists so the rendered URL keeps it.
-        Livewire::setUpdateRoute(fn ($handle) => Route::post($prefix . '/livewire/update', $handle)
+        // prefix. This route only exists so the rendered URL keeps it.
+        Livewire::setUpdateRoute(fn ($handle) => Route::post($routeUri, $handle)
             ->middleware('web')
             ->name('subdirectory.livewire.update'));
     }
