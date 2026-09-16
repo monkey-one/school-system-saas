@@ -90,7 +90,13 @@ class AppServiceProvider extends ServiceProvider
         // the route itself only needs the prefix when that base path already
         // carries it (behind a proxy sending X-Forwarded-Prefix, or a real
         // sub-directory). Otherwise the prefix would end up twice.
-        $base = rtrim((string) $this->app['request']->getBaseUrl(), '/');
+        //
+        // The forwarded header is read directly: TrustProxies runs after the
+        // providers boot, so getBaseUrl() does not include the proxy prefix
+        // yet at this point, even though it will by the time URLs render.
+        $request = $this->app['request'];
+        $forwarded = rtrim((string) $request->headers->get('X-Forwarded-Prefix'), '/');
+        $base = $forwarded !== '' ? $forwarded : rtrim((string) $request->getBaseUrl(), '/');
         $routeUri = ($base === $prefix ? $prefix : '') . '/livewire/update';
 
         // Livewire already registered its own /livewire/update route, which
