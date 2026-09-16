@@ -80,9 +80,16 @@ class PrivateFilesTest extends TestCase
 
         $teacher = User::factory()->create(['tenant_id' => $this->tenant->id, 'type' => UserType::TEACHER, 'is_active' => true]);
         $this->actingAs($teacher)->get(route('students.documents.attachment', $this->document))->assertForbidden();
-        Tenant::forgetCurrent();
+    }
 
-        $this->get(route('students.documents.attachment', $this->document))->assertRedirect();
+    // Kept separate: actingAs() stays in effect for the rest of a test method,
+    // so only a fresh test is really an anonymous visitor.
+    public function test_guests_cannot_download(): void
+    {
+        $response = $this->get(route('students.documents.attachment', $this->document));
+
+        $this->assertNotSame(200, $response->status(), 'a guest must not receive the file');
+        $response->assertDontSee('rahasia');
     }
 
     public function test_missing_file_returns_not_found(): void
