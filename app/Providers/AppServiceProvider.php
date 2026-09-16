@@ -13,9 +13,11 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -53,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
         $appUrl = config('app.url');
         if ($appUrl) {
             URL::forceRootUrl($appUrl);
+            $this->configureSubdirectoryAssets($appUrl);
         }
 
         // Set the system-level locale for date/time formatting functions like
@@ -65,6 +68,30 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
         $this->registerDemoGuards();
         $this->registerPanelHooks();
+    }
+
+    // When the app is served from a sub-directory (e.g. https://site.com/edusaas),
+    // Livewire still renders its script and update URLs without that prefix,
+    // because Laravel strips the request base path from relative route URLs.
+    // The browser would then post to /livewire/update on the main domain and
+    // get a 404, which breaks every Filament panel. Registering a prefixed
+    // update route and pinning the script URL keeps both inside the app.
+    private function configureSubdirectoryAssets(string $appUrl): void
+    {
+        $prefix = rtrim((string) parse_url($appUrl, PHP_URL_PATH), '/');
+
+        if ($prefix === '') {
+            return;
+        }
+
+        config(['livewire.asset_url' => rtrim($appUrl, '/') . '/livewire/livewire.min.js']);
+
+        // Livewire already registered its own /livewire/update route, which
+        // still matches the incoming request after the web server strips the
+        // prefix. This extra route only exists so the rendered URL keeps it.
+        Livewire::setUpdateRoute(fn ($handle) => Route::post($prefix . '/livewire/update', $handle)
+            ->middleware('web')
+            ->name('subdirectory.livewire.update'));
     }
 
     // Applies the name, language and timezone chosen in Super Admin →

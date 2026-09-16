@@ -169,6 +169,8 @@ Untuk subdomain per sekolah, arahkan DNS wildcard `*.sekolah.com` ke server, gun
 **Memasang di sub-folder** (mis. `https://domain.com/edusaas/`):
 - Isi `APP_URL=https://domain.com/edusaas`.
 - Di Nginx, hapus prefix dari `REQUEST_URI` sebelum diteruskan ke PHP, lalu kirim header `X-Forwarded-Prefix /edusaas`. Aplikasi sudah mempercayai header ini, sehingga signed URL tetap valid.
+- URL Livewire (script dan endpoint update) otomatis ikut memakai prefix selama `APP_URL` diisi lengkap. Tanpa ini, tombol dan form di panel Filament tidak berfungsi karena browser mengirim permintaan ke domain utama.
+- Jalankan `php artisan filament:assets` setelah deploy. Folder `public/css` dan `public/js` tidak ikut di repositori; tanpa perintah ini panel tampil tanpa CSS.
 
 ### 3.2 Queue worker (Supervisor)
 
