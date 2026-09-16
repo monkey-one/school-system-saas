@@ -13,6 +13,10 @@ Laravel 11 + Filament 3 + Livewire 3, MySQL 8, PHP 8.2+ (VPS: 8.4).
 - Branding: **numintek / Danum Inovasi Teknologi**. Tidak boleh ada kata "moonkey"
   di kode, dokumen, maupun paket rilis.
 - `git config core.fileMode false` — repo lokal punya permission 755 yang bukan perubahan nyata.
+- **Verifikasi hasil render, bukan sekadar HTTP 200.** Halaman bisa membalas 200 padahal
+  CSS-nya 404 dan tombolnya mati. Setelah deploy, pastikan CSS Filament 200 serta
+  `data-update-uri` dan `src` script Livewire membawa prefix `/edusaas`.
+  `/usr/local/bin/edusaas-deploy.sh` keluar dengan status 1 bila salah satu gagal.
 
 ## Deploy / live demo
 
@@ -53,6 +57,12 @@ halaman login, dan reset data terjadwal. Paket Codester dibangun dengan `DEMO_MO
   (keduanya harus diperbarui bersamaan). Locale via `SetLocale` + `/locale/{locale}`.
 - Deploy di sub-path: `AppServiceProvider` memaksa `URL::forceRootUrl(APP_URL)`;
   jangan pakai path absolut `/...` di Blade — pakai `url()`/`route()`/`asset()`.
+  URL Livewire dibuat berprefix oleh `AppServiceProvider::configureSubdirectoryAssets()`,
+  yang membaca header `X-Forwarded-Prefix` saat boot karena `TrustProxies` baru jalan
+  setelah provider boot. Tanpa ini semua panel Filament mati di sub-folder.
+- Aset Filament (`public/css`, `public/js`) tidak ada di git. Jalankan
+  `php artisan filament:assets` tiap deploy — `composer install` juga sudah memicunya
+  lewat `filament:upgrade` di `post-autoload-dump`.
 
 ## Konvensi kode
 
