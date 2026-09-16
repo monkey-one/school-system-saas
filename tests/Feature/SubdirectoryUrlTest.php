@@ -31,21 +31,26 @@ class SubdirectoryUrlTest extends TestCase
     }
 
     // The live demo runs behind a proxy that strips the prefix from the path
-    // and announces it with X-Forwarded-Prefix, which Laravel then treats as
-    // the request base path.
+    // and announces it with X-Forwarded-Prefix. That header is only honoured
+    // once TrustProxies has run, which happens after the providers boot, so
+    // the prefix must be read from the header itself while booting.
     public function test_prefix_is_not_duplicated_behind_a_forwarding_proxy(): void
     {
         config(['app.url' => 'https://example.test/edusaas']);
 
-        Request::setTrustedProxies(['127.0.0.1'], Request::HEADER_X_FORWARDED_PREFIX);
         $request = Request::create('https://example.test/edusaas-admin/login', server: ['REMOTE_ADDR' => '127.0.0.1']);
         $request->headers->set('X-Forwarded-Prefix', '/edusaas');
         $this->app->instance('request', $request);
         URL::setRequest($request);
 
-        $this->assertSame('/edusaas', $request->getBaseUrl());
+        // Boot time: the proxy is not trusted yet, so the base path is empty.
+        $this->assertSame('', $request->getBaseUrl());
 
         (new AppServiceProvider($this->app))->boot();
+
+        // TrustProxies runs, and from now on the base path carries the prefix.
+        Request::setTrustedProxies(['127.0.0.1'], Request::HEADER_X_FORWARDED_PREFIX);
+        $this->assertSame('/edusaas', $request->getBaseUrl());
 
         $this->assertSame('/edusaas/livewire/update', Livewire::getUpdateUri());
     }
